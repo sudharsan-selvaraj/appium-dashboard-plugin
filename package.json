@@ -1,0 +1,51 @@
+{
+  "name": "appium-dashboard-plugin",
+  "version": "1.0.0",
+  "description": "",
+  "main": "/lib/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "sequelize:migrate": "sequelize-cli db:migrate",
+    "sequelize:migrate:undo": "sequelize-cli db:migrate:undo",
+    "postinstall": "npm run sequlize:migrate"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://sudharsan-selvaraj@github.com/sudharsan-selvaraj/appium-dashboard-plugin.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sudharsan-selvaraj/appium-dashboard-plugin/issues"
+  },
+  "homepage": "https://github.com/sudharsan-selvaraj/appium-dashboard-plugin#readme",
+  "appium": {
+    "pluginName": "appium-dashboard",
+    "mainClass": "AppiumDashboardPlugin"
+  },
+  "dependencies": {
+    "@appium/base-plugin": "^1.6.4",
+    "appium-adb": "^8.16.1",
+    "appium-ios-device": "^1.7.1",
+    "appium-support": "^2.54.2",
+    "bluebird": "^3.7.2",
+    "body-parser": "^1.19.0",
+    "circular-json": "^0.5.9",
+    "debug": "^4.3.2",
+    "express": "^4.17.1",
+    "get-port": "^5.1.1",
+    "lokijs": "^1.5.12",
+    "sequelize": "^6.6.5",
+    "sequelize-cli": "^6.2.0",
+    "sequelize-typescript": "^2.1.0",
+    "socket.io": "^4.2.0",
+    "sqlite3": "^5.0.2",
+    "typedi": "^0.10.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.13",
+    "@types/lokijs": "^1.5.7",
+    "@types/node": "^16.10.2"
+  }
+}
