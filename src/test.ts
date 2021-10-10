@@ -15,10 +15,7 @@ let android = getSessionDetails(
 
 let ios = getSessionDetails(
   JSON.parse(
-    fs.readFileSync(
-      "/Users/sselvar4/Documents/git/personal/appium-dashboard/jsons/ios-session-response.json",
-      "utf-8"
-    )
+    fs.readFileSync("/Users/sselvar4/Documents/git/personal/appium-dashboard/jsons/ios-session-response.json", "utf-8")
   )
 );
 

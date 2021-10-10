@@ -2,19 +2,14 @@ import BasePlugin from "@appium/base-plugin";
 import { SessionManager } from "./session-manager";
 import { getSessionDetails } from "./utils";
 
-class AppiumDashboardPlugin extends BasePlugin {
-  private sessionMap: Map<string, SessionManager> = new Map();
+const sessionMap: Map<string, SessionManager> = new Map();
 
+class AppiumDashboardPlugin extends BasePlugin {
   constructor(pluginName: string) {
     super(pluginName);
   }
 
-  async handle(
-    next: () => Promise<any>,
-    driver: any,
-    commandName: string,
-    ...args: any
-  ) {
+  async handle(next: () => Promise<any>, driver: any, commandName: string, ...args: any) {
     let appiumCommand = {
       driver,
       commandName,
@@ -29,20 +24,19 @@ class AppiumDashboardPlugin extends BasePlugin {
       } else {
         let sessionInfo = getSessionDetails(response);
         let sessionManager = new SessionManager(sessionInfo);
-        this.sessionMap.set(
-          sessionInfo.session_id,
-          new SessionManager(sessionInfo)
-        );
-        return await sessionManager.onCommandRecieved(appiumCommand);
+        sessionMap.set(sessionInfo.session_id, new SessionManager(sessionInfo));
+        await sessionManager.onCommandRecieved(appiumCommand);
+        return response;
       }
     }
 
-    if (this.sessionMap.get(args[0])) {
-      return await this.sessionMap
-        .get(args[0])
-        ?.onCommandRecieved(appiumCommand);
+    let sessionId = args[args.length - 1];
+    if (sessionMap.has(sessionId)) {
+      return await sessionMap.get(sessionId)?.onCommandRecieved(appiumCommand);
     } else {
       return await next();
     }
   }
 }
+
+export { AppiumDashboardPlugin };

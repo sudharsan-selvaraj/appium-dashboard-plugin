@@ -6,4 +6,5 @@ export interface SessionInfo {
   app: string;
   udid: string;
   capabilities: [string: any];
+  is_completed?: boolean;
 }

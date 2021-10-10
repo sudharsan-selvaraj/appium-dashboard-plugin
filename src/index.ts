@@ -1,0 +1,1 @@
+export { AppiumDashboardPlugin } from "./plugin";
