@@ -1,4 +1,5 @@
 import BasePlugin from "@appium/base-plugin";
+import { log } from "./logger";
 import { SessionManager } from "./session-manager";
 import { getSessionDetails } from "./utils";
 

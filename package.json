@@ -27,6 +27,7 @@
   "dependencies": {
     "@appium/base-plugin": "^1.6.4",
     "appium-adb": "^8.16.1",
+    "appium-base-driver": "^7.10.0",
     "appium-ios-device": "^1.7.1",
     "appium-support": "^2.54.2",
     "bluebird": "^3.7.2",

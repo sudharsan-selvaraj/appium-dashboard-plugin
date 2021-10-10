@@ -1,6 +1,7 @@
 import { SessionInfo } from "./types/session-info";
 import fetch from "node-fetch";
 const circularjson = require("circular-json");
+import { routeToCommandName as _routeToCommandName } from "appium-base-driver";
 import { log } from "./logger";
 
 function getSessionDetails(sessionResponse: any): any {
@@ -50,4 +51,32 @@ async function stopScreenRecording(driver: any, sessionId: string) {
   return await makePostCall(driver, sessionId, "appium/stop_recording_screen", {});
 }
 
-export { getSessionDetails, startScreenRecording, stopScreenRecording };
+function interceptProxyResponse(response: any): Promise<any> {
+  return new Promise((resolve, reject) => {
+    const defaultWrite = response.write;
+    const defaultEnd = response.end;
+    const chunks: any = [];
+
+    response.write = (...restArgs: any) => {
+      chunks.push(Buffer.from(restArgs[0]));
+      defaultWrite.apply(response, restArgs);
+    };
+    response.end = (...restArgs: any) => {
+      if (restArgs[0]) {
+        chunks.push(Buffer.from(restArgs[0]));
+      }
+      const body = Buffer.concat(chunks).toString("utf8");
+      defaultEnd.apply(response, restArgs);
+      resolve(JSON.parse(body));
+    };
+  });
+}
+
+function routeToCommand(proxyReqRes: any) {
+  return {
+    commandName: _routeToCommandName(proxyReqRes[0].originalUrl, proxyReqRes[0].method),
+    newargs: [proxyReqRes[0].body, proxyReqRes[proxyReqRes.length - 1]],
+  };
+}
+
+export { getSessionDetails, startScreenRecording, stopScreenRecording, interceptProxyResponse, routeToCommand };
