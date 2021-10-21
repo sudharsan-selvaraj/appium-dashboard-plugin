@@ -25,7 +25,7 @@ function getSessionDetails(sessionResponse: any): any {
 }
 
 function getDriverEndpoint(driver: any) {
-  let { address, port, basePath } = driver.opts;
+  let { address, port, basePath } = driver.opts || driver;
   return `http://${address}:${port}${basePath != "" ? "/" + basePath : ""}`;
 }
 
@@ -39,16 +39,10 @@ async function makePostCall(driver: any, sessionId: string, path: string, body: 
   return await response.json();
 }
 
-async function startScreenRecording(driver: any, sessionId: string) {
-  return await makePostCall(driver, sessionId, "appium/start_recording_screen", {
-    options: {
-      videoType: "mpeg4",
-    },
-  });
-}
-
-async function stopScreenRecording(driver: any, sessionId: string) {
-  return await makePostCall(driver, sessionId, "appium/stop_recording_screen", {});
+async function makeGETCall(driver: any, sessionId: string, path: string): Promise<any> {
+  log.info(`enpoint ${getDriverEndpoint(driver)}/session/${sessionId}/${path}`);
+  const response = await fetch(`${getDriverEndpoint(driver)}/session/${sessionId}/${path}`);
+  return await response.json();
 }
 
 function interceptProxyResponse(response: any): Promise<any> {
@@ -67,7 +61,7 @@ function interceptProxyResponse(response: any): Promise<any> {
       }
       const body = Buffer.concat(chunks).toString("utf8");
       defaultEnd.apply(response, restArgs);
-      resolve(JSON.parse(body));
+      resolve(JSON.parse(body).value);
     };
   });
 }
@@ -79,4 +73,4 @@ function routeToCommand(proxyReqRes: any) {
   };
 }
 
-export { getSessionDetails, startScreenRecording, stopScreenRecording, interceptProxyResponse, routeToCommand };
+export { makeGETCall, makePostCall, getSessionDetails, interceptProxyResponse, routeToCommand };

@@ -1,21 +1,32 @@
 import { SessionInfo } from "./types/session-info";
 import { AppiumCommand } from "./types/appium-command";
-import { startScreenRecording, stopScreenRecording, interceptProxyResponse, routeToCommand } from "./utils";
+import { interceptProxyResponse, routeToCommand } from "./utils";
+import { startScreenRecording, stopScreenRecording } from "./comman-executor";
+import { getLogTypes, getLogs } from "./comman-executor";
+import * as parser from "./command-parser";
+import { CommandLogs as commandLogsModel, Session } from "./models";
+
 import { log } from "./logger";
 import * as fs from "fs";
-const circularjson = require("circular-json");
+import * as process from "process";
+
+const CREATE_SESSION = "createSession";
 
 class SessionManager {
+  private logTypes: Array<string> = [];
+  private logInterval!: NodeJS.Timeout;
+  private isLogsPending: Boolean = false;
+  private driverOpts: any;
+
   constructor(private sessionInfo: SessionInfo) {
     this.sessionInfo.is_completed = false;
   }
 
   public async onCommandRecieved(command: AppiumCommand): Promise<any> {
-    if (command.commandName == "createSession") {
-      return await this.startScreenRecording(command.driver);
+    if (command.commandName == CREATE_SESSION) {
+      return await this.sessionStarted(command);
     } else if (command.commandName == "deleteSession") {
-      this.sessionInfo.is_completed = true;
-      await this.saveScreenRecording(command.driver);
+      await this.sessionTerminated(command);
     } else if (command.commandName == "proxyReqRes") {
       let promise = interceptProxyResponse(command.args[1]);
       let originalNext = command.next;
@@ -28,10 +39,47 @@ class SessionManager {
 
     this.appendLogs(`Recieved command ${command.commandName}`);
     let res = await command.next();
+    await this.saveCommandLog(command, res);
     this.appendLogs(command.commandName);
     this.appendLogs(!res ? "null" : JSON.stringify(res));
     this.appendLogs("------------------------------------------------------------------------------------------");
     return res;
+  }
+
+  private async sessionStarted(command: AppiumCommand) {
+    this.driverOpts = command.driver.opts;
+
+    await Session.create({
+      ...this.sessionInfo,
+      start_time: new Date(),
+    } as any);
+
+    await this.initializeLogging(command.driver);
+    await this.saveCommandLog(command, null);
+    return await this.startScreenRecording(command.driver);
+  }
+
+  private async sessionTerminated(command: AppiumCommand) {
+    this.sessionInfo.is_completed = true;
+    await this.saveScreenRecording(command.driver);
+  }
+
+  private async saveCommandLog(command: AppiumCommand, response: any) {
+    let p: any = parser;
+    if (p[command.commandName]) {
+      response = command.commandName == CREATE_SESSION ? this.sessionInfo : response;
+      let parsedLog = p[command.commandName](command.driver, command.args, response);
+      Object.assign(parsedLog, {
+        session_id: this.sessionInfo.session_id,
+        command_name: command.commandName,
+      });
+      try {
+        await commandLogsModel.create(parsedLog);
+      } catch (err) {
+        log.info(err);
+        throw err;
+      }
+    }
   }
 
   private appendLogs(log: string) {
@@ -40,6 +88,31 @@ class SessionManager {
 
   private async startScreenRecording(driver: any) {
     await startScreenRecording(driver, this.sessionInfo.session_id);
+  }
+
+  private async initializeLogging(driver: any) {
+    this.logTypes = (await getLogTypes(driver, this.sessionInfo.session_id)).value || [];
+    //this.logInterval = setInterval(this.fetchLogs.bind(this), 5000);
+  }
+
+  private async fetchLogs() {
+    if (this.isLogsPending) {
+      return;
+    }
+    if (this.sessionInfo.is_completed) {
+      clearInterval(this.logInterval);
+      log.info(`Closing logs for session ${this.sessionInfo.session_id}`);
+    } else {
+      this.isLogsPending = true;
+      log.info(`Fetching logs for session ${this.sessionInfo.session_id}`);
+      let logs = await Promise.all(
+        this.logTypes.map(async (l) => {
+          return await getLogs(this.driverOpts, this.sessionInfo.session_id, l);
+        })
+      );
+      log.info(`${logs.length}`);
+      this.isLogsPending = false;
+    }
   }
 
   private async saveScreenRecording(driver: any) {

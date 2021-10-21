@@ -9,10 +9,17 @@ import { DataTypes, Op } from "sequelize";
   updatedAt: "updated_at",
 })
 class Session extends Model<Session> {
+  @Column({
+    primaryKey: true,
+    autoIncrement: true,
+    type: DataTypes.INTEGER,
+  })
+  id!: number;
+
   @AllowNull(false)
   @Column({
     type: DataTypes.STRING,
-    primaryKey: true,
+    unique: true,
   })
   session_id!: string;
 
@@ -24,7 +31,7 @@ class Session extends Model<Session> {
 
   @AllowNull(false)
   @Column({
-    type: DataTypes.ENUM("IOS", "ANDROID"),
+    type: DataTypes.STRING,
   })
   platform_name!: string;
 
@@ -57,7 +64,7 @@ class Session extends Model<Session> {
     type: DataTypes.BOOLEAN,
     defaultValue: false,
   })
-  is_completed!: boolean;
+  is_completed?: boolean;
 
   @AllowNull(false)
   @Column({
@@ -71,7 +78,28 @@ class Session extends Model<Session> {
     type: DataTypes.DATE,
     defaultValue: null,
   })
-  end_time!: Date;
+  end_time?: Date;
+
+  @AllowNull(true)
+  @Column({
+    type: DataTypes.BOOLEAN,
+    defaultValue: true,
+  })
+  is_test_passed?: Boolean;
+
+  @AllowNull(false)
+  @Column({
+    type: DataTypes.ENUM,
+    values: ["PASSED", "FAILED"],
+    defaultValue: "PASSED",
+  })
+  session_status?: Boolean;
+
+  @AllowNull(true)
+  @Column({
+    type: DataTypes.TEXT,
+  })
+  session_status_message?: string;
 }
 
 export { Session };

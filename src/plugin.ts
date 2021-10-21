@@ -19,6 +19,11 @@ class AppiumDashboardPlugin extends BasePlugin {
     };
 
     if (commandName == "createSession") {
+      /**
+       * Append additional log capabilities to payload
+       */
+      args[2]["appium:clearDeviceLogsOnStart"] = true;
+      args[2].firstMatch[0]["appium:clearDeviceLogsOnStart"] = true;
       var response = await next();
       if (response.error) {
         return response;
