@@ -3,6 +3,7 @@ import fetch from "node-fetch";
 const circularjson = require("circular-json");
 import { routeToCommandName as _routeToCommandName } from "appium-base-driver";
 import { log } from "./logger";
+import { CustomColumnOption } from "./types/custom-column-options";
 
 function getSessionDetails(sessionResponse: any): any {
   console.log(sessionResponse.value);
@@ -73,4 +74,28 @@ function routeToCommand(proxyReqRes: any) {
   };
 }
 
-export { makeGETCall, makePostCall, getSessionDetails, interceptProxyResponse, routeToCommand };
+function customModelColumn(options: CustomColumnOption) {
+  let result: any = {};
+  result["set"] = function (value: any) {
+    if (options.json) {
+      if ((value != null || value != undefined) && typeof value === "object") {
+        value = JSON.stringify(value);
+      }
+    }
+    this.setDataValue(options.name, value);
+  };
+
+  result["get"] = function () {
+    let value = this.getDataValue(options.name);
+    if (value == null) {
+      return value;
+    }
+    if (options.json) {
+      value = JSON.parse(value);
+    }
+    return value;
+  };
+  return result;
+}
+
+export { makeGETCall, makePostCall, getSessionDetails, interceptProxyResponse, routeToCommand, customModelColumn };

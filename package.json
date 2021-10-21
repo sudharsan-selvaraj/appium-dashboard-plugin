@@ -8,7 +8,7 @@
     "sequelize:migrate": "sequelize-cli db:migrate",
     "sequelize:migrate:undo": "sequelize-cli db:migrate:undo",
     "postinstall": "npm run sequelize:migrate:undo && npm run sequelize:migrate",
-    "i": "tsc && appium plugin uninstall appium-dashboard && appium plugin install --source=local $(pwd)",
+    "i": "tsc && (appium plugin uninstall appium-dashboard || exit 0) && appium plugin install --source=local $(pwd)",
     "server": "node /Users/sselvar4/.nvm/versions/node/v16.10.0/lib/node_modules/appium/build/lib/main.js --plugins=appium-dashboard"
   },
   "repository": {
@@ -29,6 +29,7 @@
   "dependencies": {
     "@appium/base-plugin": "^1.6.4",
     "appium-adb": "^8.16.1",
+    "appium-base-driver": "^7.10.1",
     "appium-ios-device": "^1.7.1",
     "appium-support": "^2.54.2",
     "bluebird": "^3.7.2",
@@ -37,6 +38,7 @@
     "debug": "^4.3.2",
     "express": "^4.17.1",
     "get-port": "^5.1.1",
+    "lokijs": "^1.5.12",
     "node-fetch": "^2.6.2",
     "sequelize": "^6.6.5",
     "sequelize-cli": "^6.2.0",
@@ -46,6 +48,7 @@
   },
   "devDependencies": {
     "@types/express": "^4.17.13",
+    "@types/lokijs": "^1.5.7",
     "@types/node": "^16.10.2",
     "@types/node-fetch": "^3.0.3"
   }

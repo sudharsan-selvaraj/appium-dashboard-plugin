@@ -54,7 +54,7 @@ module.exports = {
     });
   },
   down: (queryInterface, Sequelize) => {
-    return promise.each(["session", "logs"], function (table) {
+    return promise.each(["logs", "command_logs", "session"], function (table) {
       return queryInterface.dropTable(table);
     });
   },

@@ -1,6 +1,7 @@
 import { Model, Table, AllowNull, Column, ForeignKey, BelongsTo } from "sequelize-typescript";
 import { DataTypes, Op } from "sequelize";
 import { Session } from "./session";
+import { customModelColumn } from "../utils";
 
 @Table({
   tableName: "command_logs",
@@ -41,11 +42,13 @@ class CommandLogs extends Model<CommandLogs> {
 
   @Column({
     type: DataTypes.STRING,
+    ...customModelColumn({ name: "response", json: true }),
   })
   response!: string;
 
   @Column({
     type: DataTypes.STRING,
+    ...customModelColumn({ name: "params", json: true }),
   })
   params!: string;
 

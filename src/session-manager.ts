@@ -1,14 +1,15 @@
 import { SessionInfo } from "./types/session-info";
 import { AppiumCommand } from "./types/appium-command";
 import { interceptProxyResponse, routeToCommand } from "./utils";
-import { startScreenRecording, stopScreenRecording } from "./comman-executor";
-import { getLogTypes, getLogs } from "./comman-executor";
-import * as parser from "./command-parser";
-import { CommandLogs as commandLogsModel, Session } from "./models";
+import { startScreenRecording, stopScreenRecording } from "./command-executor";
+import { getLogTypes, getLogs } from "./command-executor";
+import { CommandParser } from "./command-parser";
+import { CommandLogs, CommandLogs as commandLogsModel, Session } from "./models";
 
 import { log } from "./logger";
 import * as fs from "fs";
 import * as process from "process";
+const cj = require("circular-json");
 
 const CREATE_SESSION = "createSession";
 
@@ -18,7 +19,7 @@ class SessionManager {
   private isLogsPending: Boolean = false;
   private driverOpts: any;
 
-  constructor(private sessionInfo: SessionInfo) {
+  constructor(private sessionInfo: SessionInfo, private commandParser: CommandParser) {
     this.sessionInfo.is_completed = false;
   }
 
@@ -41,6 +42,7 @@ class SessionManager {
     let res = await command.next();
     await this.saveCommandLog(command, res);
     this.appendLogs(command.commandName);
+    this.appendLogs(cj.stringify(command.args));
     this.appendLogs(!res ? "null" : JSON.stringify(res));
     this.appendLogs("------------------------------------------------------------------------------------------");
     return res;
@@ -65,16 +67,19 @@ class SessionManager {
   }
 
   private async saveCommandLog(command: AppiumCommand, response: any) {
-    let p: any = parser;
-    if (p[command.commandName]) {
+    if (typeof this.commandParser[command.commandName as keyof CommandParser] == "function") {
       response = command.commandName == CREATE_SESSION ? this.sessionInfo : response;
-      let parsedLog = p[command.commandName](command.driver, command.args, response);
+      let parsedLog = await this.commandParser[command.commandName as keyof CommandParser](
+        command.driver,
+        command.args,
+        response
+      );
       Object.assign(parsedLog, {
         session_id: this.sessionInfo.session_id,
         command_name: command.commandName,
       });
       try {
-        await commandLogsModel.create(parsedLog);
+        await commandLogsModel.create(parsedLog as any);
       } catch (err) {
         log.info(err);
         throw err;

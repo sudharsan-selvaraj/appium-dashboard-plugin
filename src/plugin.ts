@@ -1,4 +1,5 @@
 import BasePlugin from "@appium/base-plugin";
+import { CommandParser } from "./command-parser";
 import { log } from "./logger";
 import { SessionManager } from "./session-manager";
 import { getSessionDetails } from "./utils";
@@ -29,8 +30,8 @@ class AppiumDashboardPlugin extends BasePlugin {
         return response;
       } else {
         let sessionInfo = getSessionDetails(response);
-        let sessionManager = new SessionManager(sessionInfo);
-        sessionMap.set(sessionInfo.session_id, new SessionManager(sessionInfo));
+        let sessionManager = new SessionManager(sessionInfo, new CommandParser(sessionInfo));
+        sessionMap.set(sessionInfo.session_id, sessionManager);
         await sessionManager.onCommandRecieved(appiumCommand);
         return response;
       }
