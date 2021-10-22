@@ -1,4 +1,6 @@
 import { SessionInfo } from "./types/session-info";
+import { saveLocator, getLocatorStrategy } from "./locator-factory";
+import { log } from "./logger";
 
 export class CommandParser {
   constructor(private sessionInfo: SessionInfo) {}
@@ -7,6 +9,59 @@ export class CommandParser {
     return !!args[0].route;
   }
 
+  /* Private methods  */
+  private async getLocatorTitleInfo(elementId: string) {
+    let strategy = await getLocatorStrategy(elementId);
+    if (strategy.index == null) {
+      return `[${strategy.using}=${strategy.value}]`;
+    } else {
+      return `[${strategy.using}=${strategy.value}][${strategy.index}]`;
+    }
+  }
+
+  private getElementCommandArgs(args: any) {
+    if (this.isProxyRequest(args)) {
+      return Object.values(args[0].params).reverse();
+    } else {
+      return args;
+    }
+  }
+
+  private isError(response: any) {
+    return response && !!response.error;
+  }
+
+  private getResponseType(response: any) {
+    if (!response) {
+      return "string";
+    } else if (this.isError(response)) {
+      return "error";
+    } else if (Array.isArray(response) || typeof response === "object") {
+      return "object";
+    } else {
+      return "string";
+    }
+  }
+
+  private getArgsBodyValue(args: any, key: string, index: number) {
+    if (this.isProxyRequest(args)) {
+      return args[0].body[key];
+    } else {
+      return args[index];
+    }
+  }
+
+  private getArgsParamsValue(args: any, key: string, index: number) {
+    if (this.isProxyRequest(args)) {
+      return args[0].params[key];
+    } else {
+      return args[index];
+    }
+  }
+
+  /**
+   * Command parser methods
+   */
   //TODO
   public async getStatus(driver: any, args: any[], response: any) {
     return {
@@ -371,13 +426,23 @@ export class CommandParser {
   public async findElement(driver: any, args: any[], response: any) {
     let newArgs = [...args];
     if (this.isProxyRequest(args)) {
-      newArgs = [...Object.keys(args[0].body), args.pop()];
+      newArgs = [...Object.values(args[0].body), args.pop()];
+    }
+
+    if (!this.isError(response)) {
+      await saveLocator(
+        {
+          using: newArgs[0],
+          value: newArgs[1],
+        },
+        [response]
+      );
     }
     return {
       title: "Find element",
-      title_info: `${newArgs[0]}=${newArgs[1]}`,
+      title_info: `[${newArgs[0]}=${newArgs[1]}]`,
       response: {
-        type: "object",
+        type: this.getResponseType(response),
         value: response,
       },
       params: {
@@ -391,13 +456,24 @@ export class CommandParser {
   public async findElements(driver: any, args: any[], response: any) {
     let newArgs = [...args];
     if (this.isProxyRequest(args)) {
-      newArgs = [...Object.keys(args[0].body), args.pop()];
+      newArgs = [...Object.values(args[0].body), args.pop()];
     }
+
+    if (!this.isError(response)) {
+      await saveLocator(
+        {
+          using: newArgs[0],
+          value: newArgs[1],
+        },
+        response
+      );
+    }
+
     return {
       title: "Find multiple elements",
-      title_info: `${newArgs[0]}=${newArgs[1]}`,
+      title_info: `[${newArgs[0]}=${newArgs[1]}]`,
       response: {
-        type: "object",
+        type: this.getResponseType(response),
         value: response,
       },
       params: {
@@ -419,30 +495,28 @@ export class CommandParser {
 
   //TODO
   public async findElementFromElement(driver: any, args: any[], response: any) {
-    return {
-      title: "findElementFromElement",
-      title_info: null,
-      response: null,
-      params: null,
-    };
+    let parsedValue = await this.findElement(driver, args, response);
+    parsedValue.title = "Find element from element";
+    return parsedValue;
   }
 
   //TODO
   public async findElementsFromElement(driver: any, args: any[], response: any) {
-    return {
-      title: "findElementsFromElement",
-      title_info: null,
-      response: null,
-      params: null,
-    };
+    let parsedValue = await this.findElements(driver, args, response);
+    parsedValue.title = "Find multiple elements from element";
+    return parsedValue;
   }
 
   //TODO
   public async click(driver: any, args: any[], response: any) {
+    let newArgs = this.getElementCommandArgs(args);
     return {
-      title: "click",
-      title_info: null,
-      response: null,
+      title: "Click",
+      title_info: await this.getLocatorTitleInfo(newArgs[0]),
+      response: {
+        type: this.getResponseType(response),
+        value: response,
+      },
       params: null,
     };
   }
@@ -459,21 +533,30 @@ export class CommandParser {
 
   //TODO
   public async getText(driver: any, args: any[], response: any) {
+    let newArgs = this.getElementCommandArgs(args);
     return {
-      title: "getText",
-      title_info: null,
-      response: null,
+      title: "Get text",
+      title_info: await this.getLocatorTitleInfo(newArgs[0]),
+      response: {
+        type: this.getResponseType(response),
+        value: response,
+      },
       params: null,
     };
   }
 
   //TODO
   public async setValue(driver: any, args: any[], response: any) {
+    let elementId = this.getArgsParamsValue(args, "elementId", 1);
+    let text = this.getArgsBodyValue(args, "text", 0);
     return {
-      title: "setValue",
-      title_info: null,
-      response: null,
-      params: null,
+      title: "Send Keys",
+      title_info: `${await this.getLocatorTitleInfo(elementId)} [value=${text}]`,
+      response: {
+        type: this.getResponseType(response),
+        value: response,
+      },
+      params: { text },
     };
   }
 

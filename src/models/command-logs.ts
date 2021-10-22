@@ -52,6 +52,12 @@ class CommandLogs extends Model<CommandLogs> {
   })
   params!: string;
 
+  @Column({
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+  })
+  is_error!: Boolean;
+
   @BelongsTo(() => Session, { foreignKey: "session_id" })
   session!: Session;
 }
