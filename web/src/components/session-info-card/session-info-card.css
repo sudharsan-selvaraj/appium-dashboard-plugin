@@ -1,0 +1,8 @@
+.session-info-card__wrapper {
+  display: flex;
+  padding: 10px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #dde7f0;
+  height: 90px;
+  width: 100%;
+}

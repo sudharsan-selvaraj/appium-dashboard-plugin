@@ -1,0 +1,46 @@
+.header__wrapper {
+  border: 1px solid #dde7f0;
+  border-top: 0;
+  background-color: #fff;
+}
+
+.header__container {
+  width: 100%;
+  height: 40px;
+  margin-right: auto;
+  margin-left: auto;
+  max-width: 1440px;
+  display: flex;
+  align-items: center;
+}
+
+.header__container .MuiSvgIcon-root {
+  height: 18px;
+  width: 18px;
+  margin-right: 5px;
+  margin-left: 5px;
+}
+
+.header__logo {
+  display: flex;
+  font-size: 12px;
+  font-weight: 600;
+  padding-right: 20px;
+}
+
+.header__logo,
+.header__search_container {
+  padding-left: 5px;
+  display: flex;
+  height: 100%;
+  align-items: center;
+  border-right: 1px solid #dde7f0;
+}
+
+.header__search_container input {
+  border: none;
+  font-size: 12px;
+  font-weight: 500;
+  min-width: 300px;
+  outline: none !important;
+}
