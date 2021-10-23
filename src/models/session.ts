@@ -41,11 +41,29 @@ class Session extends Model<Session> {
   })
   automation_name!: string;
 
+  @AllowNull(false)
+  @Column({
+    type: DataTypes.STRING,
+  })
+  device_name!: string;
+
+  @AllowNull(false)
+  @Column({
+    type: DataTypes.STRING,
+  })
+  platform_version!: string;
+
   @AllowNull(true)
   @Column({
     type: DataTypes.STRING,
   })
   app!: string;
+
+  @AllowNull(true)
+  @Column({
+    type: DataTypes.STRING,
+  })
+  browser_name!: string;
 
   @AllowNull(false)
   @Column({

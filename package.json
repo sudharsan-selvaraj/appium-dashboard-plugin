@@ -28,6 +28,8 @@
   },
   "dependencies": {
     "@appium/base-plugin": "^1.6.4",
+    "@mui/icons-material": "^5.0.4",
+    "@mui/material": "^5.0.4",
     "appium-adb": "^8.16.1",
     "appium-base-driver": "^7.10.1",
     "appium-ios-device": "^1.7.1",

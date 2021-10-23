@@ -18,12 +18,15 @@ class SessionManager {
   private isLogsPending: Boolean = false;
   private driverOpts: any;
 
-  constructor(private sessionInfo: SessionInfo, private commandParser: CommandParser) {
+  constructor(private sessionInfo: SessionInfo, private commandParser: CommandParser, private sessionResponse: any) {
     this.sessionInfo.is_completed = false;
   }
 
   public async onCommandRecieved(command: AppiumCommand): Promise<any> {
     if (command.commandName == CREATE_SESSION) {
+      this.appendLogs(`Recieved command ${command.commandName}`);
+      this.appendLogs(cj.stringify(command.args));
+      this.appendLogs(`${JSON.stringify(this.sessionResponse)}`);
       return await this.sessionStarted(command);
     } else if (command.commandName == "deleteSession") {
       await this.sessionTerminated(command);
@@ -38,7 +41,6 @@ class SessionManager {
     }
 
     this.appendLogs(`Recieved command ${command.commandName}`);
-    this.appendLogs(command.commandName);
     this.appendLogs(cj.stringify(command.args));
     try {
       let res = await command.next();

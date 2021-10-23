@@ -1,6 +1,5 @@
 .session-details__wrapper {
   display: flex;
-  background-color: rgb(217, 247, 243);
   height: 100%;
   flex: 0.9;
   flex-direction: column;
@@ -8,50 +7,11 @@
   padding-bottom: 30px;
 }
 
-.session-details__header {
-  width: 100%;
-  height: 100px;
-  background-color: #ffffff;
-  border-bottom: 1px solid #ced8e1;
-  display: flex;
-}
-
-.session-details__column {
-  display: flex;
-  width: 350px;
-  flex-direction: column;
-  height: 100%;
-  margin-right: 40px;
-  padding: 10px;
-  padding-left: 20px;
-  padding-top: 0;
-}
-
-.session-details__column_row {
-  display: flex;
-  padding-top: 10px;
-}
-
-.session-details__column_header {
-  margin-right: 10px;
-  width: 120px;
-  font-size: 12px;
-  font-weight: 500;
-  color: grey;
-}
-
-.session-details__column_value {
-  text-overflow: ellipsis !important;
-  overflow: hidden;
-  font-size: 12px;
-  font-weight: 600;
-}
-
 .session-details__main_content {
   top: 100px;
   height: calc(100% - 120px);
   width: 100%;
-  background-color: #e6e9de;
+  background-color: #ffffff;
   padding: 15px;
   display: flex;
   flex-direction: row;

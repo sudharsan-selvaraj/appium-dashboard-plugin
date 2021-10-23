@@ -1,11 +1,12 @@
 .session-info-card__wrapper {
   display: flex;
   padding-left: 15px;
-  background-color: #ffffff;
+  background-color: #f0f4f7;
   border-bottom: 1px solid #ced8e1;
   height: 90px;
   width: 100%;
   align-items: center;
+  cursor: pointer;
 }
 
 .session-info-card__items {

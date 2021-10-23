@@ -1,0 +1,39 @@
+.session-details__header {
+  width: 100%;
+  height: 100px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #ced8e1;
+  display: flex;
+}
+
+.session-details__header_column {
+  display: flex;
+  width: 350px;
+  flex-direction: column;
+  height: 100%;
+  margin-right: 40px;
+  padding: 10px;
+  padding-left: 20px;
+  padding-top: 0;
+}
+
+.session-details__header_column_row {
+  display: flex;
+  padding-top: 10px;
+  align-items: center;
+}
+
+.session-details__header_column_label {
+  margin-right: 10px;
+  min-width: 123px;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgb(116, 114, 114);
+}
+
+.session-details__header_column_value {
+  text-overflow: ellipsis !important;
+  overflow: hidden;
+  font-size: 12px;
+  font-weight: 600;
+}

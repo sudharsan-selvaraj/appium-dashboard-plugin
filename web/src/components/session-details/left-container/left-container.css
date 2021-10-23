@@ -1,8 +1,9 @@
 .left-container__wrapper {
   flex: 0.35;
   height: 100%;
-  border: 1px solid #ced8e1;
-  padding-right: 5px;
+  border-right: 1px solid #ced8e1;
+  padding-right: 20px;
+  padding-left: 10px;
   padding-bottom: 1px;
   overflow: scroll;
 }
