@@ -1,8 +1,43 @@
 .session-info-card__wrapper {
   display: flex;
-  padding: 10px;
+  padding-left: 15px;
   background-color: #ffffff;
-  border-bottom: 1px solid #dde7f0;
+  border-bottom: 1px solid #ced8e1;
   height: 90px;
   width: 100%;
+  align-items: center;
+}
+
+.session-info-card__items {
+  display: flex;
+  flex-direction: column;
+  flex: 0.9;
+}
+
+.session-info-card__details_wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.session-info-card__title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.success {
+  color: #0f720b;
+}
+
+.session-info-card__status {
+  font-size: 11px;
+  font-weight: 600;
+  margin-right: 10px;
+}
+
+.session-info-card__time {
+  font-size: 11px;
+  font-weight: 400;
+  margin-right: 10px;
+  color: grey;
 }

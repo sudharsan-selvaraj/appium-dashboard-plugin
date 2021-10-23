@@ -1,5 +1,5 @@
 .header__wrapper {
-  border: 1px solid #dde7f0;
+  border: 1px solid #ced8e1;
   border-top: 0;
   background-color: #fff;
 }
@@ -34,7 +34,7 @@
   display: flex;
   height: 100%;
   align-items: center;
-  border-right: 1px solid #dde7f0;
+  border-right: 1px solid #ced8e1;
 }
 
 .header__search_container input {
