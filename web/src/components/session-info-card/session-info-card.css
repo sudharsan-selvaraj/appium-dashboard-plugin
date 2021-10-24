@@ -3,8 +3,7 @@
   padding-left: 15px;
   background-color: #f0f4f7;
   border-bottom: 1px solid #ced8e1;
-  height: 90px;
-  width: 100%;
+  height: 110px;
   align-items: center;
   cursor: pointer;
 }
@@ -18,27 +17,70 @@
 .session-info-card__details_wrapper {
   display: flex;
   align-items: center;
+  margin-bottom: 10px;
 }
 
 .session-info-card__title {
-  font-size: 16px;
+  font-size: 12px;
   font-weight: 600;
   margin-bottom: 10px;
 }
 
-.success {
-  color: #0f720b;
-}
-
 .session-info-card__status {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
   margin-right: 10px;
 }
 
 .session-info-card__time {
-  font-size: 11px;
-  font-weight: 400;
+  font-size: 12px;
+  font-weight: 600;
   margin-right: 10px;
   color: grey;
+}
+
+.session-info-card__status_icon {
+  margin-left: auto;
+  padding-right: 15px;
+}
+
+.session-info-card__platform,
+.session-info-card__device_name {
+  font-size: 12px;
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  margin-right: 8px;
+  color: grey;
+}
+
+.session-info-card__platform .device-icon,
+.session-info-card__device_name .device-icon {
+  padding-right: 3px;
+}
+
+.session-info-card__platform .apple-icon {
+  margin-top: -4px;
+}
+
+.session-info-card__platform .MuiSvgIcon-root {
+  height: 20px;
+  width: 20px;
+}
+
+.session-info-card__device_name {
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.session-info-card__device_name .MuiSvgIcon-root {
+  height: 15px;
+  width: 12px;
+}
+
+.session-info-card__wrapper.active {
+  background-color: #abd2ed;
+}
+
+.session-info-card__wrapper.active * {
 }

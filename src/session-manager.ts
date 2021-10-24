@@ -5,18 +5,21 @@ import { startScreenRecording, stopScreenRecording } from "./command-executor";
 import { getLogTypes, getLogs } from "./command-executor";
 import { CommandParser } from "./command-parser";
 import { CommandLogs as commandLogsModel, Session } from "./models";
-
+import { Op } from "sequelize";
 import { log } from "./logger";
 import * as fs from "fs";
+import "reflect-metadata";
+import { Container } from "typedi";
+
 const cj = require("circular-json");
 
 const CREATE_SESSION = "createSession";
-
 class SessionManager {
   private logTypes: Array<string> = [];
   private logInterval!: NodeJS.Timeout;
   private isLogsPending: Boolean = false;
   private driverOpts: any;
+  private config: any = Container.get("config");
 
   constructor(private sessionInfo: SessionInfo, private commandParser: CommandParser, private sessionResponse: any) {
     this.sessionInfo.is_completed = false;
@@ -78,7 +81,30 @@ class SessionManager {
 
   private async sessionTerminated(command: AppiumCommand) {
     this.sessionInfo.is_completed = true;
-    await this.saveScreenRecording(command.driver);
+    let videoPath = await this.saveScreenRecording(command.driver);
+    let errorCount = await commandLogsModel.count({
+      where: {
+        session_id: this.sessionInfo.session_id,
+        is_error: true,
+        command_name: {
+          [Op.notIn]: ["findElement", "elementDisplayed"],
+        },
+      },
+    });
+
+    await Session.update(
+      {
+        is_completed: true,
+        session_status: errorCount > 0 ? "FAILED" : "PASSED",
+        end_time: new Date(),
+        video_path: videoPath ? videoPath : null,
+      },
+      {
+        where: {
+          session_id: this.sessionInfo.session_id,
+        },
+      }
+    );
   }
 
   private async saveCommandLog(command: AppiumCommand, response: any) {
@@ -139,15 +165,10 @@ class SessionManager {
   private async saveScreenRecording(driver: any) {
     let videoBase64String = await stopScreenRecording(driver, this.sessionInfo.session_id);
     if (videoBase64String.value != "") {
-      fs.writeFileSync(
-        `/Users/sselvar4/Documents/git/personal/appium-dashboard-plugin/videos/${this.sessionInfo.session_id}.mp4`,
-        videoBase64String.value,
-        "base64"
-      );
-
-      log.info(
-        `Saving screenrecording.. /Users/sselvar4/Documents/git/personal/appium-dashboard-plugin/videos/${this.sessionInfo.session_id}.mp4`
-      );
+      let outPath = `${this.config.videoSavePath}/${this.sessionInfo.session_id}.mp4`;
+      fs.writeFileSync(outPath, videoBase64String.value, "base64");
+      log.info(`Saving screenrecording.. ${outPath}`);
+      return outPath;
     }
   }
 }

@@ -19,6 +19,7 @@ var createSessionTable = function (queryInterface, Sequelize) {
     is_test_passed: { type: Sequelize.BOOLEAN, defaultValue: true },
     session_status: { type: Sequelize.ENUM, values: ["PASSED", "FAILED"], defaultValue: "PASSED" },
     session_status_message: { type: Sequelize.TEXT },
+    video_path: { type: Sequelize.TEXT, allowNull: true },
     created_at: Sequelize.DATE,
     updated_at: Sequelize.DATE,
   });
@@ -42,7 +43,7 @@ var createCommandLogsTable = function (queryInterface, Sequelize) {
     session_id: { type: Sequelize.TEXT, references: { model: "session", key: "session_id" } },
     command_name: { type: Sequelize.TEXT, allowNull: false },
     title: { type: Sequelize.TEXT, allowNull: false },
-    title_info: { type: Sequelize.DATE },
+    title_info: { type: Sequelize.TEXT },
     response: { type: Sequelize.TEXT },
     params: { type: Sequelize.TEXT },
     is_error: { type: Sequelize.BOOLEAN, defaultValue: false },

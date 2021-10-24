@@ -14,6 +14,17 @@
   flex-direction: column;
 }
 
+.app__loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: auto;
+}
+
+.app__loading_message {
+  font-size: 25px;
+}
+
 .app__main_content {
   margin: auto;
   margin-top: 20px;

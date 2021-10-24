@@ -1,0 +1,17 @@
+import apiClient from "./api-client";
+
+class ApiService {
+  public static getAllSessions() {
+    return apiClient.makeGETRequest("/sessions", {});
+  }
+
+  public static getSessionById(sessionId: string) {
+    return apiClient.makeGETRequest(`/sessions/${sessionId}`, {});
+  }
+
+  public static getSessionTextLogs(sessionId: string) {
+    return apiClient.makeGETRequest(`/sessions/${sessionId}/logs/text`, {});
+  }
+}
+
+export { ApiService };

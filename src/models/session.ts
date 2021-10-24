@@ -111,7 +111,13 @@ class Session extends Model<Session> {
     values: ["PASSED", "FAILED"],
     defaultValue: "PASSED",
   })
-  session_status?: Boolean;
+  session_status?: string;
+
+  @AllowNull(true)
+  @Column({
+    type: DataTypes.TEXT,
+  })
+  video_path?: string | null;
 
   @AllowNull(true)
   @Column({

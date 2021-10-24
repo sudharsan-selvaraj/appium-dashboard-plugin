@@ -3,7 +3,8 @@ import { makeGETCall, makePostCall } from "./utils";
 async function startScreenRecording(driver: any, sessionId: string) {
   return await makePostCall(driver, sessionId, "appium/start_recording_screen", {
     options: {
-      videoType: "mpeg4",
+      videoType: "libx264",
+      videoFps: 24,
     },
   });
 }

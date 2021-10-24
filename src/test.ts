@@ -1,6 +1,8 @@
 import { getSessionDetails } from "./utils";
 import { sequelizeLoader } from "./database-loader";
 import { Session } from "./models/session";
+import { CommandLogs } from "./models";
+import { Op } from "sequelize";
 
 const fs = require("fs");
 
@@ -25,8 +27,11 @@ let ios = getSessionDetails(
 
 (async function () {
   await sequelizeLoader();
-  await Session.create(android);
-  await Session.create(ios);
-  let res = await Session.findAll();
-  console.log(res[0].capabilities);
+  let res = await CommandLogs.findAll({
+    attributes: ["title_info"],
+    where: {
+      session_id: "5f9403d0-ba45-48b6-a7fd-a7315e18abaa",
+    },
+  });
+  console.log(res);
 })();

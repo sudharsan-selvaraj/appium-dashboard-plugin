@@ -4,7 +4,6 @@ import { CommandParser } from "./command-parser";
 import { log } from "./logger";
 import { SessionManager } from "./session-manager";
 import { getSessionDetails } from "./utils";
-import { router } from "./app";
 import * as express from "express";
 
 const sessionMap: Map<string, SessionManager> = new Map();
@@ -15,7 +14,7 @@ class AppiumDashboardPlugin extends BasePlugin {
   }
 
   public static async updateServer(expressApp: express.Application) {
-    expressApp.use("/dashboard", router);
+    expressApp.use("/dashboard", Container.get("expressRouter") as any);
   }
 
   async handle(next: () => Promise<any>, driver: any, commandName: string, ...args: any) {
