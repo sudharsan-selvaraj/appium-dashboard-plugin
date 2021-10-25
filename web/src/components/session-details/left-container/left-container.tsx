@@ -1,4 +1,5 @@
 import React from "react";
+import SessionCapabilityDetails from "../capability-details/session-capability-details";
 import VideoPlayer from "../video-player/video-player";
 import "./left-container.css";
 export default class LeftDetailsContainer extends React.Component<any, any> {
@@ -21,6 +22,11 @@ export default class LeftDetailsContainer extends React.Component<any, any> {
   }
 
   render() {
-    return <div className="left-container__wrapper">{this.getVideoPlayer()}</div>;
+    return (
+      <div className="left-container__wrapper">
+        {this.getVideoPlayer()}
+        <SessionCapabilityDetails session={this.props.session} />
+      </div>
+    );
   }
 }

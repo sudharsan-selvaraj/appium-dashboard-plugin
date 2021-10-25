@@ -5,8 +5,7 @@ import { routeToCommandName as _routeToCommandName } from "appium-base-driver";
 import { log } from "./logger";
 import { CustomColumnOption } from "./types/custom-column-options";
 
-function getSessionDetails(sessionResponse: any): any {
-  console.log(sessionResponse.value);
+function getSessionDetails(args: any, sessionResponse: any): any {
   let [session_id, caps] = sessionResponse.value;
   let sessionInfo: SessionInfo = {
     session_id,
@@ -18,7 +17,7 @@ function getSessionDetails(sessionResponse: any): any {
     platform_version: caps.platformVersion,
     app: caps.app,
     udid: caps.platformName.toLowerCase() == "ios" ? caps.udid : caps.deviceUDID,
-    capabilities: {} as any,
+    capabilities: JSON.parse(JSON.stringify(args[0])),
   };
 
   Object.keys(caps)

@@ -6,7 +6,10 @@ import ErrorIcon from "../../widgets/error-icon/error-icon";
 import AndroidIcon from "../../widgets/android-icon/android-icon";
 import AppleIcon from "../../widgets/apple-icon/apple-icon";
 import PhoneAndroidSharpIcon from "@material-ui/icons/PhoneAndroidSharp";
-import CommonUtils from "../utils/common-utils";
+import CommonUtils from "../../utils/common-utils";
+import ios from "../../assets/ios.svg";
+import android from "../../assets/android.svg";
+import safari from "../../assets/safari.svg";
 
 class SessionInfoCard extends React.Component<any, any> {
   constructor(props: any) {
@@ -30,21 +33,24 @@ class SessionInfoCard extends React.Component<any, any> {
   getPlatformIcon() {
     let os: string = this.props.session.platform_name.toLowerCase();
     return {
-      android: <AndroidIcon />,
-      ios: <AppleIcon />,
+      android: <img src={android} />,
+      ios: <img src={ios} />,
     }[os] as any;
   }
 
+  getBrowserIcon() {
+    let browser: string = this.props.session.browser_name.toLowerCase();
+    return {
+      safari: <img src={safari} />,
+    }[browser] as any;
+  }
+
   getExecutioTime() {
-    if (this.props.session.end_time) {
-      let time = CommonUtils.convertTimeToReadableFormat(
-        new Date(this.props.session.start_time),
-        new Date(this.props.session.end_time)
-      );
-      return `Took ${time}`;
+    let time = CommonUtils.convertTimeToReadableFormat(new Date(this.props.session.start_time), new Date());
+    if (!time.includes("mins") && !time.includes("hrs")) {
+      return "Strated few seconds ago";
     } else {
-      let time = CommonUtils.convertTimeToReadableFormat(new Date(this.props.session.start_time), new Date());
-      return `Started ${time} ago`;
+      return `Started ${time.replace(/[0-9]{1,} (secs|sec)/g, "")} ago`;
     }
   }
 
@@ -60,14 +66,14 @@ class SessionInfoCard extends React.Component<any, any> {
           <div className="session-info-card__title">{this.props.session.session_id}</div>
           <div className="session-info-card__details_wrapper">
             {this.props.session.is_completed && (
-              <div className={`session-info-card__status ${this.getStausClass()}`}>
+              <div className={`session-info-card__status entry ${this.getStausClass()}`}>
                 {this.props.session.session_status}
               </div>
             )}
-            <div className="session-info-card__platform">
+            <div className="session-info-card__platform entry">
               <div className="device-icon">{this.getPlatformIcon()}</div>v{this.props.session.platform_version}
             </div>
-            <div className="session-info-card__device_name">
+            <div className="session-info-card__device_name entry">
               <div className="device-icon">
                 <PhoneAndroidSharpIcon />
               </div>
@@ -75,7 +81,13 @@ class SessionInfoCard extends React.Component<any, any> {
             </div>
           </div>
           <div className="session-info-card__details_wrapper">
-            <div className="session-info-card__time">{this.getExecutioTime()}</div>
+            <div className="session-info-card__time entry">{this.getExecutioTime()}</div>
+            {this.props.session.browser_name && (
+              <div className="session-info-card__platform">
+                <div className="device-icon">{this.getBrowserIcon()}</div>
+                {this.props.session.browser_name}
+              </div>
+            )}
           </div>
         </div>
         <div className="session-info-card__status_icon">{this.getStausIcon()}</div>

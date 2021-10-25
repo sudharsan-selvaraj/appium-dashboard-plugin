@@ -12,7 +12,7 @@ var createSessionTable = function (queryInterface, Sequelize) {
     app: { type: Sequelize.TEXT, allowNull: true },
     browser_name: { type: Sequelize.TEXT, allowNull: true },
     udid: { type: Sequelize.TEXT, allowNull: false },
-    capabilities: { type: Sequelize.JSON, allowNull: false },
+    capabilities: { type: Sequelize.TEXT, allowNull: false },
     is_completed: { type: Sequelize.BOOLEAN, defaultValue: false },
     start_time: { type: Sequelize.DATE, allowNull: false },
     end_time: { type: Sequelize.DATE, defaultValue: null },

@@ -1,0 +1,14 @@
+.session-logs__container {
+  display: flex;
+  flex: 0.6;
+  margin-left: 20px;
+  flex-direction: column;
+  margin-bottom: 100px;
+}
+
+.session-logs__body {
+  overflow: scroll;
+  margin: auto;
+  height: 100%;
+  width: 100%;
+}

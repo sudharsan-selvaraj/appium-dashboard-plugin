@@ -7,6 +7,7 @@ import { Op } from "sequelize";
 const fs = require("fs");
 
 let android = getSessionDetails(
+  [{}],
   JSON.parse(
     fs.readFileSync(
       "/Users/sselvar4/Documents/git/personal/appium-dashboard/jsons/android-session-response.json",
@@ -16,6 +17,7 @@ let android = getSessionDetails(
 );
 
 let ios = getSessionDetails(
+  [{}],
   JSON.parse(
     fs.readFileSync("/Users/sselvar4/Documents/git/personal/appium-dashboard/jsons/ios-session-response.json", "utf-8")
   )

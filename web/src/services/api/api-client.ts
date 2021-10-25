@@ -17,7 +17,7 @@ class ApiClient {
     }).then(this.jsonResult);
   }
 
-  private formatUrl(url: string) {
+  public formatUrl(url: string) {
     return `/dashboard/api${url}`;
   }
 

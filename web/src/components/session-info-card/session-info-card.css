@@ -17,25 +17,22 @@
 .session-info-card__details_wrapper {
   display: flex;
   align-items: center;
-  margin-bottom: 10px;
+  margin-top: 10px;
 }
 
 .session-info-card__title {
   font-size: 12px;
   font-weight: 600;
-  margin-bottom: 10px;
 }
 
 .session-info-card__status {
   font-size: 13px;
   font-weight: 600;
-  margin-right: 10px;
 }
 
 .session-info-card__time {
-  font-size: 12px;
-  font-weight: 600;
-  margin-right: 10px;
+  font-size: 10px;
+  font-weight: 500;
   color: grey;
 }
 
@@ -50,7 +47,6 @@
   font-weight: 400;
   display: flex;
   align-items: center;
-  margin-right: 8px;
   color: grey;
 }
 
@@ -59,13 +55,9 @@
   padding-right: 3px;
 }
 
-.session-info-card__platform .apple-icon {
-  margin-top: -4px;
-}
-
-.session-info-card__platform .MuiSvgIcon-root {
-  height: 20px;
-  width: 20px;
+.session-info-card__platform img {
+  height: 19px;
+  width: 19px;
 }
 
 .session-info-card__device_name {
@@ -82,5 +74,6 @@
   background-color: #abd2ed;
 }
 
-.session-info-card__wrapper.active * {
+.session-info-card__item .entry {
+  margin-right: auto;
 }

@@ -57,8 +57,10 @@ class App extends React.Component<any, any> {
   }
 
   onSessionCardClicked(sessionId: string) {
-    this.initSessionPolling();
-    this.setState({ activeSession: sessionId });
+    if (sessionId != this.state.activeSession) {
+      this.initSessionPolling();
+      this.setState({ activeSession: sessionId });
+    }
   }
 
   getMainContent() {

@@ -4,7 +4,7 @@ import safari from "../../../assets/safari.svg";
 import ios from "../../../assets/ios.svg";
 import android from "../../../assets/android.svg";
 import Moment from "react-moment";
-import CommonUtils from "../../utils/common-utils";
+import CommonUtils from "../../../utils/common-utils";
 export default class SessionDetailsHeader extends React.Component<any, any> {
   private headerProperties: any[] = [
     [
@@ -122,24 +122,6 @@ export default class SessionDetailsHeader extends React.Component<any, any> {
             return <div className="session-details__header_column">{this.getHeaderRow(entries)}</div>;
           })
         )}
-
-        {/* First column */}
-
-        {/* Second column */}
-        {/* <div className="session-details__header_column">
-          <div className="session-details__header_column_row">
-            <div className="session-details__header_column_label">Device Name</div>
-            <div className="session-details__header_column_value">emulator-5555</div>
-          </div>
-          <div className="session-details__header_column_row">
-            <div className="session-details__header_column_label">UDID</div>
-            <div className="session-details__header_column_value">a12f-1231-a322f-112cs</div>
-          </div>
-          <div className="session-details__header_column_row">
-            <div className="session-details__header_column_label">Browser Name</div>
-            <div className="session-details__header_column_value">Chrome</div>
-          </div>
-        </div> */}
       </div>
     );
   }

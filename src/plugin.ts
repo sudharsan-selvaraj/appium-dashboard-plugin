@@ -35,7 +35,7 @@ class AppiumDashboardPlugin extends BasePlugin {
       if (response.error) {
         return response;
       } else {
-        let sessionInfo = getSessionDetails(response);
+        let sessionInfo = getSessionDetails(args, response);
         let sessionManager = new SessionManager(sessionInfo, new CommandParser(sessionInfo), response);
         sessionMap.set(sessionInfo.session_id, sessionManager);
         await sessionManager.onCommandRecieved(appiumCommand);

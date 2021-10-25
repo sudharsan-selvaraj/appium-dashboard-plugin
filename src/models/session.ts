@@ -1,5 +1,6 @@
 import { Model, Table, AllowNull, Column } from "sequelize-typescript";
 import { DataTypes, Op } from "sequelize";
+import { customModelColumn } from "../utils";
 
 @Table({
   tableName: "session",
@@ -73,7 +74,8 @@ class Session extends Model<Session> {
 
   @AllowNull(false)
   @Column({
-    type: DataTypes.JSONB,
+    type: DataTypes.STRING,
+    ...customModelColumn({ name: "capabilities", json: true }),
   })
   capabilities!: any;
 

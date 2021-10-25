@@ -5,6 +5,10 @@ class ApiService {
     return apiClient.makeGETRequest("/sessions", {});
   }
 
+  public static getTextLogsForSession(sessionId: string) {
+    return apiClient.makeGETRequest(`/sessions/${sessionId}/logs/text`, {});
+  }
+
   public static getSessionById(sessionId: string) {
     return apiClient.makeGETRequest(`/sessions/${sessionId}`, {});
   }
