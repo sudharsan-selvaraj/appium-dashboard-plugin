@@ -1,5 +1,5 @@
 .text-log-entry__wrapper {
-  min-height: 50px;
+  min-height: 30px;
   border-top: 0;
   display: flex;
   flex-direction: column;
@@ -16,11 +16,16 @@
   background: #fffdea;
 }
 
+.text-log-entry__wrapper.expandable {
+  cursor: pointer;
+}
+
 .text-log-row {
   display: flex;
   align-items: center;
   width: 100%;
   margin-right: 6px;
+  margin-bottom: 10px;
 }
 
 .text-log-title__wrapper {
@@ -28,6 +33,10 @@
   flex: 1;
   display: flex;
   flex-direction: row;
+}
+
+.warning .text-log-entry__title {
+  color: #917210;
 }
 
 .text-log-entry__title {
@@ -42,18 +51,36 @@
   letter-spacing: -0.2px;
 }
 
+.text-log-params-title {
+  padding-bottom: 10px;
+  font-size: 11px;
+  color: grey;
+  font-weight: 900;
+  text-transform: uppercase;
+}
 .text-log-entry__wrapper .expand-icon > .MuiSvgIcon-root {
   font-size: 20px;
 }
 
-.text-log-params-container {
+.text-log-params-container,
+.text-log-error-container {
   border: 1px solid #ced8e1;
   background: #f9f9f9;
   width: 100%;
   padding: 15px;
-  margin-top: 20px;
-  margin-bottom: 20px;
+  margin-top: 5px;
+  margin-bottom: 5px;
   padding-bottom: 5px;
+  border-radius: 5px;
+}
+
+.text-log-error-container {
+  border: 1px solid #eed202;
+  border-left: 5px solid #eed202;
+}
+
+.text-log-error-container .text-log-params-json-entry-key {
+  text-transform: capitalize;
 }
 
 .text-log-prams-header {
@@ -75,11 +102,20 @@
 .text-log-params-json-entry-value,
 .text-log-params-json-entry-key,
 .text-log-json-value {
-  font-size: 11px;
+  font-size: 12px;
   padding-bottom: 10px;
 }
 
 .text-log-params-json-entry-key {
   font-weight: 600;
   margin-right: 20px;
+}
+
+.text-log-screenshot {
+  padding: 15px;
+  display: flex;
+  margin-right: auto;
+  max-width: 300px;
+  max-height: 600px;
+  height: auto;
 }

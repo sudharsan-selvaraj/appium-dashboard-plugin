@@ -12,10 +12,11 @@ class App extends React.Component<any, any> {
   private polling: any;
   constructor(props: any) {
     super(props);
+    let sessionId = window.location.pathname.match(new RegExp(/dashboard\/session\/(.*)/));
     this.state = {
       loading: true,
       sessions: [],
-      activeSession: null,
+      activeSession: sessionId && sessionId.length ? sessionId[1] : null,
     };
   }
 
@@ -25,7 +26,10 @@ class App extends React.Component<any, any> {
         this.setState({
           loading: false,
           sessions: result.rows,
-          activeSession: this.state.activeSession || result.rows[0]?.session_id,
+          activeSession:
+            result.rows.filter((r: any) => r.session_id == this.state.activeSession).length > 0
+              ? this.state.activeSession
+              : result.rows[0]?.session_id,
         });
       },
       (error) => {

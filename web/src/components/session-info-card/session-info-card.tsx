@@ -12,8 +12,15 @@ import android from "../../assets/android.svg";
 import safari from "../../assets/safari.svg";
 
 class SessionInfoCard extends React.Component<any, any> {
+  private elementRef: any = React.createRef();
   constructor(props: any) {
     super(props);
+  }
+
+  componentDidMount() {
+    if (this.props.isActive) {
+      this.elementRef.current.scrollIntoView();
+    }
   }
 
   getStausClass() {
@@ -48,15 +55,16 @@ class SessionInfoCard extends React.Component<any, any> {
   getExecutioTime() {
     let time = CommonUtils.convertTimeToReadableFormat(new Date(this.props.session.start_time), new Date());
     if (!time.includes("mins") && !time.includes("hrs")) {
-      return "Strated few seconds ago";
+      return "few seconds ago";
     } else {
-      return `Started ${time.replace(/[0-9]{1,} (secs|sec)/g, "")} ago`;
+      return `${time.replace(/[0-9]{1,} (secs|sec)/g, "")} ago`;
     }
   }
 
   render() {
     return (
       <div
+        ref={this.elementRef}
         className={`session-info-card__wrapper ${this.props.isActive ? "active" : ""}`}
         onClick={() => {
           this.props.onCardClicked(this.props.session.session_id);
@@ -81,7 +89,7 @@ class SessionInfoCard extends React.Component<any, any> {
             </div>
           </div>
           <div className="session-info-card__details_wrapper">
-            <div className="session-info-card__time entry">{this.getExecutioTime()}</div>
+            <div className="session-info-card__time">{this.getExecutioTime()}</div>
             {this.props.session.browser_name && (
               <div className="session-info-card__platform">
                 <div className="device-icon">{this.getBrowserIcon()}</div>

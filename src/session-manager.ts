@@ -1,8 +1,7 @@
 import { SessionInfo } from "./types/session-info";
 import { AppiumCommand } from "./types/appium-command";
 import { interceptProxyResponse, routeToCommand } from "./utils";
-import { startScreenRecording, stopScreenRecording } from "./command-executor";
-import { getLogTypes, getLogs } from "./command-executor";
+import { getLogTypes, getLogs, startScreenRecording, stopScreenRecording, takeScreenShot } from "./command-executor";
 import { CommandParser } from "./command-parser";
 import { CommandLogs as commandLogsModel, Session } from "./models";
 import { Op } from "sequelize";
@@ -10,6 +9,7 @@ import { log } from "./logger";
 import * as fs from "fs";
 import "reflect-metadata";
 import { Container } from "typedi";
+import { v4 as uuidv4 } from "uuid";
 
 const cj = require("circular-json");
 
@@ -68,14 +68,14 @@ class SessionManager {
 
   private async sessionStarted(command: AppiumCommand) {
     this.driverOpts = command.driver.opts;
-
     await Session.create({
       ...this.sessionInfo,
       start_time: new Date(),
     } as any);
 
-    await this.initializeLogging(command.driver);
     await this.saveCommandLog(command, null);
+    await this.initializeLogging(command.driver);
+    await this.initializeScreenShotFolder();
     return await this.startScreenRecording(command.driver);
   }
 
@@ -115,10 +115,17 @@ class SessionManager {
         command.args,
         response
       );
+      let screenShotPath = null;
+      if (this.config.takeScreenshotsFor.indexOf(command.commandName) >= 0) {
+        screenShotPath = `${this.config.screenshotSavePath}/${this.sessionInfo.session_id}/${uuidv4()}.jpg`;
+        let screenShotbase64 = await takeScreenShot(command.driver, this.sessionInfo.session_id);
+        fs.writeFileSync(screenShotPath, screenShotbase64.value, "base64");
+      }
       Object.assign(parsedLog, {
         session_id: this.sessionInfo.session_id,
         command_name: command.commandName,
         is_error: response && !!response.error ? true : false,
+        screen_shot: screenShotPath,
       });
       try {
         await commandLogsModel.create(parsedLog as any);
@@ -140,6 +147,12 @@ class SessionManager {
   private async initializeLogging(driver: any) {
     this.logTypes = (await getLogTypes(driver, this.sessionInfo.session_id)).value || [];
     //this.logInterval = setInterval(this.fetchLogs.bind(this), 5000);
+  }
+
+  private async initializeScreenShotFolder() {
+    if (!fs.existsSync(`${this.config.screenshotSavePath}/${this.sessionInfo.session_id}`)) {
+      fs.mkdirSync(`${this.config.screenshotSavePath}/${this.sessionInfo.session_id}`, { recursive: true });
+    }
   }
 
   private async fetchLogs() {

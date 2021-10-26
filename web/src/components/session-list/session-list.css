@@ -5,7 +5,7 @@
   border-top: 0;
   flex-direction: column;
   flex: 0.2;
-  min-width: 325px;
+  min-width: 370px;
 }
 
 .session-list__header {
@@ -17,6 +17,8 @@
   padding-left: 20px;
   font-size: 13px;
   font-weight: 600;
+  background: #142433;
+  color: #ffffff;
 }
 
 .session-list__header .MuiSvgIcon-root {

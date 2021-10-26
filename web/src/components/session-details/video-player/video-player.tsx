@@ -7,7 +7,6 @@ export default class VideoPlayer extends React.Component<any, any> {
   }
 
   render() {
-    console.log(`Video path ${this.props.video_path}`);
     return (
       <div className="player-wrapper">
         <video className="react-player" src={this.props.video_path} width={480} height={600} controls={true} />

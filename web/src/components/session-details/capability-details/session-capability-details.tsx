@@ -1,9 +1,9 @@
 import React from "react";
 import Tab from "../../../widgets/tab/tab";
-import { BaseComponent } from "../base-component-class";
+import { RouteReactiveComponent } from "../base-component-class";
 import "./session-capability-details.css";
 
-export default class SessionCapabilityDetails extends BaseComponent<any, any> {
+export default class SessionCapabilityDetails extends RouteReactiveComponent<any, any> {
   private polling: any;
   constructor(props: any) {
     super(props);
@@ -17,12 +17,12 @@ export default class SessionCapabilityDetails extends BaseComponent<any, any> {
   }
 
   initializePolling() {
-    if (this.polling) {
-      clearInterval(this.polling);
-    }
-    this.polling = setInterval(() => {
-      console.log(this.props.session.session_id);
-    }, 2000);
+    // if (this.polling) {
+    //   clearInterval(this.polling);
+    // }
+    // this.polling = setInterval(() => {
+    //   console.log(this.props.session.session_id);
+    // }, 2000);
   }
 
   protected componentUpdated() {

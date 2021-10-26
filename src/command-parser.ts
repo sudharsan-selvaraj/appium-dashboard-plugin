@@ -1,12 +1,14 @@
 import { SessionInfo } from "./types/session-info";
 import { saveLocator, getLocatorStrategy } from "./locator-factory";
 import { log } from "./logger";
+import { response } from "express";
+import { title } from "process";
 
 export class CommandParser {
   constructor(private sessionInfo: SessionInfo) {}
 
   private isProxyRequest(args: any[]) {
-    return !!args[0].route;
+    return args && args[0] && !!args[0].route;
   }
 
   /* Private methods  */
@@ -31,9 +33,21 @@ export class CommandParser {
     return response && !!response.error;
   }
 
+  private getResponseObj(response: any) {
+    let responseType = this.getResponseType(response);
+    if (!responseType) {
+      return null;
+    } else {
+      return {
+        type: responseType,
+        value: response,
+      };
+    }
+  }
+
   private getResponseType(response: any) {
-    if (!response) {
-      return "string";
+    if (response == null) {
+      return null;
     } else if (this.isError(response)) {
       return "error";
     } else if (Array.isArray(response) || typeof response === "object") {
@@ -57,6 +71,33 @@ export class CommandParser {
     } else {
       return args[index];
     }
+  }
+
+  private async constructCommandResponse(config: {
+    driver: any;
+    args: any[];
+    response: any;
+    title: any;
+    titleInfoFormat?: (parsedArgs: any) => Promise<any>;
+    paramsFormat?: (parsedArgs: any) => Promise<any>;
+  }) {
+    let newArgs = [...config.args];
+    if (this.isProxyRequest(config.args)) {
+      newArgs = [...Object.values(config.args[0].body), config.args.pop()];
+    }
+
+    let title = null;
+    if (config.titleInfoFormat) {
+      title = await config.titleInfoFormat(newArgs);
+      log.info(`title is ${title}`);
+    }
+
+    return {
+      title: config.title,
+      title_info: config.titleInfoFormat ? await config.titleInfoFormat(newArgs) : null,
+      response: this.getResponseObj(config.response),
+      params: config.paramsFormat ? await config.paramsFormat(newArgs) : null,
+    };
   }
 
   /**
@@ -182,64 +223,67 @@ export class CommandParser {
     };
   }
 
-  //TODO
+  //COMPLETED
   public async setUrl(driver: any, args: any[], response: any) {
-    return {
-      title: "setUrl",
-      title_info: null,
-      response: null,
-      params: null,
-    };
+    return this.constructCommandResponse({
+      driver,
+      args,
+      response,
+      title: "Navigate to url",
+      titleInfoFormat: (newArgs) => newArgs[0],
+    });
   }
 
-  //TODO
+  //COMPLETED
   public async forward(driver: any, args: any[], response: any) {
-    return {
-      title: "forward",
-      title_info: null,
-      response: null,
-      params: null,
-    };
+    return this.constructCommandResponse({
+      driver,
+      args,
+      response,
+      title: "Navigate forward",
+    });
   }
 
-  //TODO
+  //COMPLETED
   public async back(driver: any, args: any[], response: any) {
-    return {
-      title: "back",
-      title_info: null,
-      response: null,
-      params: null,
-    };
+    return this.constructCommandResponse({
+      driver,
+      args,
+      response,
+      title: "Navigate Back",
+    });
   }
 
-  //TODO
+  //COMPLETED
   public async refresh(driver: any, args: any[], response: any) {
-    return {
-      title: "refresh",
-      title_info: null,
-      response: null,
-      params: null,
-    };
+    return this.constructCommandResponse({
+      driver,
+      args,
+      response,
+      title: "Refresh page",
+    });
   }
 
-  //TODO
+  //COMPLETED
   public async execute(driver: any, args: any[], response: any) {
-    return {
-      title: "execute",
-      title_info: null,
-      response: null,
-      params: null,
-    };
+    return this.constructCommandResponse({
+      driver,
+      args,
+      response,
+      title: "Execute script",
+      titleInfoFormat: (args) => args[0],
+    });
   }
 
-  //TODO
+  //COMPLETED
   public async executeAsync(driver: any, args: any[], response: any) {
-    return {
-      title: "executeAsync",
-      title_info: null,
-      response: null,
-      params: null,
-    };
+    return this.constructCommandResponse({
+      driver,
+      args,
+      response,
+      title: "Execute asyncrounous script",
+      titleInfoFormat: (args) => args[0],
+    });
   }
 
   //TODO
@@ -402,85 +446,84 @@ export class CommandParser {
     };
   }
 
-  //TODO
+  //COMPLETED
   public async getPageSource(driver: any, args: any[], response: any) {
     return {
-      title: "getPageSource",
+      title: "Get Page Source",
       title_info: null,
-      response: null,
+      response: {
+        type: "html",
+        value: response,
+      },
       params: null,
     };
   }
 
-  //TODO
+  //COMPLETED
   public async title(driver: any, args: any[], response: any) {
-    return {
-      title: "title",
-      title_info: null,
-      response: null,
-      params: null,
-    };
+    return this.constructCommandResponse({
+      driver,
+      args,
+      response,
+      title: "Get Title",
+      titleInfoFormat: async (newArgs) => newArgs[0],
+    });
   }
 
-  //TODO
+  //COMPLETED
   public async findElement(driver: any, args: any[], response: any) {
-    let newArgs = [...args];
-    if (this.isProxyRequest(args)) {
-      newArgs = [...Object.values(args[0].body), args.pop()];
-    }
-
-    if (!this.isError(response)) {
-      await saveLocator(
-        {
+    return this.constructCommandResponse({
+      driver,
+      args,
+      response,
+      title: "Find Element",
+      titleInfoFormat: async (newArgs) => {
+        if (!this.isError(response)) {
+          await saveLocator(
+            {
+              using: newArgs[0],
+              value: newArgs[1],
+            },
+            [response]
+          );
+        }
+        return `[${newArgs[0]}=${newArgs[1]}]`;
+      },
+      paramsFormat: async (newArgs) => {
+        return {
           using: newArgs[0],
           value: newArgs[1],
-        },
-        [response]
-      );
-    }
-    return {
-      title: "Find element",
-      title_info: `[${newArgs[0]}=${newArgs[1]}]`,
-      response: {
-        type: this.getResponseType(response),
-        value: response,
+        };
       },
-      params: {
-        using: newArgs[0],
-        value: newArgs[1],
-      },
-    };
+    });
   }
 
-  //TODO
+  //COMPLETED
   public async findElements(driver: any, args: any[], response: any) {
-    let newArgs = [...args];
-    if (this.isProxyRequest(args)) {
-      newArgs = [...Object.values(args[0].body), args.pop()];
-    }
-
-    if (!this.isError(response)) {
-      await saveLocator(
-        {
+    return this.constructCommandResponse({
+      driver,
+      args,
+      response,
+      title: "Find Multiple",
+      titleInfoFormat: async (newArgs) => {
+        if (!this.isError(response)) {
+          await saveLocator(
+            {
+              using: newArgs[0],
+              value: newArgs[1],
+            },
+            response
+          );
+        }
+        return `[${newArgs[0]}=${newArgs[1]}]`;
+      },
+      paramsFormat: async (newArgs) => {
+        return {
           using: newArgs[0],
           value: newArgs[1],
-        },
-        response
-      );
-    }
-
-    return {
-      title: "Find multiple elements",
-      title_info: `[${newArgs[0]}=${newArgs[1]}]`,
-      response: {
-        type: this.getResponseType(response),
-        value: response,
+        };
       },
-      params: {
-        using: newArgs[0],
-        value: newArgs[1],
-      },
-    };
+    });
   }
 
   //TODO
@@ -493,69 +536,61 @@ export class CommandParser {
     };
   }
 
-  //TODO
+  //COMPLETED
   public async findElementFromElement(driver: any, args: any[], response: any) {
     let parsedValue = await this.findElement(driver, args, response);
     parsedValue.title = "Find element from element";
     return parsedValue;
   }
 
-  //TODO
+  //COMPLETED
   public async findElementsFromElement(driver: any, args: any[], response: any) {
     let parsedValue = await this.findElements(driver, args, response);
     parsedValue.title = "Find multiple elements from element";
     return parsedValue;
   }
 
-  //TODO
+  //COMPLETED
   public async click(driver: any, args: any[], response: any) {
     let newArgs = this.getElementCommandArgs(args);
     return {
       title: "Click",
       title_info: await this.getLocatorTitleInfo(newArgs[0]),
-      response: {
-        type: this.getResponseType(response),
-        value: response,
-      },
+      response: this.getResponseObj(response),
       params: null,
     };
   }
 
-  //TODO
+  //COMPLETED
   public async submit(driver: any, args: any[], response: any) {
+    let newArgs = this.getElementCommandArgs(args);
     return {
-      title: "submit",
-      title_info: null,
-      response: null,
+      title: "Submit",
+      title_info: await this.getLocatorTitleInfo(newArgs[0]),
+      response: this.getResponseObj(response),
       params: null,
     };
   }
 
-  //TODO
+  //COMPLETED
   public async getText(driver: any, args: any[], response: any) {
     let newArgs = this.getElementCommandArgs(args);
     return {
       title: "Get text",
       title_info: await this.getLocatorTitleInfo(newArgs[0]),
-      response: {
-        type: this.getResponseType(response),
-        value: response,
-      },
+      response: this.getResponseObj(response),
       params: null,
     };
   }
 
-  //TODO
+  //COMPLETED
   public async setValue(driver: any, args: any[], response: any) {
     let elementId = this.getArgsParamsValue(args, "elementId", 1);
     let text = this.getArgsBodyValue(args, "text", 0);
     return {
       title: "Send Keys",
       title_info: `${await this.getLocatorTitleInfo(elementId)} [value=${text}]`,
-      response: {
-        type: this.getResponseType(response),
-        value: response,
-      },
+      response: this.getResponseObj(response),
       params: { text },
     };
   }
@@ -590,24 +625,28 @@ export class CommandParser {
     };
   }
 
-  //TODO
+  //COMPLETED
   public async elementSelected(driver: any, args: any[], response: any) {
-    return {
-      title: "elementSelected",
-      title_info: null,
-      response: null,
-      params: null,
-    };
+    let elementId = this.getArgsParamsValue(args, "elementId", 0);
+    return this.constructCommandResponse({
+      driver,
+      args,
+      response,
+      title: "Is Element Selected",
+      titleInfoFormat: async (newArgs) => this.getLocatorTitleInfo(elementId),
+    });
   }
 
-  //TODO
+  //COMPLETED
   public async elementEnabled(driver: any, args: any[], response: any) {
-    return {
-      title: "elementEnabled",
-      title_info: null,
-      response: null,
-      params: null,
-    };
+    let elementId = this.getArgsParamsValue(args, "elementId", 0);
+    return this.constructCommandResponse({
+      driver,
+      args,
+      response,
+      title: "Is Element Enabled",
+      titleInfoFormat: async (newArgs) => this.getLocatorTitleInfo(elementId),
+    });
   }
 
   //TODO
@@ -630,14 +669,16 @@ export class CommandParser {
     };
   }
 
-  //TODO
+  //COMPLETED
   public async elementDisplayed(driver: any, args: any[], response: any) {
-    return {
-      title: "elementDisplayed",
-      title_info: null,
-      response: null,
-      params: null,
-    };
+    let elementId = this.getArgsParamsValue(args, "elementId", 0);
+    return this.constructCommandResponse({
+      driver,
+      args,
+      response,
+      title: "Is Element Displayed",
+      titleInfoFormat: async (newArgs) => this.getLocatorTitleInfo(elementId),
+    });
   }
 
   //TODO
@@ -1260,24 +1301,24 @@ export class CommandParser {
     };
   }
 
-  //TODO
+  //COMPLETED
   public async hideKeyboard(driver: any, args: any[], response: any) {
-    return {
-      title: "hideKeyboard",
-      title_info: null,
-      response: null,
-      params: null,
-    };
+    return this.constructCommandResponse({
+      driver,
+      args,
+      response,
+      title: "Hide Keyboard",
+    });
   }
 
-  //TODO
+  //COMPLETED
   public async isKeyboardShown(driver: any, args: any[], response: any) {
-    return {
-      title: "isKeyboardShown",
-      title_info: null,
-      response: null,
-      params: null,
-    };
+    return this.constructCommandResponse({
+      driver,
+      args,
+      response,
+      title: "Is Keyboard displayed",
+    });
   }
 
   //TODO

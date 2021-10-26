@@ -9,8 +9,8 @@ export default class LeftDetailsContainer extends React.Component<any, any> {
 
   getVideoPlayer() {
     if (this.props.session.video_path) {
-      let videoUrl = `${window.location.origin}/dashboard/api/sessions/${this.props.session.session_id}/video`;
-      //let videoUrl = `http://localhost:4723/dashboard/api/sessions/${this.props.session.session_id}/video`;
+      //let videoUrl = `${window.location.origin}/dashboard/api/sessions/${this.props.session.session_id}/video`;
+      let videoUrl = `http://localhost:4723/dashboard/api/sessions/${this.props.session.session_id}/video`;
       return <VideoPlayer video_path={videoUrl} />;
     } else if (!this.props.session.is_completed) {
       return (

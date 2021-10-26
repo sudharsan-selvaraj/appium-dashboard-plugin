@@ -54,6 +54,27 @@ apiRouter.get(
 );
 
 apiRouter.get(
+  "/sessions/:sessionId/log/:logId/screen-shot",
+  async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    let sessionId: string = req.params.sessionId;
+    let logId: string = req.params.logId;
+    let log = await CommandLogs.findOne({
+      where: {
+        session_id: sessionId,
+        log_id: logId,
+      },
+    });
+    if (log && log.screen_shot) {
+      return res.status(200).sendFile(log.screen_shot);
+    }
+    res.status(400).send({
+      error: true,
+      message: "Screenshot not available",
+    });
+  }
+);
+
+apiRouter.get(
   "/sessions/:sessionId/logs/text",
   async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     let sessionId: string = req.params.sessionId;

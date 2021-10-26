@@ -1,17 +1,20 @@
 import React from "react";
 import { ApiService } from "../../../../services/api";
+import CheckBox from "../../../../widgets/check-box/checkbox";
 import LogEntry from "../../../../widgets/log-entry/log-entry";
 import Spinner from "../../../../widgets/spinner/spinner";
-import { BaseComponent } from "../../base-component-class";
+import { RouteReactiveComponent } from "../../base-component-class";
 import "./text-logs.css";
 
-export default class TextLogs extends BaseComponent<any, any> {
+export default class TextLogs extends RouteReactiveComponent<any, any> {
   private polling: any;
   constructor(props: any) {
     super(props);
     this.state = {
       logs: [],
       loading: true,
+      showScreenShots: true,
+      showExceptions: false,
     };
   }
 
@@ -24,7 +27,7 @@ export default class TextLogs extends BaseComponent<any, any> {
   }
 
   initializeLogs() {
-    this.setState({ loading: true });
+    this.setState({ loading: true, showScreenShots: true, showExceptions: false });
     this.fetchTextLogs();
     this.clearPolling();
     this.polling = setInterval(this.fetchTextLogs.bind(this), 5000);
@@ -50,17 +53,51 @@ export default class TextLogs extends BaseComponent<any, any> {
 
   getLogEntries() {
     return React.Children.toArray(
-      this.state.logs.map((l: any) => {
-        return <LogEntry log={l} />;
-      })
+      this.state.logs
+        .filter((l: any) => {
+          return this.state.showExceptions ? l.is_error : true;
+        })
+        .map((l: any) => {
+          return <LogEntry log={l} showScreenShots={this.state.showScreenShots} />;
+        })
     );
+  }
+
+  toggleScreenShots(status: any) {
+    this.setState({
+      showScreenShots: status,
+    });
+  }
+
+  toggleExceptions(status: any) {
+    this.setState({
+      showExceptions: status,
+    });
   }
 
   render() {
     if (this.state.loading) {
       return <Spinner />;
     } else {
-      return <div className="session--text-logs__wrapper">{this.getLogEntries()}</div>;
+      return (
+        <div className="session-text-logs__wrapper">
+          <div className="session-text-logs__filter_container">
+            <div className="session-text-logs__filter_input_wrapper">
+              <CheckBox
+                label="Show Images"
+                checked={this.state.showScreenShots}
+                onValueChanged={this.toggleScreenShots.bind(this)}
+              />
+              <CheckBox
+                label="Show Errors Only"
+                checked={this.state.showExceptions}
+                onValueChanged={this.toggleExceptions.bind(this)}
+              />
+            </div>
+          </div>
+          <div className="session-text-logs__scroll_container">{this.getLogEntries()}</div>
+        </div>
+      );
     }
   }
 }

@@ -4,9 +4,13 @@ async function startScreenRecording(driver: any, sessionId: string) {
   return await makePostCall(driver, sessionId, "appium/start_recording_screen", {
     options: {
       videoType: "libx264",
-      videoFps: 24,
+      videoFps: 10,
     },
   });
+}
+
+async function takeScreenShot(driver: any, sessionId: string) {
+  return await makeGETCall(driver, sessionId, "screenshot");
 }
 
 async function stopScreenRecording(driver: any, sessionId: string) {
@@ -24,4 +28,4 @@ async function getLogs(driver: any, sessionId: string, logType: string) {
   return res;
 }
 
-export { startScreenRecording, stopScreenRecording, getLogTypes, getLogs };
+export { startScreenRecording, stopScreenRecording, getLogTypes, getLogs, takeScreenShot };

@@ -636,6 +636,11 @@
     "@types/mime" "^1"
     "@types/node" "*"
 
+"@types/uuid@^8.3.1":
+  "integrity" "sha512-Y2mHTRAbqfFkpjldbkHGY8JIzRN6XqYRliG8/24FcHm2D2PwW24fl5xMRTVGdrb7iMrwCaIEbLWerGIkXuFWVg=="
+  "resolved" "https://registry.npmjs.org/@types/uuid/-/uuid-8.3.1.tgz"
+  "version" "8.3.1"
+
 "@types/validator@*":
   "integrity" "sha512-fWG42pMJOL4jKsDDZZREnXLjc3UE0R8LOJfARWYg6U966rxDT7TYejYzLnUF5cvSObGg34nd0+H2wHHU5Omdfw=="
   "resolved" "https://registry.npmjs.org/@types/validator/-/validator-13.6.3.tgz"
@@ -796,7 +801,7 @@
     "teen_process" "^1.11.0"
     "utf7" "^1.0.2"
 
-"appium-base-driver@^7.10.1":
+"appium-base-driver@^7.0.0", "appium-base-driver@^7.10.1":
   "integrity" "sha512-GSE1rq5L5TRM0nrUAEzbt7KL8c2bRedsPlyMKFU6H/d+syucGt1JPFuCHPe4pHrzL7BafaZeU79cOczcFUmXXg=="
   "resolved" "https://registry.npmjs.org/appium-base-driver/-/appium-base-driver-7.10.1.tgz"
   "version" "7.10.1"
@@ -822,10 +827,23 @@
     "webdriverio" "^6.0.2"
     "ws" "^8.0.0"
 
-"appium-ios-device@^1.7.1":
-  "integrity" "sha512-kMsj/jjYqNRNgKpl7waXzWv9ydioMmGy1hGvdbhLHFI8oNMw71KJlK0rQtJ2Abw1H2zf92bpjpmoCBmO+UyICQ=="
-  "resolved" "https://registry.npmjs.org/appium-ios-device/-/appium-ios-device-1.7.1.tgz"
-  "version" "1.7.1"
+"appium-idb@^0.x":
+  "integrity" "sha512-xijrqWSxJtKtWvXPVVR/FkVJtfQ5DwVCCA5R0nV0jMOtET55CoKKx0TO7KIiuZaHfQv/dbBCR8u7SEe3MF5Q9Q=="
+  "resolved" "https://registry.npmjs.org/appium-idb/-/appium-idb-0.5.1.tgz"
+  "version" "0.5.1"
+  dependencies:
+    "@babel/runtime" "^7.0.0"
+    "appium-support" "^2.41.0"
+    "asyncbox" "^2.5.2"
+    "bluebird" "^3.1.1"
+    "lodash" "^4.0.0"
+    "source-map-support" "^0.5.5"
+    "teen_process" "^1.11.0"
+
+"appium-ios-device@^1.7.0", "appium-ios-device@^1.7.1", "appium-ios-device@^1.8.0":
+  "integrity" "sha512-l4PVO0RSCsgd9wLiHhpBOlCP2wM0ND3+9+UMKP72c3qaaC2JxEqiKNIoc0r/jW7D5/Aoh/MtTT2yFHvqtZ0r/Q=="
+  "resolved" "https://registry.npmjs.org/appium-ios-device/-/appium-ios-device-1.8.0.tgz"
+  "version" "1.8.0"
   dependencies:
     "@babel/runtime" "^7.0.0"
     "appium-support" "^2.35.0"
@@ -834,7 +852,40 @@
     "semver" "^7.0.0"
     "source-map-support" "^0.5.5"
 
-"appium-support@^2.35.0", "appium-support@^2.48.1", "appium-support@^2.54.1", "appium-support@^2.54.2":
+"appium-ios-simulator@^3.14.0", "appium-ios-simulator@^3.28.0":
+  "integrity" "sha512-JqtpDXeYpJ0iA5Uwx4bbLFGiA/vpuejMa7VG5qbQ1nrGQ7+EZuETpKl+w8oWUmDi2fvOwwVLbeCSuDp0ysSPzg=="
+  "resolved" "https://registry.npmjs.org/appium-ios-simulator/-/appium-ios-simulator-3.28.1.tgz"
+  "version" "3.28.1"
+  dependencies:
+    "@babel/runtime" "^7.0.0"
+    "appium-support" "^2.44.0"
+    "appium-xcode" "^3.1.0"
+    "async-lock" "^1.0.0"
+    "asyncbox" "^2.3.1"
+    "bluebird" "^3.5.1"
+    "lodash" "^4.2.1"
+    "node-simctl" "^6.4.0"
+    "semver" "^7.0.0"
+    "source-map-support" "^0.5.3"
+    "teen_process" "^1.3.0"
+    "xmldom" "^0.x"
+
+"appium-remote-debugger@^8.13.2":
+  "integrity" "sha512-ke418dyTWUYt9tsMnrhq0DpDfsVUofmPR0lkq3OWY3Jov46Myype2Hl8PwjJFMBn9wFcxNv1sghcLhoWYenSzA=="
+  "resolved" "https://registry.npmjs.org/appium-remote-debugger/-/appium-remote-debugger-8.13.2.tgz"
+  "version" "8.13.2"
+  dependencies:
+    "@babel/runtime" "^7.0.0"
+    "appium-base-driver" "^7.0.0"
+    "appium-ios-device" "^1.7.0"
+    "appium-support" "^2.41.0"
+    "async-lock" "^1.2.2"
+    "asyncbox" "^2.6.0"
+    "bluebird" "^3.4.7"
+    "lodash" "^4.17.11"
+    "source-map-support" "^0.5.5"
+
+"appium-support@^2.35.0", "appium-support@^2.4.0", "appium-support@^2.41.0", "appium-support@^2.44.0", "appium-support@^2.46.0", "appium-support@^2.47.1", "appium-support@^2.48.1", "appium-support@^2.54.1", "appium-support@^2.54.2":
   "integrity" "sha512-o5Tv1eA2zbcsvCDB7H1k6ErzNgu6e6WvhzI1bSz6rBENTKymylcN7jxA4kDUGSMvHj76KrzW/fIZAgHqztkoZw=="
   "resolved" "https://registry.npmjs.org/appium-support/-/appium-support-2.54.2.tgz"
   "version" "2.54.2"
@@ -871,6 +922,69 @@
     "uuid" "^8.0.0"
     "which" "^2.0.0"
     "yauzl" "^2.7.0"
+
+"appium-webdriveragent@^3.13.0":
+  "integrity" "sha512-bQTBn9gsW2A/mtH2fBjKv9KnZQIzihHURw3C3+gM0gwCutr+ZBK8mvR5OvZelaprwXcsvMfHrahZv7uAZg+rLQ=="
+  "resolved" "https://registry.npmjs.org/appium-webdriveragent/-/appium-webdriveragent-3.15.0.tgz"
+  "version" "3.15.0"
+  dependencies:
+    "@babel/runtime" "^7.0.0"
+    "appium-base-driver" "^7.0.0"
+    "appium-ios-simulator" "^3.14.0"
+    "appium-support" "^2.46.0"
+    "async-lock" "^1.0.0"
+    "asyncbox" "^2.5.3"
+    "axios" "^0.x"
+    "bluebird" "^3.5.5"
+    "lodash" "^4.17.11"
+    "node-simctl" "^6.0.2"
+    "source-map-support" "^0.5.12"
+    "teen_process" "^1.14.1"
+
+"appium-xcode@^3.1.0", "appium-xcode@^3.8.0":
+  "integrity" "sha512-kT1du+HYBrd8X+cLfpp0mLCbqv7tgPRI9lCmrSeL2t9cIGdb+p9m4MOlfaKxrsqFurQlmMVUHmKDZLU4kvZWBg=="
+  "resolved" "https://registry.npmjs.org/appium-xcode/-/appium-xcode-3.11.0.tgz"
+  "version" "3.11.0"
+  dependencies:
+    "@babel/runtime" "^7.0.0"
+    "appium-support" "^2.4.0"
+    "asyncbox" "^2.3.0"
+    "lodash" "^4.17.4"
+    "plist" "^3.0.1"
+    "semver" "^7.0.0"
+    "source-map-support" "^0.5.5"
+    "teen_process" "^1.3.0"
+
+"appium-xcuitest-driver@^3.55.1":
+  "integrity" "sha512-HSYvNjvpBxtTHQBvQy1+H6cmIO1l9HgyRuQ/eGHCPeAAIvZflTf+tO/8VW3iwRBTexWivDu9uDA3GmaxWtXosw=="
+  "resolved" "https://registry.npmjs.org/appium-xcuitest-driver/-/appium-xcuitest-driver-3.55.1.tgz"
+  "version" "3.55.1"
+  dependencies:
+    "@babel/runtime" "^7.0.0"
+    "appium-base-driver" "^7.0.0"
+    "appium-idb" "^0.x"
+    "appium-ios-device" "^1.8.0"
+    "appium-ios-simulator" "^3.28.0"
+    "appium-remote-debugger" "^8.13.2"
+    "appium-support" "^2.47.1"
+    "appium-webdriveragent" "^3.13.0"
+    "appium-xcode" "^3.8.0"
+    "async-lock" "^1.0.0"
+    "asyncbox" "^2.3.1"
+    "bluebird" "^3.5.1"
+    "css-selector-parser" "^1.4.1"
+    "js2xmlparser2" "^0.2.0"
+    "lodash" "^4.17.10"
+    "lru-cache" "^6.0.0"
+    "moment" "^2.24.0"
+    "moment-timezone" "^0.x"
+    "node-simctl" "^6.4.0"
+    "portscanner" "2.2.0"
+    "semver" "^7.0.0"
+    "source-map-support" "^0.5.5"
+    "teen_process" "^1.14.0"
+    "ws" "^8.0.0"
+    "xmldom" "^0.x"
 
 "aproba@^1.0.3 || ^2.0.0":
   "integrity" "sha512-lYe4Gx7QT+MKGbDsA+Z+he/Wtef0BiwDOlK/XkBrdfsh9J/jPPXbX0tE9x9cl27Tmu5gg3QUbUrQYa/y+KOHPQ=="
@@ -944,17 +1058,24 @@
   "resolved" "https://registry.npmjs.org/assert-plus/-/assert-plus-1.0.0.tgz"
   "version" "1.0.0"
 
-"async-lock@^1.0.0":
+"async-lock@^1.0.0", "async-lock@^1.2.2":
   "integrity" "sha512-8A7SkiisnEgME2zEedtDYPxUPzdv3x//E7n5IFktPAtMYSEAV7eNJF0rMwrVyUFj6d/8rgajLantbjcNRQYXIg=="
   "resolved" "https://registry.npmjs.org/async-lock/-/async-lock-1.3.0.tgz"
   "version" "1.3.0"
+
+"async@^2.6.0":
+  "integrity" "sha512-zflvls11DCy+dQWzTW2dzuilv8Z5X/pjfmZOWba6TNIVDm+2UDaJmXSOXlasHKfNBs8oo3M0aT50fDEWfKZjXg=="
+  "resolved" "https://registry.npmjs.org/async/-/async-2.6.3.tgz"
+  "version" "2.6.3"
+  dependencies:
+    "lodash" "^4.17.14"
 
 "async@^3.2.0":
   "integrity" "sha512-XdD5lRO/87udXCMC9meWdYiR+Nq6ZjUfXidViUZGu2F1MO4T3XwZ1et0hb2++BgLfhyJwy44BGB/yx80ABx8hg=="
   "resolved" "https://registry.npmjs.org/async/-/async-3.2.1.tgz"
   "version" "3.2.1"
 
-"asyncbox@^2.6.0", "asyncbox@^2.9.1":
+"asyncbox@^2.3.0", "asyncbox@^2.3.1", "asyncbox@^2.5.2", "asyncbox@^2.5.3", "asyncbox@^2.6.0", "asyncbox@^2.9.1":
   "integrity" "sha512-VSon1vGccTPcseugq0hl1ImUReW2+Z0GrDpeNHrxuZIKIUf5+gaeXtEFqESFJzSlF3y1UHC8Pkc6AhX/mTiBLA=="
   "resolved" "https://registry.npmjs.org/asyncbox/-/asyncbox-2.9.2.tgz"
   "version" "2.9.2"
@@ -1047,7 +1168,7 @@
   dependencies:
     "inherits" "~2.0.0"
 
-"bluebird@^3.1.1", "bluebird@^3.4.7", "bluebird@^3.5.1", "bluebird@^3.5.3", "bluebird@^3.7.2", "bluebird@3.7.2":
+"bluebird@^3.1.1", "bluebird@^3.4.7", "bluebird@^3.5.1", "bluebird@^3.5.3", "bluebird@^3.5.5", "bluebird@^3.7.2", "bluebird@3.7.2":
   "integrity" "sha512-XpNj6GDQzdfW+r2Wnn7xiSAd7TM3jzkxGXBGTtWKuSXv1xUV+azxAm8jdWZN06QTQk+2N2XB9jRDkvbmQmcRtg=="
   "resolved" "https://registry.npmjs.org/bluebird/-/bluebird-3.7.2.tgz"
   "version" "3.7.2"
@@ -1348,6 +1469,11 @@
   dependencies:
     "crc-32" "^1.2.0"
     "readable-stream" "^3.4.0"
+
+"css-selector-parser@^1.4.1":
+  "integrity" "sha512-HYPSb7y/Z7BNDCOrakL4raGO2zltZkbeXyAd6Tg9obzix6QhzxCotdBl6VT0Dv4vZfJGVz3WL/xaEI9Ly3ul0g=="
+  "resolved" "https://registry.npmjs.org/css-selector-parser/-/css-selector-parser-1.4.1.tgz"
+  "version" "1.4.1"
 
 "css-shorthand-properties@^1.1.1":
   "integrity" "sha512-Md+Juc7M3uOdbAFwOYlTrccIZ7oCFuzrhKYQjdeUEW/sE1hv17Jp/Bws+ReOPpGVBTYCBoYo+G17V5Qo8QQ75A=="
@@ -2192,6 +2318,13 @@
   "resolved" "https://registry.npmjs.org/is-function/-/is-function-1.0.2.tgz"
   "version" "1.0.2"
 
+"is-number-like@^1.0.3":
+  "integrity" "sha512-6rZi3ezCyFcn5L71ywzz2bS5b2Igl1En3eTlZlvKjpz1n3IZLAYMbKYAIQgFmEu0GENg92ziU/faEOA/aixjbA=="
+  "resolved" "https://registry.npmjs.org/is-number-like/-/is-number-like-1.0.8.tgz"
+  "version" "1.0.8"
+  dependencies:
+    "lodash.isfinite" "^3.3.2"
+
 "is-promise@^2.2.2":
   "integrity" "sha512-+lP4/6lKUBfQjZ2pdxThZvLUAafmZb8OAxFb8XXtiQmS35INgr85hdOGoEs124ez1FCnZJt6jau/T+alh58QFQ=="
   "resolved" "https://registry.npmjs.org/is-promise/-/is-promise-2.2.2.tgz"
@@ -2259,6 +2392,11 @@
   "integrity" "sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ=="
   "resolved" "https://registry.npmjs.org/js-tokens/-/js-tokens-4.0.0.tgz"
   "version" "4.0.0"
+
+"js2xmlparser2@^0.2.0":
+  "integrity" "sha1-p8ogibg9AjMdYxiS3WdDhkElAz8="
+  "resolved" "https://registry.npmjs.org/js2xmlparser2/-/js2xmlparser2-0.2.0.tgz"
+  "version" "0.2.0"
 
 "jsbn@~0.1.0":
   "integrity" "sha1-peZUwuWi3rXyAdls77yoDA7y9RM="
@@ -2408,6 +2546,11 @@
   "resolved" "https://registry.npmjs.org/lodash.flatten/-/lodash.flatten-4.4.0.tgz"
   "version" "4.4.0"
 
+"lodash.isfinite@^3.3.2":
+  "integrity" "sha1-+4m2WpqAKBgz8LdHizpRBPiY67M="
+  "resolved" "https://registry.npmjs.org/lodash.isfinite/-/lodash.isfinite-3.3.2.tgz"
+  "version" "3.3.2"
+
 "lodash.isobject@^3.0.2":
   "integrity" "sha1-PI+41bW/S/kK4G4U8qUwpO2TXh0="
   "resolved" "https://registry.npmjs.org/lodash.isobject/-/lodash.isobject-3.0.2.tgz"
@@ -2433,7 +2576,7 @@
   "resolved" "https://registry.npmjs.org/lodash.zip/-/lodash.zip-4.2.0.tgz"
   "version" "4.2.0"
 
-"lodash@^4.0.0", "lodash@^4.17.15", "lodash@^4.17.20", "lodash@^4.17.4", "lodash@^4.17.5", "lodash@^4.2.1", "lodash@4.17.21":
+"lodash@^4.0.0", "lodash@^4.17.10", "lodash@^4.17.11", "lodash@^4.17.14", "lodash@^4.17.15", "lodash@^4.17.20", "lodash@^4.17.4", "lodash@^4.17.5", "lodash@^4.2.1", "lodash@4.17.21":
   "integrity" "sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg=="
   "resolved" "https://registry.npmjs.org/lodash/-/lodash-4.17.21.tgz"
   "version" "4.17.21"
@@ -2637,7 +2780,7 @@
   dependencies:
     "minimist" "^1.2.5"
 
-"moment-timezone@^0.5.31":
+"moment-timezone@^0.5.31", "moment-timezone@^0.x":
   "integrity" "sha512-PTc2vcT8K9J5/9rDEPe5czSIKgLoGsH8UNpA4qZTVw0Vd/Uz19geE9abbIOQKaAQFcnQ3v5YEXrbSc5BpshH+w=="
   "resolved" "https://registry.npmjs.org/moment-timezone/-/moment-timezone-0.5.33.tgz"
   "version" "0.5.33"
@@ -2758,6 +2901,23 @@
     "rimraf" "^2.6.1"
     "semver" "^5.3.0"
     "tar" "^4"
+
+"node-simctl@^6.0.2", "node-simctl@^6.4.0":
+  "integrity" "sha512-nAkI4WRFd18mkDbgBr472SoCM+ID3rGIH0Wm8JcUV2EQsZA/gh4/d7ZAS12psyvikMorw7FaXC1YPROwkcOcIQ=="
+  "resolved" "https://registry.npmjs.org/node-simctl/-/node-simctl-6.5.0.tgz"
+  "version" "6.5.0"
+  dependencies:
+    "@babel/runtime" "^7.0.0"
+    "asyncbox" "^2.3.1"
+    "bluebird" "^3.5.1"
+    "lodash" "^4.2.1"
+    "npmlog" "^5.0.0"
+    "rimraf" "^3.0.0"
+    "semver" "^7.0.0"
+    "source-map-support" "^0.5.5"
+    "teen_process" "^1.5.1"
+    "uuid" "^8.0.0"
+    "which" "^2.0.0"
 
 "nopt@^4.0.1":
   "integrity" "sha512-CvaGwVMztSMJLOeXPrez7fyfObdZqNUK1cPAEzLHrTybIua9pMdmmPR5YwtfNftIOMv3DPUhFaxsZMNTQO20Kg=="
@@ -3049,6 +3209,14 @@
   "integrity" "sha512-TRzzuFRRmEoSW/p1KVAmiOgPco2Irlah+bGFCeNfJXxxYGwSw7YwAOAcd7X28K/m5bjBWKsC29KyoMfHbypayg=="
   "resolved" "https://registry.npmjs.org/pngjs/-/pngjs-6.0.0.tgz"
   "version" "6.0.0"
+
+"portscanner@2.2.0":
+  "integrity" "sha512-IFroCz/59Lqa2uBvzK3bKDbDDIEaAY8XJ1jFxcLWTqosrsc32//P4VuSB2vZXoHiHqOmx8B5L5hnKOxL/7FlPw=="
+  "resolved" "https://registry.npmjs.org/portscanner/-/portscanner-2.2.0.tgz"
+  "version" "2.2.0"
+  dependencies:
+    "async" "^2.6.0"
+    "is-number-like" "^1.0.3"
 
 "printj@~1.1.0":
   "integrity" "sha512-zA2SmoLaxZyArQTOPj5LXecR+RagfPSU5Kw1qP+jkWeNlrq+eJZyY2oS68SU1Z/7/myXM4lo9716laOFAVStCQ=="
@@ -3581,7 +3749,7 @@
   "resolved" "https://registry.npmjs.org/signal-exit/-/signal-exit-3.0.5.tgz"
   "version" "3.0.5"
 
-"source-map-support@^0.5.3", "source-map-support@^0.5.5", "source-map-support@^0.x", "source-map-support@0.5.20":
+"source-map-support@^0.5.12", "source-map-support@^0.5.3", "source-map-support@^0.5.5", "source-map-support@^0.x", "source-map-support@0.5.20":
   "integrity" "sha512-n1lZZ8Ve4ksRqizaBQgxXDgKwttHDhyfQjA6YZZn8+AroHbsIz+JjwxQDxbp+7y5OYCI8t1Yk7etjD9CRd2hIw=="
   "resolved" "https://registry.npmjs.org/source-map-support/-/source-map-support-0.5.20.tgz"
   "version" "0.5.20"
@@ -3779,7 +3947,7 @@
     "safe-buffer" "^5.2.1"
     "yallist" "^3.1.1"
 
-"teen_process@^1.11.0", "teen_process@^1.5.1", "teen_process@1.16.0":
+"teen_process@^1.11.0", "teen_process@^1.14.0", "teen_process@^1.14.1", "teen_process@^1.3.0", "teen_process@^1.5.1", "teen_process@1.16.0":
   "integrity" "sha512-RnW7HHZD1XuhSTzD3djYOdIl1adE3oNEprE3HOFFxWs5m4FZsqYRhKJ4mDU2udtNGMLUS7jV7l8vVRLWAvmPDw=="
   "resolved" "https://registry.npmjs.org/teen_process/-/teen_process-1.16.0.tgz"
   "version" "1.16.0"
@@ -3965,7 +4133,7 @@
   "resolved" "https://registry.npmjs.org/uuid/-/uuid-3.4.0.tgz"
   "version" "3.4.0"
 
-"uuid@^8.0.0", "uuid@^8.1.0", "uuid@8.3.2":
+"uuid@^8.0.0", "uuid@^8.1.0", "uuid@^8.3.2", "uuid@8.3.2":
   "integrity" "sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg=="
   "resolved" "https://registry.npmjs.org/uuid/-/uuid-8.3.2.tgz"
   "version" "8.3.2"
@@ -4137,6 +4305,11 @@
   "integrity" "sha512-fDlsI/kFEx7gLvbecc0/ohLG50fugQp8ryHzMTuW9vSa1GJ0XYWKnhsUx7oie3G98+r56aTQIUB4kht42R3JvA=="
   "resolved" "https://registry.npmjs.org/xmlbuilder/-/xmlbuilder-11.0.1.tgz"
   "version" "11.0.1"
+
+"xmldom@^0.x":
+  "integrity" "sha512-iAcin401y58LckRZ0TkI4k0VSM1Qg0KGSc3i8rU+xrxe19A/BN1zHyVSJY7uoutVlaTSzYyk/v5AmkewAP7jtg=="
+  "resolved" "https://registry.npmjs.org/xmldom/-/xmldom-0.6.0.tgz"
+  "version" "0.6.0"
 
 "xtend@^4.0.0":
   "integrity" "sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ=="

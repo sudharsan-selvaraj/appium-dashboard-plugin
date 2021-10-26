@@ -25,6 +25,10 @@ class AppiumDashboardPlugin extends BasePlugin {
       args,
     };
 
+    if (commandName == "getScreenshot") {
+      return await next();
+    }
+
     if (commandName == "createSession") {
       /**
        * Append additional log capabilities to payload

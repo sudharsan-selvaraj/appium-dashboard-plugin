@@ -58,6 +58,12 @@ class CommandLogs extends Model<CommandLogs> {
   })
   is_error!: Boolean;
 
+  @AllowNull(true)
+  @Column({
+    type: DataTypes.TEXT,
+  })
+  screen_shot?: string | null;
+
   @BelongsTo(() => Session, { foreignKey: "session_id" })
   session!: Session;
 }

@@ -8,10 +8,10 @@
 
 .session-details__header_column {
   display: flex;
-  width: 450px;
+  width: auto;
   flex-direction: column;
   height: 100%;
-  margin-right: 10px;
+  margin-right: 15px;
   padding-left: 20px;
   padding-top: 0;
 }
@@ -23,17 +23,14 @@
 }
 
 .session-details__header_column_label {
-  margin-right: -20px;
-  min-width: 123px;
+  margin-right: 20px;
   font-size: 13px;
   font-weight: 600;
   color: rgb(116, 114, 114);
 }
 
 .session-details__header_column_value {
-  text-overflow: ellipsis !important;
-  overflow: hidden;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 550;
   display: flex;
   flex-direction: row;

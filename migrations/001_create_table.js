@@ -46,6 +46,7 @@ var createCommandLogsTable = function (queryInterface, Sequelize) {
     title_info: { type: Sequelize.TEXT },
     response: { type: Sequelize.TEXT },
     params: { type: Sequelize.TEXT },
+    screen_shot: { type: Sequelize.TEXT, allowNull: true },
     is_error: { type: Sequelize.BOOLEAN, defaultValue: false },
     created_at: Sequelize.DATE,
     updated_at: Sequelize.DATE,

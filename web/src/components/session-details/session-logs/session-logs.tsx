@@ -1,9 +1,9 @@
 import Tab from "../../../widgets/tab/tab";
-import { BaseComponent } from "../base-component-class";
+import { RouteReactiveComponent } from "../base-component-class";
 import "./session-logs.css";
 import TextLogs from "./text-logs/text-logs";
 
-export default class SessionLogs extends BaseComponent<any, any> {
+export default class SessionLogs extends RouteReactiveComponent<any, any> {
   constructor(props: any) {
     super(props);
     this.state = {
@@ -25,7 +25,6 @@ export default class SessionLogs extends BaseComponent<any, any> {
   }
 
   protected componentUpdated(): void {
-    console.log("Compoenent Updated");
     this.setState({ activeTab: 0 });
   }
 

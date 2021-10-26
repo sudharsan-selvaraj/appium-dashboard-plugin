@@ -8,7 +8,7 @@
   cursor: pointer;
 }
 
-.session-info-card__items {
+.session-info-card__item {
   display: flex;
   flex-direction: column;
   flex: 0.9;
@@ -22,7 +22,6 @@
 
 .session-info-card__title {
   font-size: 12px;
-  font-weight: 600;
 }
 
 .session-info-card__status {
@@ -31,9 +30,11 @@
 }
 
 .session-info-card__time {
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 500;
   color: grey;
+  margin-right: 25px;
+  letter-spacing: -1.1px;
 }
 
 .session-info-card__status_icon {
