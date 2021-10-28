@@ -3,7 +3,7 @@ import { AppiumCommand } from "./types/appium-command";
 import { interceptProxyResponse, routeToCommand } from "./utils";
 import { getLogTypes, getLogs, startScreenRecording, stopScreenRecording, takeScreenShot } from "./command-executor";
 import { CommandParser } from "./command-parser";
-import { CommandLogs as commandLogsModel, Session } from "./models";
+import { CommandLogs as commandLogsModel, Session, Logs as LogsTable } from "./models";
 import { Op } from "sequelize";
 import { log } from "./logger";
 import * as fs from "fs";
@@ -15,10 +15,7 @@ const cj = require("circular-json");
 
 const CREATE_SESSION = "createSession";
 class SessionManager {
-  private logTypes: Array<string> = [];
-  private logInterval!: NodeJS.Timeout;
-  private isLogsPending: Boolean = false;
-  private driverOpts: any;
+  private lastLogLine = 0;
   private config: any = Container.get("config");
 
   constructor(private sessionInfo: SessionInfo, private commandParser: CommandParser, private sessionResponse: any) {
@@ -27,9 +24,6 @@ class SessionManager {
 
   public async onCommandRecieved(command: AppiumCommand): Promise<any> {
     if (command.commandName == CREATE_SESSION) {
-      this.appendLogs(`Recieved command ${command.commandName}`);
-      this.appendLogs(cj.stringify(command.args));
-      this.appendLogs(`${JSON.stringify(this.sessionResponse)}`);
       return await this.sessionStarted(command);
     } else if (command.commandName == "deleteSession") {
       await this.sessionTerminated(command);
@@ -40,16 +34,13 @@ class SessionManager {
       Object.assign(command, {
         ...routeToCommand(command.args),
       });
-      this.appendLogs("Inside Proxy Req");
     }
 
     this.appendLogs(`Recieved command ${command.commandName}`);
-    this.appendLogs(cj.stringify(command.args));
+    await this.saveServerLogs(command);
     try {
       let res = await command.next();
       await this.saveCommandLog(command, res);
-      this.appendLogs(!res ? "null" : JSON.stringify(res));
-      this.appendLogs("------------------------------------------------------------------------------------------");
       return res;
     } catch (err: any) {
       await this.saveCommandLog(command, {
@@ -62,19 +53,16 @@ class SessionManager {
           message: err.message,
         })
       );
-      this.appendLogs("------------------------------------------------------------------------------------------");
     }
   }
 
   private async sessionStarted(command: AppiumCommand) {
-    this.driverOpts = command.driver.opts;
     await Session.create({
       ...this.sessionInfo,
       start_time: new Date(),
     } as any);
 
     await this.saveCommandLog(command, null);
-    await this.initializeLogging(command.driver);
     await this.initializeScreenShotFolder();
     return await this.startScreenRecording(command.driver);
   }
@@ -91,7 +79,6 @@ class SessionManager {
         },
       },
     });
-
     await Session.update(
       {
         is_completed: true,
@@ -105,6 +92,27 @@ class SessionManager {
         },
       }
     );
+  }
+
+  private async saveServerLogs(command: AppiumCommand) {
+    let logs = getLogs(command.driver, this.sessionInfo.session_id, "server");
+    let newLogs = logs.slice(this.lastLogLine);
+    if (!newLogs.length) {
+      return false;
+    }
+    this.lastLogLine = logs.length;
+    await LogsTable.bulkCreate(
+      newLogs.map((l: any) => {
+        return {
+          ...l,
+          timestamp: new Date(l.timestamp),
+          session_id: this.sessionInfo.session_id,
+          log_type: "DEVICE",
+        };
+      })
+    );
+
+    return true;
   }
 
   private async saveCommandLog(command: AppiumCommand, response: any) {
@@ -144,34 +152,9 @@ class SessionManager {
     await startScreenRecording(driver, this.sessionInfo.session_id);
   }
 
-  private async initializeLogging(driver: any) {
-    this.logTypes = (await getLogTypes(driver, this.sessionInfo.session_id)).value || [];
-    //this.logInterval = setInterval(this.fetchLogs.bind(this), 5000);
-  }
-
   private async initializeScreenShotFolder() {
     if (!fs.existsSync(`${this.config.screenshotSavePath}/${this.sessionInfo.session_id}`)) {
       fs.mkdirSync(`${this.config.screenshotSavePath}/${this.sessionInfo.session_id}`, { recursive: true });
-    }
-  }
-
-  private async fetchLogs() {
-    if (this.isLogsPending) {
-      return;
-    }
-    if (this.sessionInfo.is_completed) {
-      clearInterval(this.logInterval);
-      log.info(`Closing logs for session ${this.sessionInfo.session_id}`);
-    } else {
-      this.isLogsPending = true;
-      log.info(`Fetching logs for session ${this.sessionInfo.session_id}`);
-      let logs = await Promise.all(
-        this.logTypes.map(async (l) => {
-          return await getLogs(this.driverOpts, this.sessionInfo.session_id, l);
-        })
-      );
-      log.info(`${logs.length}`);
-      this.isLogsPending = false;
     }
   }
 

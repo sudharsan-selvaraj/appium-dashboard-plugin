@@ -1,6 +1,6 @@
 import * as express from "express";
 import bodyParser from "body-parser";
-import { Session, CommandLogs } from "../models/index";
+import { Session, CommandLogs, Logs } from "../models/index";
 import * as path from "path";
 
 const cors = require("cors");
@@ -82,6 +82,21 @@ apiRouter.get(
       await CommandLogs.findAndCountAll({
         where: {
           session_id: sessionId,
+        },
+      })
+    );
+  }
+);
+
+apiRouter.get(
+  "/sessions/:sessionId/logs/device",
+  async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    let sessionId: string = req.params.sessionId;
+    res.status(200).send(
+      await Logs.findAndCountAll({
+        where: {
+          session_id: sessionId,
+          log_type: "DEVICE",
         },
       })
     );

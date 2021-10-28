@@ -25,3 +25,9 @@
   width: 320px;
   margin-left: 50px;
 }
+
+.session-text-logs__bottom_padding_container {
+  height: 100px;
+  width: 100%;
+  background: transparent;
+}

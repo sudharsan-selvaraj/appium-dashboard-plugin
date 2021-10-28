@@ -21,11 +21,21 @@ async function getLogTypes(driver: any, sessionId: string) {
   return await makeGETCall(driver, sessionId, "log/types");
 }
 
-async function getLogs(driver: any, sessionId: string, logType: string) {
-  var res = await makePostCall(driver, sessionId, "log", {
-    type: logType,
-  });
-  return res;
+function getLogs(driver: any, sessionId: string, logType: string) {
+  let session = driver,
+    logKey: any = {
+      uiautomator2: "uiautomator2.adb.logcat.logs",
+      xcuitest: "logs.syslog.logs",
+    };
+  if (driver.sessions) {
+    session = driver.sessions[sessionId];
+  }
+
+  let logs = logKey[session.caps.automationName.toLowerCase()]?.split(".").reduce((acc: any, k: any) => {
+    return acc[k] || {};
+  }, session);
+
+  return Array.isArray(logs) ? logs : [];
 }
 
 export { startScreenRecording, stopScreenRecording, getLogTypes, getLogs, takeScreenShot };

@@ -95,7 +95,9 @@ export default class TextLogs extends RouteReactiveComponent<any, any> {
               />
             </div>
           </div>
-          <div className="session-text-logs__scroll_container">{this.getLogEntries()}</div>
+          <div className="session-text-logs__scroll_container">
+            {this.getLogEntries()} <div className="session-text-logs__bottom_padding_container" />
+          </div>
         </div>
       );
     }

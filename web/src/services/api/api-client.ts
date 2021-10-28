@@ -18,7 +18,7 @@ class ApiClient {
   }
 
   public formatUrl(url: string) {
-    return `/dashboard/api${url}`;
+    return `http://localhost:4723/dashboard/api/${url}`;
   }
 
   private jsonResult(res: any) {

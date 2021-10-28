@@ -1,5 +1,6 @@
 import Tab from "../../../widgets/tab/tab";
 import { RouteReactiveComponent } from "../base-component-class";
+import DeviceLogs from "./device-logs/device-logs";
 import "./session-logs.css";
 import TextLogs from "./text-logs/text-logs";
 
@@ -18,7 +19,7 @@ export default class SessionLogs extends RouteReactiveComponent<any, any> {
         key: 0,
       },
       {
-        label: "Appium Logs",
+        label: "Device Logs",
         key: 1,
       },
     ];
@@ -33,10 +34,10 @@ export default class SessionLogs extends RouteReactiveComponent<any, any> {
   }
 
   getActiveTabComponent(activeTab: number) {
-    // return {
-    //   0: <TextLogs session={this.props.session} />,
-    // }[activeTab];
-    return <TextLogs session={this.props.session} />;
+    return {
+      0: <TextLogs session={this.props.session} />,
+      1: <DeviceLogs session={this.props.session} />,
+    }[activeTab];
   }
 
   render() {
