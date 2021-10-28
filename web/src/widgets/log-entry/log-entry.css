@@ -112,10 +112,14 @@
 }
 
 .text-log-screenshot {
-  padding: 15px;
-  display: flex;
-  margin-right: auto;
   max-width: 300px;
   max-height: 600px;
   height: auto;
+}
+
+.text-log-screenshot__link {
+  padding: 15px;
+  display: flex;
+  margin-right: auto;
+  cursor: pointer;
 }

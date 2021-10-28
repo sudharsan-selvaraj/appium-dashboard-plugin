@@ -2,6 +2,7 @@ import React from "react";
 import { ApiService } from "../../../../services/api";
 import Spinner from "../../../../widgets/spinner/spinner";
 import { RouteReactiveComponent } from "../../base-component-class";
+import SearchIcon from "@material-ui/icons/Search";
 import "./device-logs.css";
 
 export default class DeviceLogs extends RouteReactiveComponent<any, any> {
@@ -11,6 +12,7 @@ export default class DeviceLogs extends RouteReactiveComponent<any, any> {
     this.state = {
       logs: [],
       loading: true,
+      filterText: "",
     };
   }
 
@@ -49,23 +51,19 @@ export default class DeviceLogs extends RouteReactiveComponent<any, any> {
 
   getLogEntries() {
     return React.Children.toArray(
-      this.state.logs.map((l: any) => {
-        return <div className="console-log-line">{l.message}</div>;
-      })
+      this.state.logs
+        .filter((l: any) => l.message.indexOf(this.state.filterText) >= 0)
+        .map((l: any) => {
+          return <div className="console-log-line">{l.message}</div>;
+        })
     );
   }
 
-  // toggleScreenShots(status: any) {
-  //   this.setState({
-  //     showScreenShots: status,
-  //   });
-  // }
-
-  // toggleExceptions(status: any) {
-  //   this.setState({
-  //     showExceptions: status,
-  //   });
-  // }
+  filterLogs(filterText: string) {
+    this.setState({
+      filterText: filterText,
+    });
+  }
 
   render() {
     if (this.state.loading) {
@@ -73,6 +71,12 @@ export default class DeviceLogs extends RouteReactiveComponent<any, any> {
     } else {
       return (
         <div className="session-device-logs__wrapper">
+          <div className="session-device-logs__filter_container">
+            <div className="session-device-logs__filter_wrapper">
+              <SearchIcon />
+              <input type="text" placeholder="Filter logs" onChange={(e) => this.filterLogs(e.target.value)} />
+            </div>
+          </div>
           <div className="session-device-logs__scroll_container">
             {this.getLogEntries()}
             <div className="console-log-line"></div>

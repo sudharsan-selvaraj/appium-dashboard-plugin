@@ -1,7 +1,6 @@
 import { Container } from "typedi";
 import BasePlugin from "@appium/base-plugin";
 import { CommandParser } from "./command-parser";
-import { log } from "./logger";
 import { SessionManager } from "./session-manager";
 import { getSessionDetails } from "./utils";
 import * as express from "express";

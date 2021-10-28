@@ -18,3 +18,28 @@
   color: #cdee69;
   font-size: 14px;
 }
+
+.session-device-logs__filter_container {
+  height: 50px;
+  width: 100%;
+  border: 1px solid #ced8e1;
+}
+
+.session-device-logs__filter_wrapper {
+  margin: 5px;
+  margin-top: 10px;
+  width: 300px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-items: space-between;
+}
+
+.session-device-logs__filter_container input {
+  margin-left: 5px;
+  border: none;
+  width: 200px;
+  border-bottom: 1px solid #aaacaf;
+  outline: none !important;
+  height: 25px;
+}
