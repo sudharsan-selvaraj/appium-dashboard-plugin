@@ -16,12 +16,14 @@ export default class LogEntry extends React.Component<any, any> {
     if (logBody.type == "string" || logBody.value == null) {
       return (
         <div className="text-log-params-container">
-          <div className="text-log-string-value">{logBody.value ? logBody.value.toString() : "null"}</div>
+          <div className="text-log-params-title">{logTitle}</div>
+          <div className="text-log-string-value">{logBody.value != null ? logBody.value.toString() : "null"}</div>
         </div>
       );
     } else if (Array.isArray(logBody.value)) {
       return (
         <div className="text-log-params-container">
+          <div className="text-log-params-title">{logTitle}</div>
           <div className="text-log-json-value">{JSON.stringify(logBody.value)}</div>
         </div>
       );
@@ -56,13 +58,7 @@ export default class LogEntry extends React.Component<any, any> {
   }
 
   getParamsElement() {
-    return this.getLogBody(
-      "Params",
-      Object.assign({
-        type: "object",
-        value: this.props.log.params,
-      })
-    );
+    return this.getLogBody("Params", this.props.log.params);
   }
 
   toggleExpand(expandStatus: boolean) {

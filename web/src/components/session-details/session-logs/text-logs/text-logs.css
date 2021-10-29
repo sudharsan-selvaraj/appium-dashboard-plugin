@@ -31,3 +31,15 @@
   width: 100%;
   background: transparent;
 }
+
+.session-text-logs__wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.session-text-logs__wrapper > .loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: auto;
+}

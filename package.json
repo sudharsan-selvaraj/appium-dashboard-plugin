@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "@appium/base-plugin": "^1.6.4",
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "@mui/icons-material": "^5.0.4",
     "@mui/material": "^5.0.4",
     "appium-adb": "^8.16.1",

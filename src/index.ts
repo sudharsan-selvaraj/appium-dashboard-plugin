@@ -5,7 +5,7 @@ import { AppiumDashboardPlugin } from "./plugin";
 import { config } from "./config";
 import * as fs from "fs";
 import { log } from "./logger";
-
+var ffmpeg = require("@ffmpeg-installer/ffmpeg").path;
 Container.set("expressRouter", router);
 Container.set("config", config);
 
@@ -18,6 +18,9 @@ async function createVideoDirectoryPath(fullPath: string) {
 
 log.info(Container.get("config"));
 (async () => {
+  //Add FFMPEG to path
+  process.env.PATH = process.env.PATH + ":" + ffmpeg.replace(/ffmpeg$/g, "");
+
   //load sequelize database
   await sequelizeLoader();
 

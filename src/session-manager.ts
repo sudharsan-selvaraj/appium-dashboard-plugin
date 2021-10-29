@@ -37,6 +37,7 @@ class SessionManager {
     }
 
     this.appendLogs(`Recieved command ${command.commandName}`);
+    this.appendLogs(`args:\n ${cj.stringify(command.args)}`);
     await this.saveServerLogs(command);
     try {
       let res = await command.next();

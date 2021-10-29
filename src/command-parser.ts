@@ -1,8 +1,7 @@
 import { SessionInfo } from "./types/session-info";
 import { saveLocator, getLocatorStrategy } from "./locator-factory";
 import { log } from "./logger";
-import { response } from "express";
-import { title } from "process";
+import { millisToMinutesAndSeconds } from "./utils";
 
 export class CommandParser {
   constructor(private sessionInfo: SessionInfo) {}
@@ -80,6 +79,7 @@ export class CommandParser {
     title: any;
     titleInfoFormat?: (parsedArgs: any) => Promise<any>;
     paramsFormat?: (parsedArgs: any) => Promise<any>;
+    responseFormat?: (response: any) => Promise<any>;
   }) {
     let newArgs = [...config.args];
     if (this.isProxyRequest(config.args)) {
@@ -95,8 +95,10 @@ export class CommandParser {
     return {
       title: config.title,
       title_info: config.titleInfoFormat ? await config.titleInfoFormat(newArgs) : null,
-      response: this.getResponseObj(config.response),
-      params: config.paramsFormat ? await config.paramsFormat(newArgs) : null,
+      response: config.responseFormat
+        ? this.getResponseObj(await config.responseFormat(config.response))
+        : this.getResponseObj(config.response),
+      params: config.paramsFormat ? this.getResponseObj(await config.paramsFormat(newArgs)) : null,
     };
   }
 
@@ -153,74 +155,98 @@ export class CommandParser {
     };
   }
 
-  //TODO
+  //COMPLETED
   public async getTimeouts(driver: any, args: any[], response: any) {
-    return {
-      title: "getTimeouts",
-      title_info: null,
-      response: null,
-      params: null,
-    };
+    return this.constructCommandResponse({
+      driver,
+      args,
+      response,
+      title: "Get Timeouts",
+    });
   }
 
-  //TODO
+  //COMPLETED
   public async timeouts(driver: any, args: any[], response: any) {
-    return {
-      title: "timeouts",
-      title_info: null,
-      response: null,
-      params: null,
-    };
+    return this.constructCommandResponse({
+      driver,
+      args,
+      response,
+      title: "Set Timeouts",
+      titleInfoFormat: async (newArgs: any) => {
+        return `[${newArgs[0]}=${millisToMinutesAndSeconds(newArgs[1] || 0)}]`;
+      },
+    });
   }
 
-  //TODO
+  //COMPLETED
   public async asyncScriptTimeout(driver: any, args: any[], response: any) {
-    return {
-      title: "asyncScriptTimeout",
-      title_info: null,
-      response: null,
-      params: null,
-    };
+    let res = await this.constructCommandResponse({
+      driver,
+      args,
+      response,
+      title: "Set Async script timeout",
+      titleInfoFormat: async (newArgs: any) => {
+        return millisToMinutesAndSeconds(newArgs[0] || 0);
+      },
+    });
+
+    if (res.response?.type != "error") {
+      res.response = null;
+    }
+    return res;
   }
 
-  //TODO
+  //COMPLETED
   public async implicitWait(driver: any, args: any[], response: any) {
-    return {
-      title: "implicitWait",
-      title_info: null,
-      response: null,
-      params: null,
-    };
+    let res = await this.constructCommandResponse({
+      driver,
+      args,
+      response,
+      title: "Set Implicit wait",
+      titleInfoFormat: async (newArgs: any) => {
+        return millisToMinutesAndSeconds(newArgs[0] || 0);
+      },
+    });
+    if (res.response?.type != "error") {
+      res.response = null;
+    }
+    return res;
   }
 
-  //TODO
+  //COMPLETED
   public async getWindowHandle(driver: any, args: any[], response: any) {
-    return {
-      title: "getWindowHandle",
-      title_info: null,
-      response: null,
-      params: null,
-    };
+    return this.constructCommandResponse({
+      driver,
+      args,
+      response,
+      title: "Get Window Handle",
+    });
   }
 
-  //TODO
+  //COMPLETED
   public async getWindowHandles(driver: any, args: any[], response: any) {
-    return {
-      title: "getWindowHandles",
-      title_info: null,
-      response: null,
-      params: null,
-    };
+    return this.constructCommandResponse({
+      driver,
+      args,
+      response,
+      title: "Get Window Handles",
+    });
   }
 
   //TODO
   public async getUrl(driver: any, args: any[], response: any) {
-    return {
-      title: "getUrl",
-      title_info: null,
-      response: null,
-      params: null,
-    };
+    return this.constructCommandResponse({
+      driver,
+      args,
+      response,
+      title: "Get URL",
+      titleInfoFormat: async (newArgs: any) => {
+        return newArgs[0];
+      },
+      responseFormat: async (response: any) => {
+        return null;
+      },
+    });
   }
 
   //COMPLETED
@@ -230,7 +256,7 @@ export class CommandParser {
       args,
       response,
       title: "Navigate to url",
-      titleInfoFormat: (newArgs) => newArgs[0],
+      titleInfoFormat: async (newArgs) => newArgs[0],
     });
   }
 
@@ -271,7 +297,13 @@ export class CommandParser {
       args,
       response,
       title: "Execute script",
-      titleInfoFormat: (args) => args[0],
+      titleInfoFormat: async (args) => args[0],
+      paramsFormat: async (args: any) => {
+        return {
+          script: args[0],
+          args: args[1],
+        };
+      },
     });
   }
 
@@ -282,7 +314,13 @@ export class CommandParser {
       args,
       response,
       title: "Execute asyncrounous script",
-      titleInfoFormat: (args) => args[0],
+      titleInfoFormat: async (args) => args[0],
+      paramsFormat: async (args: any) => {
+        return {
+          script: args[0],
+          args: args[1],
+        };
+      },
     });
   }
 
@@ -346,117 +384,120 @@ export class CommandParser {
     };
   }
 
-  //TODO
+  //COMPLETED
   public async setFrame(driver: any, args: any[], response: any) {
-    return {
-      title: "setFrame",
-      title_info: null,
-      response: null,
-      params: null,
-    };
+    return this.constructCommandResponse({
+      driver,
+      args,
+      response,
+      title: "Set Frame",
+      titleInfoFormat: (args) => args[0],
+    });
   }
 
-  //TODO
+  //COMPLETED
   public async setWindow(driver: any, args: any[], response: any) {
-    return {
-      title: "setWindow",
-      title_info: null,
-      response: null,
-      params: null,
-    };
+    return this.constructCommandResponse({
+      driver,
+      args,
+      response,
+      title: "Set Window",
+      titleInfoFormat: async (args) => args[0],
+    });
   }
 
-  //TODO
+  //COMPLETED
   public async closeWindow(driver: any, args: any[], response: any) {
-    return {
-      title: "closeWindow",
-      title_info: null,
-      response: null,
-      params: null,
-    };
+    return this.constructCommandResponse({
+      driver,
+      args,
+      response,
+      title: "Close Window",
+      titleInfoFormat: (args) => args[0],
+    });
   }
 
-  //TODO
+  //COMPLETED
   public async getWindowSize(driver: any, args: any[], response: any) {
-    return {
-      title: "getWindowSize",
-      title_info: null,
-      response: null,
-      params: null,
-    };
+    return this.constructCommandResponse({
+      driver,
+      args,
+      response,
+      title: "Get Window Size",
+      titleInfoFormat: async (args) => args[0],
+    });
   }
 
-  //TODO
+  //COMPLETED
   public async maximizeWindow(driver: any, args: any[], response: any) {
-    return {
-      title: "maximizeWindow",
-      title_info: null,
-      response: null,
-      params: null,
-    };
+    return this.constructCommandResponse({
+      driver,
+      args,
+      response,
+      title: "Maximize Window",
+    });
   }
 
-  //TODO
+  //COMPLETED
   public async getCookies(driver: any, args: any[], response: any) {
-    return {
-      title: "getCookies",
-      title_info: null,
-      response: null,
-      params: null,
-    };
+    return this.constructCommandResponse({
+      driver,
+      args,
+      response,
+      title: "Get Cookies",
+    });
   }
 
-  //TODO
+  //COMPLETED
   public async setCookie(driver: any, args: any[], response: any) {
-    return {
-      title: "setCookie",
-      title_info: null,
-      response: null,
-      params: null,
-    };
+    return this.constructCommandResponse({
+      driver,
+      args,
+      response,
+      title: "Set Cookies",
+    });
   }
 
-  //TODO
+  //COMPLETED
   public async deleteCookies(driver: any, args: any[], response: any) {
-    return {
-      title: "deleteCookies",
-      title_info: null,
-      response: null,
-      params: null,
-    };
+    return this.constructCommandResponse({
+      driver,
+      args,
+      response,
+      title: "Delete Cookies",
+    });
   }
 
-  //TODO
+  //COMPLETED
   public async getCookie(driver: any, args: any[], response: any) {
-    return {
-      title: "getCookie",
-      title_info: null,
-      response: null,
-      params: null,
-    };
+    return this.constructCommandResponse({
+      driver,
+      args,
+      response,
+      title: "Get Cookies",
+      titleInfoFormat: async (newArgs) => this.getArgsParamsValue(args, "name", 0),
+    });
   }
 
-  //TODO
+  //COMPLETED
   public async deleteCookie(driver: any, args: any[], response: any) {
-    return {
-      title: "deleteCookie",
-      title_info: null,
-      response: null,
-      params: null,
-    };
+    return this.constructCommandResponse({
+      driver,
+      args,
+      response,
+      title: "Delete Cookie",
+      titleInfoFormat: async (newArgs) => this.getArgsParamsValue(args, "name", 0),
+    });
   }
 
   //COMPLETED
   public async getPageSource(driver: any, args: any[], response: any) {
-    return {
+    return this.constructCommandResponse({
+      driver,
+      args,
+      response,
       title: "Get Page Source",
-      title_info: null,
-      response: {
-        type: "html",
-        value: response,
-      },
-      params: null,
-    };
+    });
   }
 
   //COMPLETED
@@ -504,7 +545,7 @@ export class CommandParser {
       driver,
       args,
       response,
-      title: "Find Multiple",
+      title: "Find Multiple Elements",
       titleInfoFormat: async (newArgs) => {
         if (!this.isError(response)) {
           await saveLocator(
@@ -591,18 +632,23 @@ export class CommandParser {
       title: "Send Keys",
       title_info: `${await this.getLocatorTitleInfo(elementId)} [value=${text}]`,
       response: this.getResponseObj(response),
-      params: { text },
+      params: this.getResponseObj({
+        text,
+      }),
     };
   }
 
-  //TODO
+  //COMPLETED
   public async keys(driver: any, args: any[], response: any) {
-    return {
-      title: "keys",
-      title_info: null,
-      response: null,
-      params: null,
-    };
+    return this.constructCommandResponse({
+      driver,
+      args,
+      response,
+      title: "Type Keys to active element",
+      paramsFormat: async (newArgs) => {
+        return { text: newArgs[0] };
+      },
+    });
   }
 
   //TODO
@@ -617,12 +663,13 @@ export class CommandParser {
 
   //TODO
   public async clear(driver: any, args: any[], response: any) {
-    return {
-      title: "clear",
-      title_info: null,
-      response: null,
-      params: null,
-    };
+    return this.constructCommandResponse({
+      driver,
+      args,
+      response,
+      title: "Clear",
+      titleInfoFormat: async (newArgs) => this.getLocatorTitleInfo(newArgs[0]),
+    });
   }
 
   //COMPLETED
@@ -649,14 +696,16 @@ export class CommandParser {
     });
   }
 
-  //TODO
+  //COMPETED
   public async getAttribute(driver: any, args: any[], response: any) {
-    return {
-      title: "getAttribute",
-      title_info: null,
-      response: null,
-      params: null,
-    };
+    let elementId = this.getArgsParamsValue(args, "elementId", 0);
+    return this.constructCommandResponse({
+      driver,
+      args,
+      response,
+      title: "Get attribute",
+      titleInfoFormat: async (newArgs) => this.getLocatorTitleInfo(elementId),
+    });
   }
 
   //TODO
@@ -701,44 +750,50 @@ export class CommandParser {
     };
   }
 
-  //TODO
+  //COMPLETED
   public async getSize(driver: any, args: any[], response: any) {
-    return {
-      title: "getSize",
-      title_info: null,
-      response: null,
-      params: null,
-    };
+    let elementId = this.getArgsParamsValue(args, "elementId", 0);
+    return this.constructCommandResponse({
+      driver,
+      args,
+      response,
+      title: "Get Element Size",
+      titleInfoFormat: async (newArgs) => this.getLocatorTitleInfo(elementId),
+    });
   }
 
-  //TODO
+  //COMPLETED
   public async getCssProperty(driver: any, args: any[], response: any) {
-    return {
-      title: "getCssProperty",
-      title_info: null,
-      response: null,
-      params: null,
-    };
+    let elementId = this.getArgsParamsValue(args, "elementId", 1);
+    let propertyName = this.getArgsParamsValue(args, "propertyName", 0);
+    return this.constructCommandResponse({
+      driver,
+      args,
+      response,
+      title: "Get CSS property",
+      titleInfoFormat: async (newArgs) => `[${this.getLocatorTitleInfo(elementId)}][property=${propertyName}]`,
+    });
   }
 
-  //TODO
+  //COMPLETED
   public async getOrientation(driver: any, args: any[], response: any) {
-    return {
-      title: "getOrientation",
-      title_info: null,
-      response: null,
-      params: null,
-    };
+    return this.constructCommandResponse({
+      driver,
+      args,
+      response,
+      title: "Get Orientation",
+    });
   }
 
-  //TODO
+  //COMPLETED
   public async setOrientation(driver: any, args: any[], response: any) {
-    return {
-      title: "setOrientation",
-      title_info: null,
-      response: null,
-      params: null,
-    };
+    return this.constructCommandResponse({
+      driver,
+      args,
+      response,
+      title: "Set Orientation",
+      titleInfoFormat: async (newArgs) => newArgs[0],
+    });
   }
 
   //TODO
@@ -843,12 +898,15 @@ export class CommandParser {
 
   //TODO
   public async performActions(driver: any, args: any[], response: any) {
-    return {
-      title: "performActions",
-      title_info: null,
-      response: null,
-      params: null,
-    };
+    return this.constructCommandResponse({
+      driver,
+      args,
+      response,
+      title: "Perform actions",
+      paramsFormat: async (newArgs) => {
+        return newArgs[0];
+      },
+    });
   }
 
   //TODO
@@ -921,34 +979,37 @@ export class CommandParser {
     };
   }
 
-  //TODO
+  //COMPLETED
   public async getCurrentContext(driver: any, args: any[], response: any) {
-    return {
-      title: "getCurrentContext",
-      title_info: null,
-      response: null,
-      params: null,
-    };
+    return this.constructCommandResponse({
+      driver,
+      args,
+      response,
+      title: "Get Current Context",
+    });
   }
 
   //TODO
   public async setContext(driver: any, args: any[], response: any) {
-    return {
-      title: "setContext",
-      title_info: null,
-      response: null,
-      params: null,
-    };
+    return this.constructCommandResponse({
+      driver,
+      args,
+      response,
+      title: "Set Context",
+      titleInfoFormat: async (args: any) => {
+        return args[0];
+      },
+    });
   }
 
   //TODO
   public async getContexts(driver: any, args: any[], response: any) {
-    return {
-      title: "getContexts",
-      title_info: null,
-      response: null,
-      params: null,
-    };
+    return this.constructCommandResponse({
+      driver,
+      args,
+      response,
+      title: "Get Available Contexts",
+    });
   }
 
   //TODO
@@ -1583,12 +1644,12 @@ export class CommandParser {
 
   //TODO
   public async getAlertText(driver: any, args: any[], response: any) {
-    return {
-      title: "getAlertText",
-      title_info: null,
-      response: null,
-      params: null,
-    };
+    return this.constructCommandResponse({
+      driver,
+      args,
+      response,
+      title: "Get Alert Text",
+    });
   }
 
   //TODO

@@ -17,6 +17,7 @@ class App extends React.Component<any, any> {
       loading: true,
       sessions: [],
       activeSession: sessionId && sessionId.length ? sessionId[1] : null,
+      filterText: "",
     };
   }
 
@@ -67,6 +68,18 @@ class App extends React.Component<any, any> {
     }
   }
 
+  onSessionFilterChanged(filterText: string) {
+    this.setState({ filterText });
+  }
+
+  getSessions() {
+    if (this.state.filterText) {
+      return this.state.sessions.filter((s: any) => s.session_id.indexOf(this.state.filterText) >= 0);
+    } else {
+      return this.state.sessions;
+    }
+  }
+
   getMainContent() {
     if (this.state.loading) {
       return (
@@ -87,9 +100,10 @@ class App extends React.Component<any, any> {
         <div className="app__main_content code">
           <Router history={history}>
             <SessionList
-              sessions={this.state.sessions}
+              sessions={this.getSessions()}
               activeSession={this.state.activeSession}
               onSessionCardClicked={this.onSessionCardClicked.bind(this)}
+              isFilterApplied={this.state.filterText.length > 0}
             />
             <Route
               path="/dashboard/session/:sessionId"
@@ -110,7 +124,7 @@ class App extends React.Component<any, any> {
     return (
       <div className="app__container">
         <div className="app__wrapper">
-          <Header />
+          <Header onSessionFilterChanged={this.onSessionFilterChanged.bind(this)} />
           {this.getMainContent()}
         </div>
       </div>

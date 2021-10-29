@@ -77,7 +77,14 @@ export default class TextLogs extends RouteReactiveComponent<any, any> {
 
   render() {
     if (this.state.loading) {
-      return <Spinner />;
+      return (
+        <div className="session-text-logs__wrapper">
+          <div className="loading-container">
+            <Spinner />
+            Loading..
+          </div>
+        </div>
+      );
     } else {
       return (
         <div className="session-text-logs__wrapper">
