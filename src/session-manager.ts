@@ -40,10 +40,13 @@ class SessionManager {
     this.appendLogs(`args:\n ${cj.stringify(command.args)}`);
     await this.saveServerLogs(command);
     try {
+      command.startTime = new Date();
       let res = await command.next();
+      command.endTime = new Date();
       await this.saveCommandLog(command, res);
       return res;
     } catch (err: any) {
+      command.endTime = new Date();
       await this.saveCommandLog(command, {
         error: err.error,
         message: err.message,
@@ -135,6 +138,8 @@ class SessionManager {
         command_name: command.commandName,
         is_error: response && !!response.error ? true : false,
         screen_shot: screenShotPath,
+        start_time: command.startTime,
+        end_time: command.endTime,
       });
       try {
         await commandLogsModel.create(parsedLog as any);

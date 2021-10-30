@@ -1,6 +1,9 @@
 export default class CommonUtils {
   public static convertTimeToReadableFormat(startDate: Date, endDate: Date) {
     let seconds = Math.round((endDate.getTime() - startDate.getTime()) / 1000);
+    if (seconds <= 0) {
+      return `${Math.round(endDate.getTime() - startDate.getTime())} ms`;
+    }
     var levels: any = [
       [Math.floor(seconds / 31536000), "years"],
       [Math.floor((seconds % 31536000) / 86400), "days"],

@@ -11,3 +11,8 @@
   height: 100%;
   width: 100%;
 }
+
+.session-logs__container .tab-wrapper {
+  width: 99%;
+  margin: 5px;
+}

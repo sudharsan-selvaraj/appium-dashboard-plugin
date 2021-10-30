@@ -1,13 +1,11 @@
 import { Container } from "typedi";
 import { sequelizeLoader } from "./database-loader";
-import { router } from "./app/index";
+import { getRouter } from "./app/index";
 import { AppiumDashboardPlugin } from "./plugin";
 import { config } from "./config";
 import * as fs from "fs";
 import { log } from "./logger";
 var ffmpeg = require("@ffmpeg-installer/ffmpeg").path;
-Container.set("expressRouter", router);
-Container.set("config", config);
 
 async function createVideoDirectoryPath(fullPath: string) {
   if (!fs.existsSync(fullPath)) {
@@ -15,8 +13,9 @@ async function createVideoDirectoryPath(fullPath: string) {
     log.info("Video directory created " + fullPath);
   }
 }
+Container.set("expressRouter", getRouter({ config }));
+Container.set("config", config);
 
-log.info(Container.get("config"));
 (async () => {
   //Add FFMPEG to path
   process.env.PATH = process.env.PATH + ":" + ffmpeg.replace(/ffmpeg$/g, "");

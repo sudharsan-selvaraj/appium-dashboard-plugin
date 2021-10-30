@@ -123,3 +123,26 @@
   margin-right: auto;
   cursor: pointer;
 }
+
+.text-log-title__right-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  min-width: 50px;
+}
+
+.text-log-title__duration {
+  font-size: 11px;
+  color: grey;
+  min-width: 35px;
+  justify-content: space-between;
+  margin-bottom: 4px;
+  margin-right: 2px;
+}
+
+.text-log-title__duration .MuiSvgIcon-root {
+  height: 15px;
+  width: 15px;
+  margin-bottom: -3px;
+  margin-right: 3px;
+}

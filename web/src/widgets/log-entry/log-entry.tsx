@@ -1,6 +1,8 @@
 import React from "react";
 import ArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import ArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
+import CommonUtils from "../../utils/common-utils";
+import AccessTimeIcon from "@material-ui/icons/AccessTime";
 
 import "./log-entry.css";
 export default class LogEntry extends React.Component<any, any> {
@@ -67,6 +69,21 @@ export default class LogEntry extends React.Component<any, any> {
     });
   }
 
+  getDuration() {
+    if (!this.props.log.start_time || !this.props.log.end_time) {
+      return "";
+    } else {
+      let time = CommonUtils.convertTimeToReadableFormat(
+        new Date(this.props.log.start_time),
+        new Date(this.props.log.end_time)
+      )
+        .replace(/hrs|hr/g, "h")
+        .replace(/mins|min/g, "m")
+        .replace(/secs|sec/g, "s");
+      return time;
+    }
+  }
+
   render() {
     return (
       <div
@@ -80,15 +97,23 @@ export default class LogEntry extends React.Component<any, any> {
             <div className="text-log-entry__title">{this.props.log.title}</div>
             <div className="text-log-entry__title-info">{this.props.log.title_info}</div>
           </div>
-          {this.state.hasExpandableContent && (
-            <div className="expand-icon">
-              {this.state.expanded ? (
-                <ArrowUpIcon onClick={() => this.toggleExpand(false)} />
-              ) : (
-                <ArrowDownIcon onClick={() => this.toggleExpand(true)} />
-              )}
-            </div>
-          )}
+          <div className="text-log-title__right-container">
+            {this.getDuration() != "" && (
+              <div className="text-log-title__duration">
+                <AccessTimeIcon />
+                {this.getDuration()}
+              </div>
+            )}
+            {this.state.hasExpandableContent && (
+              <div className="expand-icon">
+                {this.state.expanded ? (
+                  <ArrowUpIcon onClick={() => this.toggleExpand(false)} />
+                ) : (
+                  <ArrowDownIcon onClick={() => this.toggleExpand(true)} />
+                )}
+              </div>
+            )}
+          </div>
         </div>
         {this.props.log.response != null && <div className="text-log-row">{this.getResponseElement()}</div>}
 

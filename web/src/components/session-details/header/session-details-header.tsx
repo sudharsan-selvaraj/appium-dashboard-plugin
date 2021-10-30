@@ -5,6 +5,8 @@ import ios from "../../../assets/ios.svg";
 import android from "../../../assets/android.svg";
 import Moment from "react-moment";
 import CommonUtils from "../../../utils/common-utils";
+import DeleteIcon from "@material-ui/icons/Delete";
+
 export default class SessionDetailsHeader extends React.Component<any, any> {
   private headerProperties: any[] = [
     [

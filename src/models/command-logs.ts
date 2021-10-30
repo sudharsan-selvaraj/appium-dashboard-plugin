@@ -64,6 +64,17 @@ class CommandLogs extends Model<CommandLogs> {
   })
   screen_shot?: string | null;
 
+  @Column({
+    type: DataTypes.DATE,
+  })
+  start_time?: Date;
+
+  @AllowNull(true)
+  @Column({
+    type: DataTypes.DATE,
+  })
+  end_time?: Date;
+
   @BelongsTo(() => Session, { foreignKey: "session_id" })
   session!: Session;
 }

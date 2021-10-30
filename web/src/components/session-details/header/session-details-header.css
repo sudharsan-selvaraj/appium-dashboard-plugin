@@ -44,3 +44,12 @@
   width: 19px;
   margin-right: 5px;
 }
+
+.session-details__header_column_last {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-left: 20px;
+  height: 100%;
+}

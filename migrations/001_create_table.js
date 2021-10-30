@@ -28,7 +28,7 @@ var createSessionTable = function (queryInterface, Sequelize) {
 var createLogsTable = function (queryInterface, Sequelize) {
   return queryInterface.createTable("logs", {
     log_id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
-    session_id: { type: Sequelize.TEXT, references: { model: "session", key: "session_id" } },
+    session_id: { type: Sequelize.TEXT, references: { model: "session", key: "session_id" }, onDelete: "CASCADE" },
     log_type: { type: Sequelize.TEXT, allowNull: false },
     message: { type: Sequelize.TEXT, allowNull: false },
     timestamp: { type: Sequelize.DATE },
@@ -40,7 +40,7 @@ var createLogsTable = function (queryInterface, Sequelize) {
 var createCommandLogsTable = function (queryInterface, Sequelize) {
   return queryInterface.createTable("command_logs", {
     log_id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
-    session_id: { type: Sequelize.TEXT, references: { model: "session", key: "session_id" } },
+    session_id: { type: Sequelize.TEXT, references: { model: "session", key: "session_id" }, onDelete: "CASCADE" },
     command_name: { type: Sequelize.TEXT, allowNull: false },
     title: { type: Sequelize.TEXT, allowNull: false },
     title_info: { type: Sequelize.TEXT },
@@ -48,6 +48,8 @@ var createCommandLogsTable = function (queryInterface, Sequelize) {
     params: { type: Sequelize.TEXT },
     screen_shot: { type: Sequelize.TEXT, allowNull: true },
     is_error: { type: Sequelize.BOOLEAN, defaultValue: false },
+    start_time: Sequelize.DATE,
+    end_time: Sequelize.DATE,
     created_at: Sequelize.DATE,
     updated_at: Sequelize.DATE,
   });

@@ -17,6 +17,10 @@ class ApiService {
     return apiClient.makeGETRequest(`/sessions/${sessionId}`, {});
   }
 
+  public static deleteSessionById(sessionId: string) {
+    return apiClient.makeDELETERequest(`/sessions/${sessionId}`);
+  }
+
   public static getSessionTextLogs(sessionId: string) {
     return apiClient.makeGETRequest(`/sessions/${sessionId}/logs/text`, {});
   }

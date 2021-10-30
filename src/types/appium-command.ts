@@ -3,4 +3,6 @@ export interface AppiumCommand {
   commandName: string;
   args: Array<any>;
   next: () => Promise<any>;
+  startTime?: Date;
+  endTime?: Date;
 }

@@ -2,111 +2,137 @@ import * as express from "express";
 import bodyParser from "body-parser";
 import { Session, CommandLogs, Logs } from "../models/index";
 import * as path from "path";
-
+import * as fs from "fs";
 const cors = require("cors");
 
-let router = express.Router();
-let apiRouter = express.Router();
-router.use(bodyParser.json());
-router.use(bodyParser.urlencoded({ extended: true }));
-router.use(cors());
-apiRouter.use(cors());
+function getRouter({ config }: { config: any }) {
+  let router = express.Router();
+  let apiRouter = express.Router();
+  router.use(bodyParser.json());
+  router.use(bodyParser.urlencoded({ extended: true }));
+  router.use(cors());
+  apiRouter.use(cors());
 
-/* Add routes */
+  /* Add routes */
 
-router.use(express.static(path.join(__dirname, "../public")));
+  router.use(express.static(path.join(__dirname, "../public")));
 
-apiRouter.get("/sessions", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-  res.status(200).send(await Session.findAndCountAll());
-});
+  apiRouter.get("/sessions", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    res.status(200).send(await Session.findAndCountAll());
+  });
 
-apiRouter.get(
-  "/sessions/:sessionId",
-  async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    let sessionId: string = req.params.sessionId;
-    res.status(200).send(
-      await Session.findOne({
-        where: {
-          session_id: sessionId,
-        },
-      })
-    );
-  }
-);
-
-apiRouter.get(
-  "/sessions/:sessionId/video",
-  async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    let sessionId: string = req.params.sessionId;
-    let session = await Session.findOne({
-      where: {
-        session_id: sessionId,
-      },
-    });
-    if (session && session.video_path) {
-      return res.status(200).sendFile(session.video_path);
+  apiRouter.get(
+    "/sessions/:sessionId",
+    async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+      let sessionId: string = req.params.sessionId;
+      res.status(200).send(
+        await Session.findOne({
+          where: {
+            session_id: sessionId,
+          },
+        })
+      );
     }
-    res.status(400).send({
-      error: true,
-      message: "Video not available",
-    });
-  }
-);
+  );
 
-apiRouter.get(
-  "/sessions/:sessionId/log/:logId/screen-shot",
-  async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    let sessionId: string = req.params.sessionId;
-    let logId: string = req.params.logId;
-    let log = await CommandLogs.findOne({
-      where: {
-        session_id: sessionId,
-        log_id: logId,
-      },
-    });
-    if (log && log.screen_shot) {
-      return res.status(200).sendFile(log.screen_shot);
+  apiRouter.delete(
+    "/sessions/:sessionId",
+    async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+      let sessionId: string = req.params.sessionId;
+      let session = await Session.findOne({
+        where: {
+          session_id: sessionId,
+        },
+      });
+
+      if (session) {
+        await session.destroy();
+        if (session.video_path) {
+          fs.unlinkSync(session.video_path);
+        }
+        fs.rmdirSync(`${config.screenshotSavePath}/${session.session_id}`, { recursive: true });
+      }
+      res.status(200).send({
+        success: true,
+      });
     }
-    res.status(400).send({
-      error: true,
-      message: "Screenshot not available",
-    });
-  }
-);
+  );
 
-apiRouter.get(
-  "/sessions/:sessionId/logs/text",
-  async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    let sessionId: string = req.params.sessionId;
-    res.status(200).send(
-      await CommandLogs.findAndCountAll({
+  apiRouter.get(
+    "/sessions/:sessionId/video",
+    async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+      let sessionId: string = req.params.sessionId;
+      let session = await Session.findOne({
         where: {
           session_id: sessionId,
         },
-      })
-    );
-  }
-);
+      });
+      if (session && session.video_path) {
+        return res.status(200).sendFile(session.video_path);
+      }
+      res.status(400).send({
+        error: true,
+        message: "Video not available",
+      });
+    }
+  );
 
-apiRouter.get(
-  "/sessions/:sessionId/logs/device",
-  async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    let sessionId: string = req.params.sessionId;
-    res.status(200).send(
-      await Logs.findAndCountAll({
+  apiRouter.get(
+    "/sessions/:sessionId/log/:logId/screen-shot",
+    async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+      let sessionId: string = req.params.sessionId;
+      let logId: string = req.params.logId;
+      let log = await CommandLogs.findOne({
         where: {
           session_id: sessionId,
-          log_type: "DEVICE",
+          log_id: logId,
         },
-      })
-    );
-  }
-);
+      });
+      if (log && log.screen_shot) {
+        return res.status(200).sendFile(log.screen_shot);
+      }
+      res.status(400).send({
+        error: true,
+        message: "Screenshot not available",
+      });
+    }
+  );
 
-router.use("/api", apiRouter);
+  apiRouter.get(
+    "/sessions/:sessionId/logs/text",
+    async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+      let sessionId: string = req.params.sessionId;
+      res.status(200).send(
+        await CommandLogs.findAndCountAll({
+          where: {
+            session_id: sessionId,
+          },
+        })
+      );
+    }
+  );
 
-router.get("*", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-  res.status(200).sendFile(path.join(__dirname, "../public/index.html"));
-});
+  apiRouter.get(
+    "/sessions/:sessionId/logs/device",
+    async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+      let sessionId: string = req.params.sessionId;
+      res.status(200).send(
+        await Logs.findAndCountAll({
+          where: {
+            session_id: sessionId,
+            log_type: "DEVICE",
+          },
+        })
+      );
+    }
+  );
 
-export { router };
+  router.use("/api", apiRouter);
+
+  router.get("*", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    res.status(200).sendFile(path.join(__dirname, "../public/index.html"));
+  });
+
+  return router;
+}
+export { getRouter };
