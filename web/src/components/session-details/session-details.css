@@ -21,8 +21,10 @@
   flex-direction: row;
   align-items: center;
   justify-content: flex-end;
-  margin: 10px;
-  width: 95%;
+  padding: 10px;
+  padding-right: 5%;
+  background: #142433;
+  color: #ffffff;
 }
 
 .session-details__action_items {
@@ -30,11 +32,12 @@
   flex-direction: row;
   align-items: center;
   justify-items: center;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 600;
+  text-transform: uppercase;
   cursor: pointer;
 }
 
 .session-details__action_items:hover {
-  color: rgb(167, 66, 66);
+  color: #90bdf0;
 }

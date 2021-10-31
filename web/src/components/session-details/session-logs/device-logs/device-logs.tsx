@@ -1,7 +1,7 @@
 import React from "react";
 import { ApiService } from "../../../../services/api";
 import Spinner from "../../../../widgets/spinner/spinner";
-import { RouteReactiveComponent } from "../../base-component-class";
+import { RouteReactiveComponent } from "../../../route-reactive-component";
 import SearchIcon from "@material-ui/icons/Search";
 import "./device-logs.css";
 

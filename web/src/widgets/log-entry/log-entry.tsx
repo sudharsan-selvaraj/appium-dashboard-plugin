@@ -125,11 +125,11 @@ export default class LogEntry extends React.Component<any, any> {
           <a
             className="text-log-screenshot__link"
             target="blank"
-            href={`http://localhost:4723/dashboard/api/sessions/${this.props.log.session_id}/log/${this.props.log.log_id}/screen-shot`}
+            href={`/dashboard/api/sessions/${this.props.log.session_id}/log/${this.props.log.log_id}/screen-shot`}
           >
             <img
               className="text-log-screenshot"
-              src={`http://localhost:4723/dashboard/api/sessions/${this.props.log.session_id}/log/${this.props.log.log_id}/screen-shot`}
+              src={`/dashboard/api/sessions/${this.props.log.session_id}/log/${this.props.log.log_id}/screen-shot`}
             />
           </a>
         )}

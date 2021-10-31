@@ -1,10 +1,8 @@
-import React, { useRef } from "react";
+import React from "react";
 import "./session-info-card.css";
 import Spinner from "../../widgets/spinner/spinner";
 import SuccessIcon from "../../widgets/success-icon/success-icon";
 import ErrorIcon from "../../widgets/error-icon/error-icon";
-import AndroidIcon from "../../widgets/android-icon/android-icon";
-import AppleIcon from "../../widgets/apple-icon/apple-icon";
 import PhoneAndroidSharpIcon from "@material-ui/icons/PhoneAndroidSharp";
 import CommonUtils from "../../utils/common-utils";
 import ios from "../../assets/ios.svg";
@@ -54,7 +52,7 @@ class SessionInfoCard extends React.Component<any, any> {
 
   getExecutioTime() {
     let time = CommonUtils.convertTimeToReadableFormat(new Date(this.props.session.start_time), new Date());
-    if (!time.includes("mins") && !time.includes("hrs")) {
+    if (!time.includes("min") && !time.includes("hr")) {
       return "few seconds ago";
     } else {
       return `${time.replace(/[0-9]{1,} (secs|sec)/g, "")} ago`;

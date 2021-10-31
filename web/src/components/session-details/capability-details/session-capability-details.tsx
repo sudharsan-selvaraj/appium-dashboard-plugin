@@ -1,6 +1,6 @@
 import React from "react";
 import Tab from "../../../widgets/tab/tab";
-import { RouteReactiveComponent } from "../base-component-class";
+import { RouteReactiveComponent } from "../../route-reactive-component";
 import "./session-capability-details.css";
 
 export default class SessionCapabilityDetails extends RouteReactiveComponent<any, any> {

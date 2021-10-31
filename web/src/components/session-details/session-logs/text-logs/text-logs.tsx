@@ -3,7 +3,7 @@ import { ApiService } from "../../../../services/api";
 import CheckBox from "../../../../widgets/check-box/checkbox";
 import LogEntry from "../../../../widgets/log-entry/log-entry";
 import Spinner from "../../../../widgets/spinner/spinner";
-import { RouteReactiveComponent } from "../../base-component-class";
+import { RouteReactiveComponent } from "../../../route-reactive-component";
 import "./text-logs.css";
 
 export default class TextLogs extends RouteReactiveComponent<any, any> {

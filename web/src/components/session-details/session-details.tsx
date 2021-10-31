@@ -5,40 +5,50 @@ import "./session-details.css";
 import SessionLogs from "./session-logs/session-logs";
 import DeleteIcon from "@material-ui/icons/DeleteOutlineTwoTone";
 import { ApiService } from "../../services/api";
-import { Redirect } from "react-router";
+import Spinner from "../../widgets/spinner/spinner";
+import { RouteReactiveComponent } from "../route-reactive-component";
 
-export default class SessionDetails extends React.Component<any, any> {
+export default class SessionDetails extends RouteReactiveComponent<any, any> {
   constructor(props: any) {
     super(props);
     this.state = {
-      deleted: false,
+      deleting: false,
     };
   }
 
   deleteSession() {
     if (window.confirm("Are you sure you want to delete this session?")) {
+      this.setState({ deleting: true });
       ApiService.deleteSessionById(this.props.session.session_id)
         .then((res) => {
-          this.setState({ deleted: true });
+          window.location.reload();
         })
         .catch((err) => {});
     }
   }
 
-  render() {
-    if (this.state.deleted) {
-      return <Redirect to="/" />;
-    }
+  protected componentUpdated(): void {
+    this.setState({ deleting: false });
+  }
 
+  render() {
     if (this.props.session) {
       return (
         <div className="session-details__wrapper">
-          <SessionDetailsHeader session={this.props.session} />
-          <div className="session-details__action_container">
-            <div className="session-details__action_items" onClick={this.deleteSession.bind(this)}>
-              <DeleteIcon /> Delete session
+          {this.props.session.is_completed && (
+            <div className="session-details__action_container">
+              {this.state.deleting ? (
+                <div className="session-details__action_items">
+                  <Spinner /> Deleting..
+                </div>
+              ) : (
+                <div className="session-details__action_items" onClick={this.deleteSession.bind(this)}>
+                  <DeleteIcon /> Delete session
+                </div>
+              )}
             </div>
-          </div>
+          )}
+          <SessionDetailsHeader session={this.props.session} />
           <div className="session-details__main_content">
             <LeftDetailsContainer session={this.props.session} />
             <SessionLogs session={this.props.session} />

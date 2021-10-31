@@ -1,5 +1,5 @@
 import Tab from "../../../widgets/tab/tab";
-import { RouteReactiveComponent } from "../base-component-class";
+import { RouteReactiveComponent } from "../../route-reactive-component";
 import DeviceLogs from "./device-logs/device-logs";
 import "./session-logs.css";
 import TextLogs from "./text-logs/text-logs";
