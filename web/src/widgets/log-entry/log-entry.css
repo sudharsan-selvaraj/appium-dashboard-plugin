@@ -146,3 +146,9 @@
   margin-bottom: -3px;
   margin-right: 3px;
 }
+
+.text-log-params-container,
+.text-log-error-container {
+  max-height: 200px;
+  overflow: scroll;
+}

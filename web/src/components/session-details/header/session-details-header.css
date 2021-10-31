@@ -1,6 +1,6 @@
 .session-details__header {
   width: 100%;
-  min-height: 120px;
+  padding-bottom: 20px;
   background: #f9f9f9;
   border-bottom: 1px solid #ced8e1;
   border-top: 1px solid #ced8e1;
@@ -12,7 +12,7 @@
   width: auto;
   flex-direction: column;
   height: 100%;
-  margin-right: 15px;
+  margin-right: 35px;
   padding-left: 20px;
   padding-top: 0;
 }
@@ -28,10 +28,13 @@
   font-size: 13px;
   font-weight: 600;
   color: rgb(116, 114, 114);
+  min-width: 95px;
+  text-overflow: ellipsis;
 }
 
 .session-details__header_column_value {
   font-size: 12px;
+  font-weight: 600;
   display: flex;
   flex-direction: row;
   align-items: center;

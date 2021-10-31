@@ -24,8 +24,8 @@ export default class SessionList extends React.Component<any, any> {
     return (
       <div className="session-list__container">
         <div className="session-list__header">
-          <FilterListRoundedIcon />
-          FILTERS
+          {/* <FilterListRoundedIcon /> */}
+          SESSIONS
         </div>
         <div className="session-list__scrollConatiner">
           {this.getSessions()}

@@ -29,22 +29,18 @@ export default class SessionDetailsHeader extends React.Component<any, any> {
         label: "Os Version",
         key: "platform_version",
       },
-      {
-        label: "Device Name",
-        key: "device_name",
-      },
     ],
     [
       {
         label: "Start Time",
         formatValue: (session: any) => {
-          return <Moment format="DD-MMM-YYYY HH:mm:ss UTC">{session.start_time}</Moment>;
+          return <Moment format="DD-MMM-YYYY HH:mm:ss">{session.start_time}</Moment>;
         },
       },
       {
         label: "End Time",
         formatValue: (session: any) => {
-          return session.end_time ? <Moment format="DD-MMM-YYYY HH:mm:ss UTC">{session.end_time}</Moment> : "-";
+          return session.end_time ? <Moment format="DD-MMM-YYYY HH:mm:ss">{session.end_time}</Moment> : "-";
         },
       },
       {
@@ -58,6 +54,10 @@ export default class SessionDetailsHeader extends React.Component<any, any> {
       },
     ],
     [
+      {
+        label: "Device Name",
+        key: "device_name",
+      },
       {
         label: "UDID",
         key: "udid",

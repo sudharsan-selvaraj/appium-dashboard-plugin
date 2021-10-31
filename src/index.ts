@@ -21,7 +21,7 @@ Container.set("config", config);
   process.env.PATH = process.env.PATH + ":" + ffmpeg.replace(/ffmpeg$/g, "");
 
   //load sequelize database
-  await sequelizeLoader();
+  await sequelizeLoader({ dbPath: config.databasePath });
 
   //create directory for videos
   await createVideoDirectoryPath(config.videoSavePath);

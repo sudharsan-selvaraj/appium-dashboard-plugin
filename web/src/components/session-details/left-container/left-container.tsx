@@ -1,4 +1,5 @@
 import React from "react";
+import { ApiService } from "../../../services/api";
 import SessionCapabilityDetails from "../capability-details/session-capability-details";
 import VideoPlayer from "../video-player/video-player";
 import "./left-container.css";
@@ -9,9 +10,7 @@ export default class LeftDetailsContainer extends React.Component<any, any> {
 
   getVideoPlayer() {
     if (this.props.session.video_path) {
-      let videoUrl = `${window.location.origin}/dashboard/api/sessions/${this.props.session.session_id}/video`;
-      //let videoUrl = `http://localhost:4723/dashboard/api/sessions/${this.props.session.session_id}/video`;
-      return <VideoPlayer video_path={videoUrl} />;
+      return <VideoPlayer video_path={ApiService.getVideoForSession(this.props.session.session_id)} />;
     } else if (!this.props.session.is_completed) {
       return (
         <div className="no-video__banner">
