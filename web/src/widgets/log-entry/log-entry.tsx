@@ -6,6 +6,7 @@ import AccessTimeIcon from "@material-ui/icons/AccessTime";
 
 import "./log-entry.css";
 import { ApiService } from "../../services/api";
+import CodeViewer from "../code-viewer/code-viewer";
 export default class LogEntry extends React.Component<any, any> {
   constructor(props: any) {
     super(props);
@@ -27,7 +28,9 @@ export default class LogEntry extends React.Component<any, any> {
       return (
         <div className="text-log-params-container">
           <div className="text-log-params-title">{logTitle}</div>
-          <div className="text-log-json-value">{JSON.stringify(logBody.value)}</div>
+          <div className="text-log-json-value">
+            <CodeViewer code={JSON.stringify(logBody.value, null, 2)} language="json" />
+          </div>
         </div>
       );
     } else if (logBody.type == "error") {

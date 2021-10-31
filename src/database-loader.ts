@@ -8,7 +8,7 @@ export let sequelizeLoader = async ({ dbPath }: { dbPath: string }): Promise<Seq
   const sequelize = new Sequelize({
     dialect: "sqlite",
     storage: `${dbPath}/database.sqlite`,
-
+    logging: false,
     /* add all models imported from models package */
     models: Object.keys(models).map((modelName) => {
       return (models as any)[modelName];

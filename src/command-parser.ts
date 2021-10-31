@@ -233,7 +233,7 @@ export class CommandParser {
     });
   }
 
-  //TODO
+  //COMPLETED
   public async getUrl(driver: any, args: any[], response: any) {
     return this.constructCommandResponse({
       driver,
@@ -661,7 +661,7 @@ export class CommandParser {
     };
   }
 
-  //TODO
+  //COMPLETED
   public async clear(driver: any, args: any[], response: any) {
     return this.constructCommandResponse({
       driver,
@@ -730,14 +730,17 @@ export class CommandParser {
     });
   }
 
-  //TODO
+  //COMPLETED
   public async getLocation(driver: any, args: any[], response: any) {
-    return {
-      title: "getLocation",
-      title_info: null,
-      response: null,
-      params: null,
-    };
+    return this.constructCommandResponse({
+      driver,
+      args,
+      response,
+      title: "Get Element Location",
+      titleInfoFormat: async (newArgs) => {
+        return await this.getLocatorTitleInfo(this.getArgsParamsValue(args, "elementId", 0));
+      },
+    });
   }
 
   //TODO
@@ -818,12 +821,13 @@ export class CommandParser {
 
   //TODO
   public async moveTo(driver: any, args: any[], response: any) {
-    return {
-      title: "moveTo",
-      title_info: null,
-      response: null,
-      params: null,
-    };
+    return this.constructCommandResponse({
+      driver,
+      args,
+      response,
+      title: "Move To Element",
+      titleInfoFormat: async (newArgs) => this.getLocatorTitleInfo(newArgs[0]),
+    });
   }
 
   //TODO
@@ -896,7 +900,7 @@ export class CommandParser {
     };
   }
 
-  //TODO
+  //COMPLETED
   public async performActions(driver: any, args: any[], response: any) {
     return this.constructCommandResponse({
       driver,
@@ -989,7 +993,7 @@ export class CommandParser {
     });
   }
 
-  //TODO
+  //COMPLETED
   public async setContext(driver: any, args: any[], response: any) {
     return this.constructCommandResponse({
       driver,
@@ -1002,7 +1006,7 @@ export class CommandParser {
     });
   }
 
-  //TODO
+  //COMPLETED
   public async getContexts(driver: any, args: any[], response: any) {
     return this.constructCommandResponse({
       driver,
@@ -1642,7 +1646,7 @@ export class CommandParser {
     };
   }
 
-  //TODO
+  //COMPLETED
   public async getAlertText(driver: any, args: any[], response: any) {
     return this.constructCommandResponse({
       driver,
@@ -1682,14 +1686,14 @@ export class CommandParser {
     };
   }
 
-  //TODO
+  //COMPLETED
   public async getElementRect(driver: any, args: any[], response: any) {
-    return {
-      title: "getElementRect",
-      title_info: null,
-      response: null,
-      params: null,
-    };
+    return this.constructCommandResponse({
+      driver,
+      args,
+      response,
+      title: "Get Element Rect",
+    });
   }
 
   //TODO
@@ -1782,14 +1786,20 @@ export class CommandParser {
     };
   }
 
-  //TODO
+  //COMPLETED
   public async executeCdp(driver: any, args: any[], response: any) {
-    return {
-      title: "executeCdp",
-      title_info: null,
-      response: null,
-      params: null,
-    };
+    return this.constructCommandResponse({
+      driver,
+      args,
+      response,
+      title: "Execute CDP",
+      paramsFormat: async (newArgs) => {
+        return {
+          command: newArgs[0],
+          params: newArgs[1],
+        };
+      },
+    });
   }
 
   //TODO
