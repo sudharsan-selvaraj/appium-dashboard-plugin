@@ -1,7 +1,7 @@
 import { SessionInfo } from "./types/session-info";
 import { AppiumCommand } from "./types/appium-command";
-import { interceptProxyResponse, routeToCommand } from "./utils";
-import { getLogTypes, getLogs, startScreenRecording, stopScreenRecording, takeScreenShot } from "./command-executor";
+import { interceptProxyResponse, routeToCommand, isDashboardCommand } from "./utils";
+import { getLogs, startScreenRecording, stopScreenRecording, takeScreenShot } from "./driver-command-executor";
 import { CommandParser } from "./command-parser";
 import { CommandLogs as commandLogsModel, Session, Logs as LogsTable } from "./models";
 import { Op } from "sequelize";
@@ -10,6 +10,7 @@ import * as fs from "fs";
 import "reflect-metadata";
 import { Container } from "typedi";
 import { v4 as uuidv4 } from "uuid";
+import { DashboardCommands } from "./dashboard-commands";
 
 const cj = require("circular-json");
 
@@ -17,9 +18,11 @@ const CREATE_SESSION = "createSession";
 class SessionManager {
   private lastLogLine = 0;
   private config: any = Container.get("config");
+  private dashboardCommands: DashboardCommands;
 
   constructor(private sessionInfo: SessionInfo, private commandParser: CommandParser, private sessionResponse: any) {
     this.sessionInfo.is_completed = false;
+    this.dashboardCommands = new DashboardCommands(sessionInfo);
   }
 
   public async onCommandRecieved(command: AppiumCommand): Promise<any> {
@@ -27,6 +30,10 @@ class SessionManager {
       return await this.sessionStarted(command);
     } else if (command.commandName == "deleteSession") {
       await this.sessionTerminated(command);
+    } else if (command.commandName == "execute" && isDashboardCommand(this.dashboardCommands, command.args[0])) {
+      this.appendLogs(typeof this.dashboardCommands[command.args[0].split(":")[1].trim() as keyof DashboardCommands]);
+      await this.executeCommand(command);
+      return true;
     } else if (command.commandName == "proxyReqRes") {
       let promise = interceptProxyResponse(command.args[1]);
       let originalNext = command.next;
@@ -83,19 +90,31 @@ class SessionManager {
         },
       },
     });
-    await Session.update(
-      {
-        is_completed: true,
-        session_status: errorCount > 0 ? "FAILED" : "PASSED",
-        end_time: new Date(),
-        video_path: videoPath ? videoPath : null,
+    let session = await Session.findOne({
+      where: {
+        session_id: this.sessionInfo.session_id,
       },
-      {
-        where: {
-          session_id: this.sessionInfo.session_id,
-        },
-      }
-    );
+    });
+
+    let updateObject: Partial<Session> = {};
+    updateObject.is_completed = true;
+    updateObject.end_time = new Date();
+    updateObject.video_path = videoPath ? videoPath : null;
+
+    if (!session?.session_status) {
+      updateObject.session_status = errorCount > 0 ? "FAILED" : "PASSED";
+    }
+
+    log.info(`Session status is ${session?.is_test_passed}`);
+    if (session?.is_test_passed == null) {
+      updateObject.is_test_passed = errorCount > 0 ? false : true;
+    }
+
+    await Session.update(updateObject, {
+      where: {
+        session_id: this.sessionInfo.session_id,
+      },
+    });
   }
 
   private async saveServerLogs(command: AppiumCommand) {
@@ -172,6 +191,11 @@ class SessionManager {
       log.info(`Saving screenrecording.. ${outPath}`);
       return outPath;
     }
+  }
+
+  private async executeCommand(command: AppiumCommand) {
+    let scriptName = command.args[0].split(":")[1].trim();
+    await (this.dashboardCommands[scriptName as keyof DashboardCommands] as any)(command.args[1]);
   }
 }
 

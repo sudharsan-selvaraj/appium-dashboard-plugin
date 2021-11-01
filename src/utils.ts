@@ -4,6 +4,8 @@ const circularjson = require("circular-json");
 import { routeToCommandName as _routeToCommandName } from "appium-base-driver";
 import { log } from "./logger";
 import { CustomColumnOption } from "./types/custom-column-options";
+import { Dashboard } from "@mui/icons-material";
+import { DashboardCommands } from "./dashboard-commands";
 
 function getSessionDetails(args: any, sessionResponse: any): any {
   let [session_id, caps] = sessionResponse.value;
@@ -93,7 +95,11 @@ function customModelColumn(options: CustomColumnOption) {
       return value;
     }
     if (options.json) {
-      value = JSON.parse(value);
+      try {
+        value = JSON.parse(value);
+      } catch (e) {
+        //ignore
+      }
     }
     return value;
   };
@@ -106,6 +112,11 @@ function millisToMinutesAndSeconds(millis: any) {
   return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
 }
 
+function isDashboardCommand(dashboardCommand: DashboardCommands, commandName: string) {
+  let parts = commandName.split(":").map((p) => p.trim());
+  return parts[0] == "dashboard" && typeof dashboardCommand[parts[1] as keyof DashboardCommands] == "function";
+}
+
 export {
   makeGETCall,
   makePostCall,
@@ -114,4 +125,5 @@ export {
   routeToCommand,
   customModelColumn,
   millisToMinutesAndSeconds,
+  isDashboardCommand,
 };

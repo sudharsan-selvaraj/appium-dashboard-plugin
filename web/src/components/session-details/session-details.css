@@ -1,7 +1,6 @@
 .session-details__wrapper {
   display: flex;
   height: 100%;
-  flex: 0.9;
   flex-direction: column;
   margin: auto;
   padding-bottom: 30px;
@@ -40,4 +39,35 @@
 
 .session-details__action_items:hover {
   color: #90bdf0;
+}
+
+.session-details__status_message_container {
+  width: 95%;
+  padding: 15px;
+  padding-bottom: 2px;
+  font-size: 12px;
+  margin: auto;
+  margin-top: 10px;
+  border-radius: 5px;
+}
+
+.session-details__status_message {
+  padding-top: 5px;
+  padding-bottom: 5px;
+  max-height: 60px;
+  overflow: scroll;
+}
+
+.session-details__status_message_container span {
+  font-weight: 600;
+}
+
+.session-details__status_message_container.passed {
+  border: 1px solid #0f720b;
+  border-left: 5px solid #85e482;
+}
+
+.session-details__status_message_container.failed {
+  border: 1px solid #ec9b82;
+  border-left: 5px solid #ec9b82;
 }

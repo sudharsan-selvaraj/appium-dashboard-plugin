@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "sequelize:migrate": "sequelize-cli db:migrate",
     "sequelize:migrate:undo": "sequelize-cli db:migrate:undo",
-    "postinstall": "npm run sequelize:migrate",
+    "postinstall": "sequelize-cli db:migrate:undo && npm run sequelize:migrate",
     "i": "tsc && (appium plugin uninstall appium-dashboard || exit 0) && appium plugin install --source=local $(pwd)",
     "server": "appium --plugins=appium-dashboard"
   },

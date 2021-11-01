@@ -1,0 +1,67 @@
+.session-debug-log__entry {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-top: none;
+  padding: 5px;
+}
+
+.session-debug-log__entry:hover {
+  background: #fffdea;
+}
+
+.session-debug-log__entry-row {
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  margin: 2px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.session-debug-log__title_wrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 90%;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.session-debug-log__message {
+  font-size: 11px;
+  margin-left: 15px;
+}
+
+.session-debug-log__time {
+  font-size: 11px;
+  min-width: 150px;
+  font-style: italic;
+  color: grey;
+}
+
+.session-debug-log__args-wrapper {
+  width: 90%;
+  padding: 10px;
+  padding-right: 20px;
+  padding-left: 20px;
+  border: 1px solid #ced8e1;
+  background: #f9f9f9;
+  margin: auto;
+  margin-bottom: 15px;
+  border-radius: 5px;
+  max-height: 200px;
+  overflow: scroll;
+}
+
+.expandable {
+  cursor: pointer;
+}
+
+.session-test-title__right-container {
+  padding-right: 15px;
+}
+.session-test-title__right-container .MuiSvgIcon-root {
+  height: 16px;
+  width: 16px;
+}

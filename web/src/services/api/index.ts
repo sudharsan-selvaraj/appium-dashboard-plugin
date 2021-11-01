@@ -13,6 +13,10 @@ class ApiService {
     return apiClient.makeGETRequest(`/sessions/${sessionId}/logs/device`, {});
   }
 
+  public static getDebugLogsForSession(sessionId: string) {
+    return apiClient.makeGETRequest(`/sessions/${sessionId}/logs/debug`, {});
+  }
+
   public static getSessionById(sessionId: string) {
     return apiClient.makeGETRequest(`/sessions/${sessionId}`, {});
   }

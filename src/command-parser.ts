@@ -1693,6 +1693,9 @@ export class CommandParser {
       args,
       response,
       title: "Get Element Rect",
+      titleInfoFormat: async (newArgs: any[]) => {
+        return await this.getLocatorTitleInfo(this.getArgsParamsValue(args, "elementId", 0));
+      },
     });
   }
 

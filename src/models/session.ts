@@ -24,6 +24,12 @@ class Session extends Model<Session> {
   })
   session_id!: string;
 
+  @AllowNull(true)
+  @Column({
+    type: DataTypes.STRING,
+  })
+  name!: string;
+
   @AllowNull(false)
   @Column({
     type: DataTypes.STRING,
@@ -103,7 +109,6 @@ class Session extends Model<Session> {
   @AllowNull(true)
   @Column({
     type: DataTypes.BOOLEAN,
-    defaultValue: true,
   })
   is_test_passed?: Boolean;
 

@@ -1,6 +1,7 @@
 import { Model, Table, AllowNull, Column, ForeignKey, BelongsTo } from "sequelize-typescript";
 import { DataTypes, Op } from "sequelize";
 import { Session } from "./session";
+import { customModelColumn } from "../utils";
 
 @Table({
   tableName: "logs",
@@ -34,10 +35,17 @@ class Logs extends Model<Logs> {
   })
   message!: string;
 
+  @AllowNull(true)
   @Column({
-    type: DataTypes.TIME,
+    type: DataTypes.STRING,
+    ...customModelColumn({ name: "args", json: true }),
   })
-  timestamp!: number;
+  args!: string;
+
+  @Column({
+    type: DataTypes.DATE,
+  })
+  timestamp!: Date;
 
   @BelongsTo(() => Session, { foreignKey: "session_id" })
   session!: Session;

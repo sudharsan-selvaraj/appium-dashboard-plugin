@@ -13,6 +13,5 @@
 }
 
 .session-logs__container .tab-wrapper {
-  width: 99%;
-  margin: 5px;
+  width: 100%;
 }

@@ -49,6 +49,16 @@ export default class SessionDetails extends RouteReactiveComponent<any, any> {
             </div>
           )}
           <SessionDetailsHeader session={this.props.session} />
+          {this.props.session.session_status_message && (
+            <div
+              className={`session-details__status_message_container ${
+                this.props.session.is_test_passed ? "passed" : "failed"
+              }`}
+            >
+              <span>Status reason:</span>
+              <div className="session-details__status_message">{this.props.session.session_status_message}</div>
+            </div>
+          )}
           <div className="session-details__main_content">
             <LeftDetailsContainer session={this.props.session} />
             <SessionLogs session={this.props.session} />

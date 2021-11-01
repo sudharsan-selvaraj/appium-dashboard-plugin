@@ -127,6 +127,21 @@ function getRouter({ config }: { config: any }) {
     }
   );
 
+  apiRouter.get(
+    "/sessions/:sessionId/logs/debug",
+    async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+      let sessionId: string = req.params.sessionId;
+      res.status(200).send(
+        await Logs.findAndCountAll({
+          where: {
+            session_id: sessionId,
+            log_type: "DEBUG",
+          },
+        })
+      );
+    }
+  );
+
   router.use("/api", apiRouter);
 
   router.get("*", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
