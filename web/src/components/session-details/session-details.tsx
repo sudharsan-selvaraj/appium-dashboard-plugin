@@ -7,6 +7,7 @@ import DeleteIcon from "@material-ui/icons/DeleteOutlineTwoTone";
 import { ApiService } from "../../services/api";
 import Spinner from "../../widgets/spinner/spinner";
 import { RouteReactiveComponent } from "../route-reactive-component";
+import ReactGA from "react-ga";
 
 export default class SessionDetails extends RouteReactiveComponent<any, any> {
   constructor(props: any) {
@@ -14,6 +15,7 @@ export default class SessionDetails extends RouteReactiveComponent<any, any> {
     this.state = {
       deleting: false,
     };
+    ReactGA.pageview(window.location.pathname + window.location.search);
   }
 
   deleteSession() {
@@ -28,6 +30,7 @@ export default class SessionDetails extends RouteReactiveComponent<any, any> {
   }
 
   protected componentUpdated(): void {
+    ReactGA.pageview(window.location.pathname + window.location.search);
     this.setState({ deleting: false });
   }
 

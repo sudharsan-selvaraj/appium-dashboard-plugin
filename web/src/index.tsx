@@ -4,6 +4,12 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter } from "react-router-dom";
+import ReactGA from "react-ga";
+ReactGA.initialize("G-0M0KXZV1WM", {
+  gaOptions: {
+    cookieDomain: "none",
+  },
+});
 
 ReactDOM.render(
   <React.StrictMode>
