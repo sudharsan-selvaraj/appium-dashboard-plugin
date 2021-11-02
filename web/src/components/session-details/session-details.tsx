@@ -37,6 +37,7 @@ export default class SessionDetails extends RouteReactiveComponent<any, any> {
         <div className="session-details__wrapper">
           {this.props.session.is_completed && (
             <div className="session-details__action_container">
+              <div className="session-details__action_name">{this.props.session.name || ""}</div>
               {this.state.deleting ? (
                 <div className="session-details__action_items">
                   <Spinner /> Deleting..

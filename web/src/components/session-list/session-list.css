@@ -10,6 +10,7 @@
 
 .session-list__header {
   height: 70px;
+  position: sticky;
   border-bottom: 1px solid #ced8e1;
   display: flex;
   align-items: center;
@@ -34,4 +35,22 @@
   height: 100px;
   width: 100%;
   background: transparent;
+}
+
+.session-list__filter_header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  cursor: pointer;
+}
+
+.session-list__filter_count {
+  margin-left: 10px;
+  margin-top: 2px;
+  width: 20px;
+  height: 17px;
+  text-align: center;
+  font-weight: 700;
+  background: rgb(221, 147, 11);
+  border-radius: 50px;
 }
