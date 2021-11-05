@@ -1,7 +1,7 @@
 src
 web
+tmp
 node_modules
-log.txt
 sequelize-config.json
 .history
 .vscode

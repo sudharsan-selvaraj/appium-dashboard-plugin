@@ -1,13 +1,13 @@
 {
   "name": "appium-dashboard",
-  "version": "v1.0.0-beta.2",
+  "version": "v1.0.0-beta.5",
   "description": "Appium plugin to view session execution details via detailed dashboard",
   "main": "lib/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "sequelize:migrate": "sequelize-cli db:migrate",
     "sequelize:migrate:undo": "sequelize-cli db:migrate:undo",
-    "postinstall": "sequelize-cli db:migrate:undo && npm run sequelize:migrate",
+    "postinstall": "npm run sequelize:migrate:undo && npm run sequelize:migrate",
     "i": "tsc && (appium plugin uninstall appium-dashboard || exit 0) && appium plugin install --source=local $(pwd)",
     "server": "appium --plugins=appium-dashboard"
   },

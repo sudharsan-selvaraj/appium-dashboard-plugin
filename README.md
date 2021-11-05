@@ -22,7 +22,7 @@ Check the sample video [here](https://gfycat.com/sharpincompletehorsechestnutlea
 This plugin requires Appium version 2.0. Once appium 2.0 is installed, run the bellow command to install the plugin
 
 ```sh
-appium plugin install --source=npm appium-device-farm
+appium plugin install --source=npm appium-dashboard
 ```
 
 ## Plugin Activation
