@@ -2,7 +2,7 @@ import { SessionInfo } from "./types/session-info";
 import fetch from "node-fetch";
 const circularjson = require("circular-json");
 import { routeToCommandName as _routeToCommandName } from "appium-base-driver";
-import { log } from "./logger";
+import { pluginLogger } from "./loggers/plugin-logger";
 import { CustomColumnOption } from "./types/custom-column-options";
 import { Dashboard } from "@mui/icons-material";
 import { DashboardCommands } from "./dashboard-commands";
@@ -35,7 +35,6 @@ function getDriverEndpoint(driver: any) {
 }
 
 async function makePostCall(driver: any, sessionId: string, path: string, body: any): Promise<any> {
-  log.info(`enpoint ${getDriverEndpoint(driver)}/session/${sessionId}/${path}`);
   const response = await fetch(`${getDriverEndpoint(driver)}/session/${sessionId}/${path}`, {
     method: "post",
     body: body ? JSON.stringify(body) : "{}",
@@ -45,7 +44,6 @@ async function makePostCall(driver: any, sessionId: string, path: string, body: 
 }
 
 async function makeGETCall(driver: any, sessionId: string, path: string): Promise<any> {
-  log.info(`enpoint ${getDriverEndpoint(driver)}/session/${sessionId}/${path}`);
   const response = await fetch(`${getDriverEndpoint(driver)}/session/${sessionId}/${path}`);
   return await response.json();
 }

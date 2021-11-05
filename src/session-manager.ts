@@ -5,7 +5,8 @@ import { getLogs, startScreenRecording, stopScreenRecording, takeScreenShot } fr
 import { CommandParser } from "./command-parser";
 import { CommandLogs as commandLogsModel, Session, Logs as LogsTable } from "./models";
 import { Op } from "sequelize";
-import { log } from "./logger";
+import { pluginLogger } from "./loggers/plugin-logger";
+import { logger } from "./loggers/logger";
 import * as fs from "fs";
 import "reflect-metadata";
 import { Container } from "typedi";
@@ -31,7 +32,6 @@ class SessionManager {
     } else if (command.commandName == "deleteSession") {
       await this.sessionTerminated(command);
     } else if (command.commandName == "execute" && isDashboardCommand(this.dashboardCommands, command.args[0])) {
-      this.appendLogs(typeof this.dashboardCommands[command.args[0].split(":")[1].trim() as keyof DashboardCommands]);
       await this.executeCommand(command);
       return true;
     } else if (command.commandName == "proxyReqRes") {
@@ -41,14 +41,15 @@ class SessionManager {
       Object.assign(command, {
         ...routeToCommand(command.args),
       });
+      logger.info(`Recieved proxyReqRes command for ${command.commandName}`);
     }
 
-    this.appendLogs(`Recieved command ${command.commandName}`);
-    this.appendLogs(`args:\n ${cj.stringify(command.args)}`);
+    logger.info(`New command recieved ${command.commandName} for session ${this.sessionInfo.session_id}`);
     await this.saveServerLogs(command);
     try {
       command.startTime = new Date();
       let res = await command.next();
+      logger.info(`Recieved response for command ${command.commandName} for session ${this.sessionInfo.session_id}`);
       command.endTime = new Date();
       await this.saveCommandLog(command, res);
       return res;
@@ -58,12 +59,14 @@ class SessionManager {
         error: err.error,
         message: err.message,
       });
-      this.appendLogs(
-        JSON.stringify({
-          error: err.error,
-          message: err.message,
-        })
+      logger.error(
+        `Error occured while executing ${command.commandName} command ` +
+          JSON.stringify({
+            error: err.error,
+            message: err.message,
+          })
       );
+      throw err;
     }
   }
 
@@ -105,7 +108,6 @@ class SessionManager {
       updateObject.session_status = errorCount > 0 ? "FAILED" : "PASSED";
     }
 
-    log.info(`Session status is ${session?.is_test_passed}`);
     if (session?.is_test_passed == null) {
       updateObject.is_test_passed = errorCount > 0 ? false : true;
     }
@@ -115,6 +117,7 @@ class SessionManager {
         session_id: this.sessionInfo.session_id,
       },
     });
+    logger.info(`Session terminated ${this.sessionInfo.session_id}`);
   }
 
   private async saveServerLogs(command: AppiumCommand) {
@@ -151,6 +154,7 @@ class SessionManager {
         screenShotPath = `${this.config.screenshotSavePath}/${this.sessionInfo.session_id}/${uuidv4()}.jpg`;
         let screenShotbase64 = await takeScreenShot(command.driver, this.sessionInfo.session_id);
         fs.writeFileSync(screenShotPath, screenShotbase64.value, "base64");
+        logger.info(`Screen shot saved for ${command.commandName} command in session ${this.sessionInfo.session_id}`);
       }
       Object.assign(parsedLog, {
         session_id: this.sessionInfo.session_id,
@@ -163,14 +167,10 @@ class SessionManager {
       try {
         await commandLogsModel.create(parsedLog as any);
       } catch (err) {
-        log.info(err);
+        pluginLogger.info(err);
         throw err;
       }
     }
-  }
-
-  private appendLogs(log: string) {
-    fs.appendFileSync("/Users/sselvar4/Documents/git/personal/appium-dashboard-plugin/log.txt", `${log}\n`);
   }
 
   private async startScreenRecording(driver: any) {
@@ -188,8 +188,10 @@ class SessionManager {
     if (videoBase64String.value != "") {
       let outPath = `${this.config.videoSavePath}/${this.sessionInfo.session_id}.mp4`;
       fs.writeFileSync(outPath, videoBase64String.value, "base64");
-      log.info(`Saving screenrecording.. ${outPath}`);
+      logger.info(`Video saved for ${this.sessionInfo.session_id} in ${outPath}`);
       return outPath;
+    } else {
+      logger.warn(`Video file is empty for session ${this.sessionInfo.session_id}`);
     }
   }
 

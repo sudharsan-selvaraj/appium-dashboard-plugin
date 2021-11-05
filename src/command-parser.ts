@@ -1,6 +1,5 @@
 import { SessionInfo } from "./types/session-info";
 import { saveLocator, getLocatorStrategy } from "./locator-factory";
-import { log } from "./logger";
 import { millisToMinutesAndSeconds } from "./utils";
 
 export class CommandParser {
@@ -13,7 +12,9 @@ export class CommandParser {
   /* Private methods  */
   private async getLocatorTitleInfo(elementId: string) {
     let strategy = await getLocatorStrategy(elementId);
-    if (strategy.index == null) {
+    if (!strategy) {
+      return "";
+    } else if (strategy.index == null) {
       return `[${strategy.using}=${strategy.value}]`;
     } else {
       return `[${strategy.using}=${strategy.value}][${strategy.index}]`;
@@ -89,7 +90,6 @@ export class CommandParser {
     let title = null;
     if (config.titleInfoFormat) {
       title = await config.titleInfoFormat(newArgs);
-      log.info(`title is ${title}`);
     }
 
     return {
@@ -663,12 +663,13 @@ export class CommandParser {
 
   //COMPLETED
   public async clear(driver: any, args: any[], response: any) {
+    let newArgs = this.getElementCommandArgs(args);
     return this.constructCommandResponse({
       driver,
       args,
       response,
       title: "Clear",
-      titleInfoFormat: async (newArgs) => this.getLocatorTitleInfo(newArgs[0]),
+      titleInfoFormat: async () => this.getLocatorTitleInfo(newArgs[0]),
     });
   }
 
@@ -1186,14 +1187,17 @@ export class CommandParser {
     };
   }
 
-  //TODO
+  //COMPLETED
   public async fingerprint(driver: any, args: any[], response: any) {
-    return {
-      title: "fingerprint",
-      title_info: null,
-      response: null,
-      params: null,
-    };
+    return this.constructCommandResponse({
+      driver,
+      args,
+      response,
+      title: "Use fingerprint",
+      titleInfoFormat: async (args: any) => {
+        return args[0];
+      },
+    });
   }
 
   //TODO
@@ -1536,14 +1540,14 @@ export class CommandParser {
     };
   }
 
-  //TODO
+  //COMPLETED
   public async reset(driver: any, args: any[], response: any) {
-    return {
-      title: "reset",
-      title_info: null,
-      response: null,
-      params: null,
-    };
+    return this.constructCommandResponse({
+      driver,
+      args,
+      response,
+      title: "Resetthe application state",
+    });
   }
 
   //TODO
@@ -1709,24 +1713,27 @@ export class CommandParser {
     };
   }
 
-  //TODO
+  //COMPLETED
   public async getWindowRect(driver: any, args: any[], response: any) {
-    return {
-      title: "getWindowRect",
-      title_info: null,
-      response: null,
-      params: null,
-    };
+    return this.constructCommandResponse({
+      driver,
+      args,
+      response,
+      title: "Get Window Rect",
+    });
   }
 
-  //TODO
+  //COMPLETED
   public async setWindowRect(driver: any, args: any[], response: any) {
-    return {
-      title: "setWindowRect",
-      title_info: null,
-      response: null,
-      params: null,
-    };
+    return this.constructCommandResponse({
+      driver,
+      args,
+      response,
+      title: "Set Window Rect",
+      titleInfoFormat: async (newArgs: any[]) => {
+        return `[x=${newArgs[0]},y=${newArgs[1]},width=${newArgs[2]},height=${newArgs[3]}]`;
+      },
+    });
   }
 
   //TODO

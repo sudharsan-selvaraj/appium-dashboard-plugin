@@ -1,6 +1,6 @@
 import { Session, Logs } from "./models/index";
 import { SessionInfo } from "./types/session-info";
-
+import { logger } from "./loggers/logger";
 export class DashboardCommands {
   constructor(private sessionInfo: SessionInfo) {}
 
@@ -8,6 +8,7 @@ export class DashboardCommands {
    * commandName: dashboard: setTestName
    */
   private async setTestName(args: any[]): Promise<void> {
+    logger.info(`Updating test name for session ${args[0]}`);
     await Session.update(
       {
         name: args[0],
@@ -22,6 +23,7 @@ export class DashboardCommands {
    * commandName: dashboard: debug
    */
   private async debug(args: any[]): Promise<void> {
+    logger.info(`Adding debug logs for session ${this.sessionInfo.session_id}`);
     let props: any = args[0];
     await Logs.create({
       session_id: this.sessionInfo.session_id,
@@ -36,6 +38,7 @@ export class DashboardCommands {
    * commandName: dashboard: updateStatus
    */
   private async updateStatus(args: any[]): Promise<void> {
+    logger.info(`Updating test status for session ${this.sessionInfo.session_id}`);
     let props: any = args[0];
     if (!props.status || !new RegExp(/passed|failed/g).test(props.status.toLowerCase())) {
       return;

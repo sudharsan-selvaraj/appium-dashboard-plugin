@@ -4,13 +4,13 @@ import { getRouter } from "./app/index";
 import { AppiumDashboardPlugin } from "./plugin";
 import { config } from "./config";
 import * as fs from "fs";
-import { log } from "./logger";
+import { pluginLogger } from "./loggers/plugin-logger";
 var ffmpeg = require("@ffmpeg-installer/ffmpeg").path;
 
 async function createVideoDirectoryPath(fullPath: string) {
   if (!fs.existsSync(fullPath)) {
     fs.mkdirSync(fullPath, { recursive: true });
-    log.info("Video directory created " + fullPath);
+    pluginLogger.info("Video directory created " + fullPath);
   }
 }
 Container.set("expressRouter", getRouter({ config }));
