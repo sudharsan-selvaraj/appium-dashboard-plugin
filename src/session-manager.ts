@@ -5,15 +5,12 @@ import { getLogs, startScreenRecording, stopScreenRecording, takeScreenShot } fr
 import { CommandParser } from "./command-parser";
 import { CommandLogs as commandLogsModel, Session, Logs as LogsTable } from "./models";
 import { Op } from "sequelize";
-import { pluginLogger } from "./loggers/plugin-logger";
 import { logger } from "./loggers/logger";
 import * as fs from "fs";
 import "reflect-metadata";
 import { Container } from "typedi";
 import { v4 as uuidv4 } from "uuid";
 import { DashboardCommands } from "./dashboard-commands";
-
-const cj = require("circular-json");
 
 const CREATE_SESSION = "createSession";
 class SessionManager {
@@ -142,34 +139,44 @@ class SessionManager {
   }
 
   private async saveCommandLog(command: AppiumCommand, response: any) {
-    if (typeof this.commandParser[command.commandName as keyof CommandParser] == "function") {
-      response = command.commandName == CREATE_SESSION ? this.sessionInfo : response;
-      let parsedLog: any = await this.commandParser[command.commandName as keyof CommandParser](
-        command.driver,
-        command.args,
-        response
-      );
-      let screenShotPath = null;
-      if (this.config.takeScreenshotsFor.indexOf(command.commandName) >= 0) {
-        screenShotPath = `${this.config.screenshotSavePath}/${this.sessionInfo.session_id}/${uuidv4()}.jpg`;
-        let screenShotbase64 = await takeScreenShot(command.driver, this.sessionInfo.session_id);
-        fs.writeFileSync(screenShotPath, screenShotbase64.value, "base64");
-        logger.info(`Screen shot saved for ${command.commandName} command in session ${this.sessionInfo.session_id}`);
-      }
-      Object.assign(parsedLog, {
-        session_id: this.sessionInfo.session_id,
-        command_name: command.commandName,
-        is_error: response && !!response.error ? true : false,
-        screen_shot: screenShotPath,
-        start_time: command.startTime,
-        end_time: command.endTime,
-      });
-      try {
+    try {
+      if (typeof this.commandParser[command.commandName as keyof CommandParser] == "function") {
+        response = command.commandName == CREATE_SESSION ? this.sessionInfo : response;
+        let parsedLog: any = await this.commandParser[command.commandName as keyof CommandParser](
+          command.driver,
+          command.args,
+          response
+        );
+        let screenShotPath = null;
+        if (this.config.takeScreenshotsFor.indexOf(command.commandName) >= 0) {
+          let screenShotbase64 = await takeScreenShot(command.driver, this.sessionInfo.session_id);
+          screenShotPath = `${this.config.screenshotSavePath}/${this.sessionInfo.session_id}/${uuidv4()}.jpg`;
+          if (screenShotbase64.value && typeof screenShotbase64.value === "string") {
+            fs.writeFileSync(screenShotPath, screenShotbase64.value, "base64");
+            logger.info(
+              `Screen shot saved for ${command.commandName} command in session ${this.sessionInfo.session_id}`
+            );
+          } else {
+            logger.error(
+              `Screen shot not saved for ${command.commandName} command in session ${
+                this.sessionInfo.session_id
+              } .response ${JSON.stringify(screenShotbase64.value)}`
+            );
+          }
+        }
+        Object.assign(parsedLog, {
+          session_id: this.sessionInfo.session_id,
+          command_name: command.commandName,
+          is_error: response && !!response.error ? true : false,
+          screen_shot: screenShotPath,
+          start_time: command.startTime,
+          end_time: command.endTime,
+        });
+
         await commandLogsModel.create(parsedLog as any);
-      } catch (err) {
-        pluginLogger.info(err);
-        throw err;
       }
+    } catch (err) {
+      logger.error(err);
     }
   }
 
@@ -184,14 +191,18 @@ class SessionManager {
   }
 
   private async saveScreenRecording(driver: any) {
-    let videoBase64String = await stopScreenRecording(driver, this.sessionInfo.session_id);
-    if (videoBase64String.value != "") {
-      let outPath = `${this.config.videoSavePath}/${this.sessionInfo.session_id}.mp4`;
-      fs.writeFileSync(outPath, videoBase64String.value, "base64");
-      logger.info(`Video saved for ${this.sessionInfo.session_id} in ${outPath}`);
-      return outPath;
-    } else {
-      logger.warn(`Video file is empty for session ${this.sessionInfo.session_id}`);
+    try {
+      let videoBase64String = await stopScreenRecording(driver, this.sessionInfo.session_id);
+      if (videoBase64String.value != "" && typeof videoBase64String.value === "string") {
+        let outPath = `${this.config.videoSavePath}/${this.sessionInfo.session_id}.mp4`;
+        fs.writeFileSync(outPath, videoBase64String.value, "base64");
+        logger.info(`Video saved for ${this.sessionInfo.session_id} in ${outPath}`);
+        return outPath;
+      } else {
+        logger.warn(`Video file is empty for session ${this.sessionInfo.session_id}`);
+      }
+    } catch (err) {
+      logger.error(err);
     }
   }
 
