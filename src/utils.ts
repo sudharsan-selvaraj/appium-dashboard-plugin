@@ -1,10 +1,7 @@
 import { SessionInfo } from "./types/session-info";
 import fetch from "node-fetch";
-const circularjson = require("circular-json");
 import { routeToCommandName as _routeToCommandName } from "appium-base-driver";
-import { pluginLogger } from "./loggers/plugin-logger";
 import { CustomColumnOption } from "./types/custom-column-options";
-import { Dashboard } from "@mui/icons-material";
 import { DashboardCommands } from "./dashboard-commands";
 
 function getSessionDetails(args: any, sessionResponse: any): any {
