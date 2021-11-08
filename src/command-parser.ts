@@ -1,4 +1,4 @@
-import { SessionInfo } from "./types/session-info";
+import { SessionInfo } from "./interfaces/session-info";
 import { saveLocator, getLocatorStrategy } from "./locator-factory";
 import { millisToMinutesAndSeconds } from "./utils";
 
@@ -105,6 +105,17 @@ export class CommandParser {
   /**
    * Command parser methods
    */
+
+  //COMPLETED
+  public async sessionTimedout(driver: any, args: any[], response: any) {
+    return {
+      title: "Session Timed out ",
+      title_info: `Session inactive for ${args[0]} seconds`,
+      response: null,
+      params: null,
+    };
+  }
+
   //TODO
   public async getStatus(driver: any, args: any[], response: any) {
     return {

@@ -1,5 +1,5 @@
-import { SessionInfo } from "./types/session-info";
-import { AppiumCommand } from "./types/appium-command";
+import { SessionInfo } from "./interfaces/session-info";
+import { AppiumCommand } from "./interfaces/appium-command";
 import { interceptProxyResponse, routeToCommand, isDashboardCommand } from "./utils";
 import { getLogs, startScreenRecording, stopScreenRecording, takeScreenShot } from "./driver-command-executor";
 import { CommandParser } from "./command-parser";
@@ -11,22 +11,38 @@ import "reflect-metadata";
 import { Container } from "typedi";
 import { v4 as uuidv4 } from "uuid";
 import { DashboardCommands } from "./dashboard-commands";
+import { PluginCliArgs } from "./interfaces/PluginCliArgs";
+import { SessionTimeoutTracker } from "./session-timeout-tracker";
 
 const CREATE_SESSION = "createSession";
+
 class SessionManager {
   private lastLogLine = 0;
   private config: any = Container.get("config");
   private dashboardCommands: DashboardCommands;
+  private sessionTimeoutTracker: SessionTimeoutTracker;
 
-  constructor(private sessionInfo: SessionInfo, private commandParser: CommandParser, private sessionResponse: any) {
+  constructor(
+    private sessionInfo: SessionInfo,
+    private commandParser: CommandParser,
+    private sessionResponse: any,
+    private cliArgs: PluginCliArgs
+  ) {
     this.sessionInfo.is_completed = false;
     this.dashboardCommands = new DashboardCommands(sessionInfo);
+    this.sessionTimeoutTracker = new SessionTimeoutTracker({
+      timeout: this.cliArgs?.sessionTimeout || 60, //defaults to 60 seconds
+      pollingInterval: 30 * 1000, //30 seconds
+      timeoutCallback: this.onSessionTimeOut.bind(this),
+    });
   }
 
   public async onCommandRecieved(command: AppiumCommand): Promise<any> {
     if (command.commandName == CREATE_SESSION) {
+      this.sessionTimeoutTracker.start();
       return await this.sessionStarted(command);
     } else if (command.commandName == "deleteSession") {
+      this.sessionTimeoutTracker.stop();
       await this.sessionTerminated(command);
     } else if (command.commandName == "execute" && isDashboardCommand(this.dashboardCommands, command.args[0])) {
       await this.executeCommand(command);
@@ -40,6 +56,8 @@ class SessionManager {
       });
       logger.info(`Recieved proxyReqRes command for ${command.commandName}`);
     }
+
+    this.sessionTimeoutTracker.tick(command);
 
     logger.info(`New command recieved ${command.commandName} for session ${this.sessionInfo.session_id}`);
     await this.saveServerLogs(command);
@@ -78,7 +96,10 @@ class SessionManager {
     return await this.startScreenRecording(command.driver);
   }
 
-  private async sessionTerminated(command: AppiumCommand) {
+  private async sessionTerminated(
+    command: AppiumCommand,
+    options: { sessionTimedOut: boolean } = { sessionTimedOut: false }
+  ) {
     this.sessionInfo.is_completed = true;
     let videoPath = await this.saveScreenRecording(command.driver);
     let errorCount = await commandLogsModel.count({
@@ -101,12 +122,12 @@ class SessionManager {
     updateObject.end_time = new Date();
     updateObject.video_path = videoPath ? videoPath : null;
 
-    if (!session?.session_status) {
-      updateObject.session_status = errorCount > 0 ? "FAILED" : "PASSED";
+    if (session?.session_status?.toLowerCase() == "running") {
+      updateObject.session_status = options.sessionTimedOut ? "TIMEOUT" : errorCount > 0 ? "FAILED" : "PASSED";
     }
 
     if (session?.is_test_passed == null) {
-      updateObject.is_test_passed = errorCount > 0 ? false : true;
+      updateObject.is_test_passed = options.sessionTimedOut || errorCount > 0 ? false : true;
     }
 
     await Session.update(updateObject, {
@@ -209,6 +230,19 @@ class SessionManager {
   private async executeCommand(command: AppiumCommand) {
     let scriptName = command.args[0].split(":")[1].trim();
     await (this.dashboardCommands[scriptName as keyof DashboardCommands] as any)(command.args[1]);
+  }
+
+  private async onSessionTimeOut(lastCommand: AppiumCommand, timeoutValue: number) {
+    logger.warn(`Session ${this.sessionInfo.session_id} timed out after ${timeoutValue} seconds`);
+    await this.saveCommandLog(
+      {
+        ...lastCommand,
+        commandName: "sessionTimedout",
+        args: [timeoutValue],
+      },
+      {}
+    );
+    await this.sessionTerminated(lastCommand, { sessionTimedOut: true });
   }
 }
 

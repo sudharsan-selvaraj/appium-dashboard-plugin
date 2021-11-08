@@ -1,7 +1,7 @@
-import { SessionInfo } from "./types/session-info";
+import { SessionInfo } from "./interfaces/session-info";
 import fetch from "node-fetch";
 import { routeToCommandName as _routeToCommandName } from "appium-base-driver";
-import { CustomColumnOption } from "./types/custom-column-options";
+import { CustomColumnOption } from "./interfaces/custom-column-options";
 import { DashboardCommands } from "./dashboard-commands";
 
 function getSessionDetails(args: any, sessionResponse: any): any {

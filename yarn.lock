@@ -2,7 +2,7 @@
 # yarn lockfile v1
 
 
-"@appium/base-plugin@^1.6.4":
+"@appium/base-plugin@^1.7.2":
   "integrity" "sha512-NLHvgOkO1FT5szNGZk1MxwZXtXNSTowGMqv0WmJtAQcewBH/HW1W+1ljffWRt8vpnxa7x9c/KlyESBRAIWWwnQ=="
   "resolved" "https://registry.npmjs.org/@appium/base-plugin/-/base-plugin-1.7.2.tgz"
   "version" "1.7.2"
