@@ -1,7 +1,7 @@
-import { makeGETCall, makePostCall } from "./utils";
+import { makeGETCall, makePostCall, makeDELETECall } from "./utils";
 
 async function startScreenRecording(driver: any, sessionId: string) {
-  return await makePostCall(driver, sessionId, "appium/start_recording_screen", {
+  return await makePostCall(driver, sessionId, "/appium/start_recording_screen", {
     options: {
       videoType: "libx264",
       videoFps: 10,
@@ -10,15 +10,19 @@ async function startScreenRecording(driver: any, sessionId: string) {
 }
 
 async function takeScreenShot(driver: any, sessionId: string) {
-  return await makeGETCall(driver, sessionId, "screenshot");
+  return await makeGETCall(driver, sessionId, "/screenshot");
 }
 
 async function stopScreenRecording(driver: any, sessionId: string) {
-  return await makePostCall(driver, sessionId, "appium/stop_recording_screen", {});
+  return await makePostCall(driver, sessionId, "/appium/stop_recording_screen", {});
 }
 
 async function getLogTypes(driver: any, sessionId: string) {
-  return await makeGETCall(driver, sessionId, "log/types");
+  return await makeGETCall(driver, sessionId, "/log/types");
+}
+
+async function terminateSession(driver: any, sessionId: string) {
+  return await makeDELETECall(driver, sessionId, "");
 }
 
 function getLogs(driver: any, sessionId: string, logType: string) {
@@ -38,4 +42,4 @@ function getLogs(driver: any, sessionId: string, logType: string) {
   return Array.isArray(logs) ? logs : [];
 }
 
-export { startScreenRecording, stopScreenRecording, getLogTypes, getLogs, takeScreenShot };
+export { startScreenRecording, stopScreenRecording, getLogTypes, getLogs, takeScreenShot, terminateSession };

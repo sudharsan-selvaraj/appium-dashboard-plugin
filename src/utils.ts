@@ -45,7 +45,7 @@ function constructBasePath(basePath: string) {
 }
 
 async function makePostCall(driver: any, sessionId: string, path: string, body: any): Promise<any> {
-  const response = await fetch(`${getDriverEndpoint(driver)}/session/${sessionId}/${path}`, {
+  const response = await fetch(`${getDriverEndpoint(driver)}/session/${sessionId}${path}`, {
     method: "post",
     body: body ? JSON.stringify(body) : "{}",
     headers: { "Content-Type": "application/json" },
@@ -54,7 +54,14 @@ async function makePostCall(driver: any, sessionId: string, path: string, body: 
 }
 
 async function makeGETCall(driver: any, sessionId: string, path: string): Promise<any> {
-  const response = await fetch(`${getDriverEndpoint(driver)}/session/${sessionId}/${path}`);
+  const response = await fetch(`${getDriverEndpoint(driver)}/session/${sessionId}${path}`);
+  return await response.json();
+}
+
+async function makeDELETECall(driver: any, sessionId: string, path: string): Promise<any> {
+  const response = await fetch(`${getDriverEndpoint(driver)}/session/${sessionId}${path}`, {
+    method: "delete",
+  });
   return await response.json();
 }
 
@@ -128,6 +135,7 @@ function isDashboardCommand(dashboardCommand: DashboardCommands, commandName: st
 export {
   makeGETCall,
   makePostCall,
+  makeDELETECall,
   getSessionDetails,
   interceptProxyResponse,
   routeToCommand,

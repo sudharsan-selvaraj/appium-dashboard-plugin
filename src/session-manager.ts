@@ -1,7 +1,13 @@
 import { SessionInfo } from "./interfaces/session-info";
 import { AppiumCommand } from "./interfaces/appium-command";
 import { interceptProxyResponse, routeToCommand, isDashboardCommand } from "./utils";
-import { getLogs, startScreenRecording, stopScreenRecording, takeScreenShot } from "./driver-command-executor";
+import {
+  getLogs,
+  startScreenRecording,
+  stopScreenRecording,
+  takeScreenShot,
+  terminateSession,
+} from "./driver-command-executor";
 import { CommandParser } from "./command-parser";
 import { CommandLogs as commandLogsModel, Session, Logs as LogsTable } from "./models";
 import { Op } from "sequelize";
@@ -40,6 +46,7 @@ class SessionManager {
   public async onCommandRecieved(command: AppiumCommand): Promise<any> {
     if (command.commandName == CREATE_SESSION) {
       this.sessionTimeoutTracker.start();
+      this.sessionTimeoutTracker.tick(command);
       return await this.sessionStarted(command);
     } else if (command.commandName == "deleteSession") {
       this.sessionTimeoutTracker.stop();
@@ -100,6 +107,17 @@ class SessionManager {
     command: AppiumCommand,
     options: { sessionTimedOut: boolean } = { sessionTimedOut: false }
   ) {
+    let session = await Session.findOne({
+      where: {
+        session_id: this.sessionInfo.session_id,
+      },
+    });
+
+    if (session?.session_status?.toLowerCase() == "timeout") {
+      logger.info(`Session ${this.sessionInfo.session_id} already timed out. So ignoring sessionTerminated command`);
+      return;
+    }
+
     this.sessionInfo.is_completed = true;
     let videoPath = await this.saveScreenRecording(command.driver);
     let errorCount = await commandLogsModel.count({
@@ -109,11 +127,6 @@ class SessionManager {
         command_name: {
           [Op.notIn]: ["findElement", "elementDisplayed"],
         },
-      },
-    });
-    let session = await Session.findOne({
-      where: {
-        session_id: this.sessionInfo.session_id,
       },
     });
 
@@ -171,8 +184,8 @@ class SessionManager {
         let screenShotPath = null;
         if (this.config.takeScreenshotsFor.indexOf(command.commandName) >= 0) {
           let screenShotbase64 = await takeScreenShot(command.driver, this.sessionInfo.session_id);
-          screenShotPath = `${this.config.screenshotSavePath}/${this.sessionInfo.session_id}/${uuidv4()}.jpg`;
           if (screenShotbase64.value && typeof screenShotbase64.value === "string") {
+            screenShotPath = `${this.config.screenshotSavePath}/${this.sessionInfo.session_id}/${uuidv4()}.jpg`;
             fs.writeFileSync(screenShotPath, screenShotbase64.value, "base64");
             logger.info(
               `Screen shot saved for ${command.commandName} command in session ${this.sessionInfo.session_id}`
@@ -243,6 +256,7 @@ class SessionManager {
       {}
     );
     await this.sessionTerminated(lastCommand, { sessionTimedOut: true });
+    await terminateSession(lastCommand.driver, this.sessionInfo.session_id);
   }
 }
 

@@ -1,6 +1,6 @@
 {
   "name": "appium-dashboard",
-  "version": "v1.0.0-beta.5",
+  "version": "v1.0.0-beta.6",
   "description": "Appium plugin to view session execution details via detailed dashboard",
   "main": "lib/index.js",
   "scripts": {
