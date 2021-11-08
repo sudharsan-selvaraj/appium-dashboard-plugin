@@ -1,10 +1,7 @@
 import { SessionInfo } from "./types/session-info";
 import fetch from "node-fetch";
-const circularjson = require("circular-json");
 import { routeToCommandName as _routeToCommandName } from "appium-base-driver";
-import { pluginLogger } from "./loggers/plugin-logger";
 import { CustomColumnOption } from "./types/custom-column-options";
-import { Dashboard } from "@mui/icons-material";
 import { DashboardCommands } from "./dashboard-commands";
 
 function getSessionDetails(args: any, sessionResponse: any): any {
@@ -31,7 +28,20 @@ function getSessionDetails(args: any, sessionResponse: any): any {
 
 function getDriverEndpoint(driver: any) {
   let { address, port, basePath } = driver.opts || driver;
-  return `http://${address}:${port}${basePath != "" ? "/" + basePath : ""}`;
+  return `http://${address}:${port}${constructBasePath(basePath)}`;
+}
+
+function constructBasePath(basePath: string) {
+  if (!basePath || basePath == "") {
+    return "";
+  }
+  if (!basePath.startsWith("/")) {
+    basePath = `/${basePath}`;
+  }
+  if (basePath.endsWith("/")) {
+    basePath = basePath.substr(0, basePath.length - 2);
+  }
+  return basePath;
 }
 
 async function makePostCall(driver: any, sessionId: string, path: string, body: any): Promise<any> {
