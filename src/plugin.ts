@@ -6,6 +6,7 @@ import { getSessionDetails } from "./utils";
 import { routeToCommand } from "./utils";
 import { pluginLogger } from "./loggers/plugin-logger";
 import { logger } from "./loggers/logger";
+import { PluginCliArgs } from "./interfaces/PluginCliArgs";
 import * as express from "express";
 
 const sessionMap: Map<string, SessionManager> = new Map();
@@ -13,6 +14,14 @@ const IGNORED_COMMANDS = ["getScreenshot", "stopRecordingScreen", "startRecordin
 class AppiumDashboardPlugin extends BasePlugin {
   constructor(pluginName: string) {
     super(pluginName);
+  }
+
+  static get argsConstraints() {
+    return {
+      sessionTimeout: {
+        isNumber: true,
+      },
+    };
   }
 
   public static async updateServer(expressApp: express.Application) {
@@ -50,7 +59,7 @@ class AppiumDashboardPlugin extends BasePlugin {
         return response;
       } else {
         let sessionInfo = getSessionDetails(args, response);
-        let sessionManager = new SessionManager(sessionInfo, new CommandParser(sessionInfo), response);
+        let sessionManager = new SessionManager(sessionInfo, new CommandParser(sessionInfo), response, this.cliArgs);
         sessionMap.set(sessionInfo.session_id, sessionManager);
         await sessionManager.onCommandRecieved(appiumCommand);
         logger.info(`New Session created with session id ${sessionInfo.session_id}`);

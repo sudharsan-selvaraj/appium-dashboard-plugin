@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "sequelize:migrate": "sequelize-cli db:migrate",
     "sequelize:migrate:undo": "sequelize-cli db:migrate:undo",
-    "postinstall": "npm run sequelize:migrate:undo && npm run sequelize:migrate",
+    "clean:cache": "node ./scripts/cleanup-cache-dir.js",
+    "postinstall": "(node ./scripts/is-prod.js || tsc) && npm run clean:cache && npm run sequelize:migrate",
     "i": "tsc && (appium plugin uninstall appium-dashboard || exit 0) && appium plugin install --source=local $(pwd)",
     "server": "appium --plugins=appium-dashboard"
   },
@@ -27,7 +28,7 @@
     "mainClass": "AppiumDashboardPlugin"
   },
   "dependencies": {
-    "@appium/base-plugin": "^1.6.4",
+    "@appium/base-plugin": "^1.7.2",
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "@mui/icons-material": "^5.0.4",
     "@mui/material": "^5.0.4",

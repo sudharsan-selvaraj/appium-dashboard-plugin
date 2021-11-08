@@ -115,10 +115,10 @@ class Session extends Model<Session> {
   @AllowNull(false)
   @Column({
     type: DataTypes.ENUM,
-    values: ["PASSED", "FAILED"],
-    defaultValue: "PASSED",
+    values: ["PASSED", "FAILED", "TIMEOUT", "RUNNING"],
+    defaultValue: "RUNNING",
   })
-  session_status?: string;
+  session_status?: "PASSED" | "FAILED" | "TIMEOUT" | "RUNNING";
 
   @AllowNull(true)
   @Column({

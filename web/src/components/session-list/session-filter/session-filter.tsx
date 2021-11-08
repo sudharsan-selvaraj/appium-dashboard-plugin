@@ -89,8 +89,10 @@ export default class SessionFilter extends React.Component<any, any> {
               onChange={this.onStatusChanged.bind(this)}
             >
               <MenuItem value={"none"}>All</MenuItem>
+              <MenuItem value={"running"}>RUNNING</MenuItem>
               <MenuItem value={"passed"}>PASSED</MenuItem>
               <MenuItem value={"failed"}>FAILED</MenuItem>
+              <MenuItem value={"timeout"}>TIMEOUT</MenuItem>
             </Select>
           </FormControl>
         </div>

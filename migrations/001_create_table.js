@@ -18,7 +18,11 @@ var createSessionTable = function (queryInterface, Sequelize) {
     start_time: { type: Sequelize.DATE, allowNull: false },
     end_time: { type: Sequelize.DATE, defaultValue: null },
     is_test_passed: { type: Sequelize.BOOLEAN, allowNull: true },
-    session_status: { type: Sequelize.ENUM, values: ["PASSED", "FAILED"], defaultValue: "PASSED" },
+    session_status: {
+      type: Sequelize.ENUM,
+      values: ["PASSED", "FAILED", "TIMEOUT", "RUNNING"],
+      defaultValue: "RUNNING",
+    },
     session_status_message: { type: Sequelize.TEXT },
     video_path: { type: Sequelize.TEXT, allowNull: true },
     created_at: Sequelize.DATE,

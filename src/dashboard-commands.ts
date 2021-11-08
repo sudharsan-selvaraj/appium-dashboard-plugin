@@ -1,5 +1,5 @@
 import { Session, Logs } from "./models/index";
-import { SessionInfo } from "./types/session-info";
+import { SessionInfo } from "./interfaces/session-info";
 import { logger } from "./loggers/logger";
 export class DashboardCommands {
   constructor(private sessionInfo: SessionInfo) {}
@@ -46,7 +46,7 @@ export class DashboardCommands {
     await Session.update(
       {
         session_status_message: props.message,
-        session_status: props.status,
+        session_status: props.status.toUpperCase(),
         is_test_passed: props.status.toLowerCase() == "passed",
       },
       {
