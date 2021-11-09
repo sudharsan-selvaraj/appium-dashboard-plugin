@@ -20,24 +20,13 @@
   width: 100%;
 }
 
-.session-list__name_filter,
-.apply-filter-button,
-.session-list__os_filter,
-.session-list__status_filter {
+.session-list__filter_row {
   display: flex;
   flex-direction: row;
   align-items: center;
   padding-left: 30px;
   padding-right: 15px;
-}
-
-.session-list__name_filter input {
-  border: none;
-  border-bottom: 1px solid rgb(204, 204, 204);
-  width: 70%;
-  height: 40px;
-  outline: none;
-  font-size: 14px;
+  margin-top: -5px;
 }
 
 .session-list__name_filter .MuiSvgIcon-root {
@@ -65,8 +54,17 @@
   min-width: 100px;
 }
 
+.session-list__filter_row_input {
+  border: none;
+  border-bottom: 1px solid rgb(204, 204, 204);
+  width: 55%;
+  height: 40px;
+  outline: none;
+  font-size: 14px;
+}
+
 .filter-dropdown {
-  width: 30%;
+  width: 55%;
   height: 40px;
   border: none;
   outline: none;

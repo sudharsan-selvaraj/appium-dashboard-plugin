@@ -40,6 +40,15 @@ export default class SessionFilter extends React.Component<any, any> {
     });
   }
 
+  onDeviceUDIDChanged(event: any) {
+    this.setState({
+      filter: {
+        ...this.state.filter,
+        device_udid: event.target.value,
+      },
+    });
+  }
+
   applyFilter() {
     this.props.onFilterApplied(this.state.filter);
   }
@@ -55,9 +64,10 @@ export default class SessionFilter extends React.Component<any, any> {
   render() {
     return (
       <div className="session-list__filter_wrapper">
-        <div className="session-list__filter_row session-list__name_filter">
-          <SearchIcon />
+        <div className="session-list__filter_row">
+          <div className="session-list__filter_row_label">Session ID:</div>
           <input
+            className="session-list__filter_row_input"
             placeholder="Search for session id or name"
             defaultValue={this.state.filter.name}
             onChange={this.onNameChanged.bind(this)}
@@ -95,6 +105,16 @@ export default class SessionFilter extends React.Component<any, any> {
               <MenuItem value={"timeout"}>TIMEOUT</MenuItem>
             </Select>
           </FormControl>
+        </div>
+
+        <div className="session-list__filter_row session-list__device_filter">
+          <div className="session-list__filter_row_label">UDID:</div>
+          <input
+            className="session-list__filter_row_input"
+            placeholder="Search with device UDID"
+            defaultValue={this.state.filter.device_udid}
+            onChange={this.onDeviceUDIDChanged.bind(this)}
+          />
         </div>
         <div className="session-list__filter_row apply-filter-button">
           <button onClick={() => this.clearFilter()}>Clear</button>

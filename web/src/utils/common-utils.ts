@@ -23,4 +23,30 @@ export default class CommonUtils {
     }
     return returntext.trim();
   }
+
+  public static filterSessionList(sessions: any[], filter: any) {
+    let filters: any = [];
+    if (filter.name) {
+      filters.push(
+        (session: any) =>
+          session.session_id.indexOf(filter.name) >= 0 ||
+          session.name?.toLowerCase().indexOf(filter.name.toLowerCase()) >= 0
+      );
+    }
+    if (filter.os) {
+      filters.push((session: any) => session.platform_name.toLowerCase() == filter.os.toLowerCase());
+    }
+
+    if (filter.status) {
+      filters.push((session: any) => session.session_status.toLowerCase() == filter.status.toLowerCase());
+    }
+
+    if (filter.device_udid) {
+      filters.push((session: any) => session.udid?.toLowerCase().indexOf(filter.device_udid.toLowerCase()) >= 0);
+    }
+
+    return filters.reduce((acc: any, filter: any) => {
+      return acc.filter(filter);
+    }, sessions);
+  }
 }

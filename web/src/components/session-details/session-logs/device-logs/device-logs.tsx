@@ -20,6 +20,10 @@ export default class DeviceLogs extends RouteReactiveComponent<any, any> {
     this.initializeLogs();
   }
 
+  componentWillUnmount() {
+    this.clearPolling();
+  }
+
   protected componentUpdated(): void {
     this.initializeLogs();
   }

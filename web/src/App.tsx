@@ -8,17 +8,32 @@ import Spinner from "./widgets/spinner/spinner";
 import { Router, Route, Redirect, Switch } from "react-router-dom";
 import history from "./history";
 
+const available_filters = ["name", "status", "device_udid", "os"];
+
 class App extends React.Component<any, any> {
   private polling: any;
   constructor(props: any) {
     super(props);
     let sessionId = window.location.pathname.match(new RegExp(/dashboard\/session\/(.*)/));
+    let filters = this.getFiltersFromQueryParams();
     this.state = {
       loading: true,
       sessions: [],
       activeSession: sessionId && sessionId.length ? sessionId[1] : null,
       filterText: "",
+      sessionListFilters: {
+        ...filters,
+      },
     };
+  }
+
+  getFiltersFromQueryParams() {
+    const urlParams = new URLSearchParams(window.location.search);
+    let filterObject = {} as any;
+    available_filters.forEach((f) => {
+      filterObject[f] = urlParams.get(f) || "";
+    });
+    return filterObject;
   }
 
   fetchSessions() {
@@ -104,6 +119,7 @@ class App extends React.Component<any, any> {
               activeSession={this.state.activeSession}
               onSessionCardClicked={this.onSessionCardClicked.bind(this)}
               isFilterApplied={this.state.filterText.length > 0}
+              filters={this.state.sessionListFilters}
             />
             <Route
               path="/dashboard/session/:sessionId"

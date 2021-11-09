@@ -1557,7 +1557,7 @@ export class CommandParser {
       driver,
       args,
       response,
-      title: "Resetthe application state",
+      title: "Reset the application state",
     });
   }
 

@@ -233,7 +233,11 @@ class SessionManager {
         logger.info(`Video saved for ${this.sessionInfo.session_id} in ${outPath}`);
         return outPath;
       } else {
-        logger.warn(`Video file is empty for session ${this.sessionInfo.session_id}`);
+        logger.error(
+          `Video not saved for session ${this.sessionInfo.session_id}. response: ${JSON.stringify(
+            videoBase64String.value
+          )}`
+        );
       }
     } catch (err) {
       logger.error(err);

@@ -22,6 +22,10 @@ export default class TextLogs extends RouteReactiveComponent<any, any> {
     this.initializeLogs();
   }
 
+  componentWillUnmount() {
+    this.clearPolling();
+  }
+
   protected componentUpdated(): void {
     this.initializeLogs();
   }
