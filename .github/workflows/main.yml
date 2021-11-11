@@ -26,5 +26,5 @@ jobs:
       - name: Run a one-line script
         run: |
           npm install appium@next -g
-          appium plugin install --src=npm appium-dashboard
+          appium plugin install --source=npm appium-dashboard
           appium --plugins=appium-dashboard
