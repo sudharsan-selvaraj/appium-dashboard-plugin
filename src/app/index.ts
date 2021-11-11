@@ -3,6 +3,7 @@ import bodyParser from "body-parser";
 import { Session, CommandLogs, Logs } from "../models/index";
 import * as path from "path";
 import * as fs from "fs";
+import { Op } from "sequelize";
 const cors = require("cors");
 
 function getRouter({ config }: { config: any }) {
@@ -25,7 +26,17 @@ function getRouter({ config }: { config: any }) {
   });
 
   apiRouter.get("/sessions", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    res.status(200).send(await Session.findAndCountAll());
+    let start_time = req.query.start_time as string;
+    let filter: any = {};
+    if (start_time) {
+      filter.start_time = { [Op.gte]: new Date(start_time) };
+    }
+    res.status(200).send(
+      await Session.findAndCountAll({
+        where: filter,
+        order: [["start_time", "DESC"]],
+      })
+    );
   });
 
   apiRouter.get(

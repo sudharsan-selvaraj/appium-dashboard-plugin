@@ -8,6 +8,7 @@ import Spinner from "./widgets/spinner/spinner";
 import { Router, Route, Redirect, Switch } from "react-router-dom";
 import history from "./history";
 import CommonUtils from "./utils/common-utils";
+import { ISessionFilterQuery } from "./interfaces/filters";
 
 class App extends React.Component<any, any> {
   private polling: any;
@@ -44,13 +45,26 @@ class App extends React.Component<any, any> {
         valid: ["running", "failed", "passed", "timeout"],
       },
       device_udid: "",
+      start_time: {
+        valid: (dateString: string) => {
+          return !isNaN(new Date(dateString).getDate());
+        },
+      },
     };
+    //TODO: sudharsan - Improve filter parsing logic
     Object.keys(allowedFilters).forEach((key) => {
       if (urlParams.get(key)) {
         if (!allowedFilters[key].valid) {
           filterObject[key] = urlParams.get(key);
-        } else if (allowedFilters[key].valid && allowedFilters[key].valid.indexOf(urlParams.get(key)) >= 0) {
-          filterObject[key] = urlParams.get(key);
+        } else if (allowedFilters[key].valid) {
+          if (typeof allowedFilters[key].valid === "function" && allowedFilters[key].valid(urlParams.get(key))) {
+            filterObject[key] = urlParams.get(key);
+          } else if (
+            Array.isArray(allowedFilters[key].valid) &&
+            allowedFilters[key].valid.indexOf(urlParams.get(key)) >= 0
+          ) {
+            filterObject[key] = urlParams.get(key);
+          }
         }
       }
     });
@@ -58,7 +72,7 @@ class App extends React.Component<any, any> {
   }
 
   fetchSessions() {
-    ApiService.getAllSessions().then(
+    ApiService.getAllSessions(this.state.sessionListFilters).then(
       (result) => {
         let filteredRows = CommonUtils.filterSessionList(result.rows, this.state.sessionListFilters);
         this.setState({

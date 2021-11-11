@@ -1,8 +1,9 @@
+import { ISessionFilterQuery } from "../../interfaces/filters";
 import apiClient from "./api-client";
 
 class ApiService {
-  public static getAllSessions() {
-    return apiClient.makeGETRequest("/sessions", {});
+  public static getAllSessions(filterParams?: ISessionFilterQuery) {
+    return apiClient.makeGETRequest("/sessions", filterParams || {});
   }
 
   public static getTextLogsForSession(sessionId: string) {
