@@ -25,6 +25,6 @@ jobs:
       # Test npm install on windows
       - name: Run a one-line script
         run: |
-          npm install appium@latest -g
+          npm install appium@next -g
           appium plugin install --src=npm appium-dashboard
           appium --plugins=appium-dashboard
