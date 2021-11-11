@@ -3,33 +3,20 @@ import "./session-list.css";
 import FilterListRoundedIcon from "@material-ui/icons/FilterListRounded";
 import SessionInfoCard from "../session-info-card/session-info-card";
 import SessionFilter from "./session-filter/session-filter";
-import CommonUtils from "../../utils/common-utils";
+
 export default class SessionList extends React.Component<any, any> {
   constructor(props: any) {
     super(props);
-    this.state = {
-      appliedFilterCount: 0,
-      showFilter: false,
-      filter: Object.assign(
-        {
-          name: "",
-          os: "",
-          status: "",
-          device_udid: "",
-        },
-        this.props.filters
-      ),
-    };
-  }
 
-  onFilterApplied(filters: any) {
-    this.setState({ filter: filters, showFilter: false });
+    this.state = {
+      showFilter: this.props.showFilter,
+    };
   }
 
   getActiveFilterCount() {
     let filterCount = 0;
-    Object.keys(this.state.filter).forEach((key: any) => {
-      if (this.state.filter[key] != "") {
+    Object.keys(this.props.filters).forEach((key: any) => {
+      if (this.props.filters[key] != "") {
         filterCount++;
       }
     });
@@ -42,7 +29,7 @@ export default class SessionList extends React.Component<any, any> {
 
   getSessions() {
     return React.Children.toArray(
-      CommonUtils.filterSessionList(this.props.sessions, this.state.filter).map((session: any) => {
+      this.props.sessions.map((session: any) => {
         return (
           <SessionInfoCard
             session={session}
@@ -55,6 +42,7 @@ export default class SessionList extends React.Component<any, any> {
   }
 
   render() {
+    let session = this.getSessions();
     return (
       <div className="session-list__container">
         <div className="session-list__header">
@@ -66,13 +54,25 @@ export default class SessionList extends React.Component<any, any> {
             )}
           </div>
           {this.state.showFilter && (
-            <SessionFilter filter={this.state.filter} onFilterApplied={this.onFilterApplied.bind(this)} />
+            <SessionFilter
+              filter={this.props.filters}
+              onFilterApplied={(filter: any) => {
+                this.props.onFilterApplied(filter);
+                this.toggleFilter(!this.state.showFilter);
+              }}
+            />
           )}
         </div>
-        <div className="session-list__scrollConatiner">
-          {this.getSessions()}
-          <div className="session-list__padding-helper"></div>
-        </div>
+        {session.length > 0 ? (
+          <div className="session-list__scrollConatiner">
+            {this.getSessions()}
+            <div className="session-list__padding-helper"></div>
+          </div>
+        ) : (
+          <div className="session-list__message_container">
+            <div className="session-list__message_text">No sessions found for given filter..</div>
+          </div>
+        )}
       </div>
     );
   }

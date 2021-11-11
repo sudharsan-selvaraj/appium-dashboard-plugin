@@ -48,7 +48,10 @@
   font-weight: 400;
   display: flex;
   align-items: center;
-  color: grey;
+  color: #5a4949;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .session-info-card__platform .device-icon,

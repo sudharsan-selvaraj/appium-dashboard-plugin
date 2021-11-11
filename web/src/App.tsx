@@ -7,8 +7,7 @@ import { ApiService } from "./services/api";
 import Spinner from "./widgets/spinner/spinner";
 import { Router, Route, Redirect, Switch } from "react-router-dom";
 import history from "./history";
-
-const available_filters = ["name", "status", "device_udid", "os"];
+import CommonUtils from "./utils/common-utils";
 
 class App extends React.Component<any, any> {
   private polling: any;
@@ -21,17 +20,39 @@ class App extends React.Component<any, any> {
       sessions: [],
       activeSession: sessionId && sessionId.length ? sessionId[1] : null,
       filterText: "",
-      sessionListFilters: {
-        ...filters,
-      },
+      sessionListFilters: Object.assign(
+        {
+          name: "",
+          os: "",
+          status: "",
+          device_udid: "",
+        },
+        filters
+      ),
     };
   }
 
   getFiltersFromQueryParams() {
     const urlParams = new URLSearchParams(window.location.search);
     let filterObject = {} as any;
-    available_filters.forEach((f) => {
-      filterObject[f] = urlParams.get(f) || "";
+    let allowedFilters: any = {
+      name: "",
+      os: {
+        valid: ["ios", "android"],
+      },
+      status: {
+        valid: ["running", "failed", "passed", "timeout"],
+      },
+      device_udid: "",
+    };
+    Object.keys(allowedFilters).forEach((key) => {
+      if (urlParams.get(key)) {
+        if (!allowedFilters[key].valid) {
+          filterObject[key] = urlParams.get(key);
+        } else if (allowedFilters[key].valid && allowedFilters[key].valid.indexOf(urlParams.get(key)) >= 0) {
+          filterObject[key] = urlParams.get(key);
+        }
+      }
     });
     return filterObject;
   }
@@ -39,13 +60,14 @@ class App extends React.Component<any, any> {
   fetchSessions() {
     ApiService.getAllSessions().then(
       (result) => {
+        let filteredRows = CommonUtils.filterSessionList(result.rows, this.state.sessionListFilters);
         this.setState({
           loading: false,
           sessions: result.rows,
           activeSession:
-            result.rows.filter((r: any) => r.session_id == this.state.activeSession).length > 0
+            filteredRows.filter((r: any) => r.session_id == this.state.activeSession).length > 0
               ? this.state.activeSession
-              : result.rows[0]?.session_id,
+              : filteredRows[0]?.session_id,
         });
       },
       (error) => {
@@ -95,6 +117,15 @@ class App extends React.Component<any, any> {
     }
   }
 
+  getFilteredSessions() {
+    return CommonUtils.filterSessionList(this.getSessions(), this.state.sessionListFilters);
+  }
+
+  onFilterApplied(filters: any) {
+    console.log(filters);
+    this.setState({ sessionListFilters: filters });
+  }
+
   getMainContent() {
     if (this.state.loading) {
       return (
@@ -115,11 +146,12 @@ class App extends React.Component<any, any> {
         <div className="app__main_content code">
           <Router history={history}>
             <SessionList
-              sessions={this.getSessions()}
+              sessions={this.getFilteredSessions()}
               activeSession={this.state.activeSession}
               onSessionCardClicked={this.onSessionCardClicked.bind(this)}
               isFilterApplied={this.state.filterText.length > 0}
               filters={this.state.sessionListFilters}
+              onFilterApplied={this.onFilterApplied.bind(this)}
             />
             <Route
               path="/dashboard/session/:sessionId"
@@ -129,7 +161,10 @@ class App extends React.Component<any, any> {
                 />
               )}
             />
-            <Redirect to={`/dashboard/session/${this.state.activeSession}`} />
+            {this.getFilteredSessions().length == 0 && <Redirect to={`/dashboard/${window.location.search}`} />}
+            {this.state.activeSession && (
+              <Redirect to={`/dashboard/session/${this.state.activeSession}${window.location.search}`} />
+            )}
           </Router>
         </div>
       );

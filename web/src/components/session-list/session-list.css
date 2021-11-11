@@ -31,6 +31,19 @@
   margin-bottom: 30px;
 }
 
+.session-list__message_container {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.session-list__message_text {
+  font-size: 14px;
+  font-weight: 600;
+  color: #142433;
+}
+
 .session-list__padding-helper {
   height: 100px;
   width: 100%;
