@@ -33,3 +33,19 @@
   border: 1px solid #ced8e1;
   display: flex;
 }
+
+.session-details__message_container {
+  display: flex;
+  align-items: center;
+  width: auto;
+  height: 100%;
+  margin: auto;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.session-details__message {
+  font-size: 15px;
+  font-weight: bold;
+  color: #2d2d2d;
+}

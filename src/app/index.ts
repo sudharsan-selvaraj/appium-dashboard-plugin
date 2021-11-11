@@ -17,6 +17,13 @@ function getRouter({ config }: { config: any }) {
 
   router.use(express.static(path.join(__dirname, "../public")));
 
+  /* Healthcheck endpoint used by device-farm plugin to see if the dashboard plugin is loaded */
+  apiRouter.get("/ping", (req, res) => {
+    res.status(200).send({
+      pong: true,
+    });
+  });
+
   apiRouter.get("/sessions", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     res.status(200).send(await Session.findAndCountAll());
   });
