@@ -66,6 +66,6 @@
     "skipLibCheck": true /* Skip type checking of declaration files. */,
     "forceConsistentCasingInFileNames": true /* Disallow inconsistently-cased references to the same file. */
   },
-  "include": ["./src/*"],
+  "include": ["./src/*", "src/plugin/utils.ts", "src/plugin/command-parser.ts"],
   "exclude": ["lib", "node_modules", "test", "typings"]
 }

@@ -4,6 +4,7 @@ import { Op } from "sequelize";
 import { BaseController } from "../commons/base-controller";
 import fs from "fs";
 import { CommandLogs, Logs } from "../../models";
+import * as path from "path";
 
 export class SessionController extends BaseController {
   public initializeRoutes(router: Router, config: any) {
@@ -57,7 +58,7 @@ export class SessionController extends BaseController {
       if (session.video_path) {
         fs.unlinkSync(session.video_path);
       }
-      fs.rmdirSync(`${config.screenshotSavePath}/${session.session_id}`, { recursive: true });
+      fs.rmdirSync(path.join(config.screenshotSavePath, session.session_id), { recursive: true });
     }
     this.sendSuccessResponse(response, {
       success: true,
@@ -72,7 +73,7 @@ export class SessionController extends BaseController {
       },
     });
     if (session && session.video_path) {
-      return response.status(200).sendFile(session.video_path);
+      return response.status(200).sendFile(session.video_path.replace("sselvar4", "balajisoundararajan"));
     }
 
     this.sendFailureResponse(response, "Video not available");
@@ -120,7 +121,7 @@ export class SessionController extends BaseController {
       },
     });
     if (log && log.screen_shot) {
-      return response.status(200).sendFile(log.screen_shot);
+      return response.status(200).sendFile(log.screen_shot.replace("sselvar4", "balajisoundararajan"));
     }
     this.sendFailureResponse(response, "Screen shot not available");
   }

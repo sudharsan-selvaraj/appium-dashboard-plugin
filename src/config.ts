@@ -1,12 +1,12 @@
 import * as os from "os";
-
-let basePath = `${os.homedir()}/.cache/appium-dashboard-plugin`;
+import * as path from "path";
+let basePath = path.join(os.homedir(), ".cache", "appium-dashboard-plugin");
 
 export let config = {
   cacheDir: basePath,
-  databasePath: `${basePath}/`,
-  videoSavePath: `${basePath}/videos`,
-  screenshotSavePath: `${basePath}/screen-shots`,
-  logFilePath: `${basePath}/appium-dashboard-plugin.log`,
+  databasePath: `${basePath}`,
+  videoSavePath: path.join(basePath, "videos"),
+  screenshotSavePath: path.join(basePath, "screen-shots"),
+  logFilePath: path.join(basePath, "appium-dashboard-plugin.log"),
   takeScreenshotsFor: ["click", "setUrl", "setValue", "performActions"],
 };

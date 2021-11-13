@@ -6,6 +6,7 @@ export let registerRoutes = (apiRouter: Router, config: any) => {
   let controllers: [string, IExpressController][] = [
     ["/sessions", new apiControllers.SessionController()],
     ["/builds", new apiControllers.BuildController()],
+    ["/projects", new apiControllers.ProjectController()],
   ];
 
   for (let [path, controller] of controllers) {

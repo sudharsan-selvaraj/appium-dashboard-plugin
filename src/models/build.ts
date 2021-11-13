@@ -1,6 +1,6 @@
-import { Model, Table, AllowNull, Column, HasMany } from "sequelize-typescript";
+import { Model, Table, AllowNull, Column, HasMany, ForeignKey } from "sequelize-typescript";
 import { DataTypes } from "sequelize";
-import { Session } from ".";
+import { Project, Session } from ".";
 
 @Table({
   tableName: "builds",
@@ -24,13 +24,20 @@ class Build extends Model<Build> {
   })
   build_id!: string;
 
+  @Column({
+    allowNull: true,
+    type: DataTypes.INTEGER,
+  })
+  @ForeignKey(() => Project)
+  project_id!: number;
+
   @AllowNull(true)
   @Column({
     type: DataTypes.STRING,
   })
   name!: string;
 
-  @HasMany(() => Session, "build_id")
+  @HasMany(() => Session, { sourceKey: "build_id" })
   sessions!: Session[];
 }
 
