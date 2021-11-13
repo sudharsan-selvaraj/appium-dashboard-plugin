@@ -19,6 +19,7 @@ import { v4 as uuidv4 } from "uuid";
 import { DashboardCommands } from "./dashboard-commands";
 import { PluginCliArgs } from "./interfaces/PluginCliArgs";
 import { SessionTimeoutTracker } from "./session-timeout-tracker";
+import { BuildService } from "./services/build-service";
 
 const CREATE_SESSION = "createSession";
 
@@ -93,9 +94,17 @@ class SessionManager {
   }
 
   private async sessionStarted(command: AppiumCommand) {
+    let caps = Object.assign({}, command.args[2].firstMatch[0], command.args[2].alwaysMatch);
+    let buildName = caps["appium:buildName"];
+
+    let build;
+    if (buildName) {
+      build = await BuildService.getOrCreateNewBuild(buildName);
+    }
     await Session.create({
       ...this.sessionInfo,
       start_time: new Date(),
+      build_id: build?.build_id,
     } as any);
 
     await this.saveCommandLog(command, null);

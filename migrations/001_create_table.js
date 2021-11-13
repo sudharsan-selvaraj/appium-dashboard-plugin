@@ -1,8 +1,24 @@
 var promise = require("bluebird");
 
+var createBuildsTable = function (queryInterface, Sequelize) {
+  return queryInterface.createTable("builds", {
+    id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
+    build_id: { type: Sequelize.TEXT, unique: true },
+    name: { type: Sequelize.TEXT, allowNull: true, unique: true },
+    created_at: Sequelize.DATE,
+    updated_at: Sequelize.DATE,
+  });
+};
+
 var createSessionTable = function (queryInterface, Sequelize) {
   return queryInterface.createTable("session", {
     id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
+    build_id: {
+      type: Sequelize.TEXT,
+      references: { model: "builds", key: "build_id" },
+      onDelete: "CASCADE",
+      allowNull: true,
+    },
     session_id: { type: Sequelize.TEXT, unique: true },
     name: { type: Sequelize.TEXT, allowNull: true },
     platform: { type: Sequelize.TEXT, allowNull: false },
@@ -63,12 +79,15 @@ var createCommandLogsTable = function (queryInterface, Sequelize) {
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return promise.each([createSessionTable, createLogsTable, createCommandLogsTable], function (table) {
-      return table(queryInterface, Sequelize);
-    });
+    return promise.each(
+      [createBuildsTable, createSessionTable, createLogsTable, createCommandLogsTable],
+      function (table) {
+        return table(queryInterface, Sequelize);
+      }
+    );
   },
   down: (queryInterface, Sequelize) => {
-    return promise.each(["logs", "command_logs", "session"], function (table) {
+    return promise.each(["logs", "command_logs", "build", "session"], function (table) {
       return queryInterface.dropTable(table);
     });
   },
