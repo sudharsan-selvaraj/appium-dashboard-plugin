@@ -1,6 +1,9 @@
 import React from "react";
 
-export abstract class RouteReactiveComponent<T, U> extends React.Component<T, U> {
+export abstract class RouteReactiveComponent<T, U> extends React.Component<
+  T,
+  U
+> {
   protected abstract componentUpdated(): void;
 
   componentDidUpdate(preProps: any) {

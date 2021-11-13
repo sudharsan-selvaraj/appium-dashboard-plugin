@@ -1,3 +1,4 @@
+import React from "react";
 import Tab from "../../../widgets/tab/tab";
 import { RouteReactiveComponent } from "../../route-reactive-component";
 import DeviceLogs from "./device-logs/device-logs";
@@ -49,8 +50,14 @@ export default class SessionLogs extends RouteReactiveComponent<any, any> {
   render() {
     return (
       <div className="session-logs__container">
-        <Tab headers={this.getTabs()} activeTab={this.state.activeTab} onTabSwitched={this.onTabSwitched.bind(this)} />
-        <div className="session-logs__body">{this.getActiveTabComponent(this.state.activeTab)}</div>
+        <Tab
+          headers={this.getTabs()}
+          activeTab={this.state.activeTab}
+          onTabSwitched={this.onTabSwitched.bind(this)}
+        />
+        <div className="session-logs__body">
+          {this.getActiveTabComponent(this.state.activeTab)}
+        </div>
       </div>
     );
   }

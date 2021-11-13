@@ -5,6 +5,7 @@ database.sqlite
 lib
 log.txt
 sequelize-config.json
+.DS_Store
 
 # idea files
 .idea

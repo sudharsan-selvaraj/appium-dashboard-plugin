@@ -21,7 +21,9 @@ export default class LogEntry extends React.Component<any, any> {
       return (
         <div className="text-log-params-container">
           <div className="text-log-params-title">{logTitle}</div>
-          <div className="text-log-string-value">{logBody.value != null ? logBody.value.toString() : "null"}</div>
+          <div className="text-log-string-value">
+            {logBody.value != null ? logBody.value.toString() : "null"}
+          </div>
         </div>
       );
     } else if (Array.isArray(logBody.value)) {
@@ -29,14 +31,19 @@ export default class LogEntry extends React.Component<any, any> {
         <div className="text-log-params-container">
           <div className="text-log-params-title">{logTitle}</div>
           <div className="text-log-json-value">
-            <CodeViewer code={JSON.stringify(logBody.value, null, 2)} language="json" />
+            <CodeViewer
+              code={JSON.stringify(logBody.value, null, 2)}
+              language="json"
+            />
           </div>
         </div>
       );
     } else if (logBody.type == "error") {
       return (
         <div className="text-log-error-container">
-          <span className="text-log-params-json-entry-key">{logBody.value.error}:</span>
+          <span className="text-log-params-json-entry-key">
+            {logBody.value.error}:
+          </span>
           <div className="text-log-json-value">{logBody.value.message}</div>
         </div>
       );
@@ -47,12 +54,14 @@ export default class LogEntry extends React.Component<any, any> {
           {React.Children.toArray(
             Object.keys(logBody.value).map((k) => {
               return (
-                <div className="text-log-params-json-row">
+                <div className="text-log-params-json-row" key={k}>
                   <div className="text-log-params-json-entry-key">{k}:</div>
-                  <div className="text-log-params-json-entry-value">{logBody.value[k].toString()}</div>
+                  <div className="text-log-params-json-entry-value">
+                    {logBody.value[k].toString()}
+                  </div>
                 </div>
               );
-            })
+            }),
           )}
         </div>
       );
@@ -77,9 +86,9 @@ export default class LogEntry extends React.Component<any, any> {
     if (!this.props.log.start_time || !this.props.log.end_time) {
       return "";
     } else {
-      let time = CommonUtils.convertTimeToReadableFormat(
+      const time = CommonUtils.convertTimeToReadableFormat(
         new Date(this.props.log.start_time),
-        new Date(this.props.log.end_time)
+        new Date(this.props.log.end_time),
       )
         .replace(/hrs|hr/g, "h")
         .replace(/mins|min/g, "m")
@@ -91,15 +100,21 @@ export default class LogEntry extends React.Component<any, any> {
   render() {
     return (
       <div
-        className={`text-log-entry__wrapper ${this.props.log.is_error ? "warning" : ""} ${
-          this.state.hasExpandableContent ? "expandable" : ""
-        }`}
-        onClick={() => this.toggleExpand(this.state.hasExpandableContent && !this.state.expanded)}
+        className={`text-log-entry__wrapper ${
+          this.props.log.is_error ? "warning" : ""
+        } ${this.state.hasExpandableContent ? "expandable" : ""}`}
+        onClick={() =>
+          this.toggleExpand(
+            this.state.hasExpandableContent && !this.state.expanded,
+          )
+        }
       >
         <div className="text-log-row">
           <div className="text-log-title__wrapper">
             <div className="text-log-entry__title">{this.props.log.title}</div>
-            <div className="text-log-entry__title-info">{this.props.log.title_info}</div>
+            <div className="text-log-entry__title-info">
+              {this.props.log.title_info}
+            </div>
           </div>
           <div className="text-log-title__right-container">
             {this.getDuration() != "" && (
@@ -119,7 +134,9 @@ export default class LogEntry extends React.Component<any, any> {
             )}
           </div>
         </div>
-        {this.props.log.response != null && <div className="text-log-row">{this.getResponseElement()}</div>}
+        {this.props.log.response != null && (
+          <div className="text-log-row">{this.getResponseElement()}</div>
+        )}
 
         {this.props.log.params != null && this.state.expanded && (
           <div className="text-log-row">{this.getParamsElement()}</div>
@@ -129,11 +146,17 @@ export default class LogEntry extends React.Component<any, any> {
           <a
             className="text-log-screenshot__link"
             target="blank"
-            href={ApiService.getScreenshotForLog(this.props.log.session_id, this.props.log.log_id)}
+            href={ApiService.getScreenshotForLog(
+              this.props.log.session_id,
+              this.props.log.log_id,
+            )}
           >
             <img
               className="text-log-screenshot"
-              src={ApiService.getScreenshotForLog(this.props.log.session_id, this.props.log.log_id)}
+              src={ApiService.getScreenshotForLog(
+                this.props.log.session_id,
+                this.props.log.log_id,
+              )}
             />
           </a>
         )}

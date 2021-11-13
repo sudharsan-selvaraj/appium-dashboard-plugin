@@ -39,10 +39,11 @@ export default class DebugLogs extends RouteReactiveComponent<any, any> {
         loading: false,
       });
 
-      if (this.props.session.is_completed) {
-        this.clearPolling();
-      }
-    });
+        if (this.props.session.is_completed) {
+          this.clearPolling();
+        }
+      },
+    );
   }
 
   clearPolling() {
@@ -56,8 +57,8 @@ export default class DebugLogs extends RouteReactiveComponent<any, any> {
       this.state.logs
         .filter((l: any) => l.message.indexOf(this.state.filterText) >= 0)
         .map((l: any) => {
-          return <DebugLogEntry log={l} />;
-        })
+          return <DebugLogEntry key={l} log={l} />;
+        }),
     );
   }
 
@@ -89,7 +90,11 @@ export default class DebugLogs extends RouteReactiveComponent<any, any> {
           <div className="session-debug-logs__filter_container">
             <div className="session-debug-logs__filter_wrapper">
               <SearchIcon />
-              <input type="text" placeholder="Filter logs" onChange={(e) => this.filterLogs(e.target.value)} />
+              <input
+                type="text"
+                placeholder="Filter logs"
+                onChange={(e) => this.filterLogs(e.target.value)}
+              />
             </div>
           </div>
           <div className="session-debug-logs__scroll_container">

@@ -3,7 +3,10 @@ import Tab from "../../../widgets/tab/tab";
 import { RouteReactiveComponent } from "../../route-reactive-component";
 import "./session-capability-details.css";
 
-export default class SessionCapabilityDetails extends RouteReactiveComponent<any, any> {
+export default class SessionCapabilityDetails extends RouteReactiveComponent<
+  any,
+  any
+> {
   private polling: any;
   constructor(props: any) {
     super(props);
@@ -31,7 +34,7 @@ export default class SessionCapabilityDetails extends RouteReactiveComponent<any
   }
 
   getTabProperties() {
-    let tabs = [
+    const tabs = [
       {
         label: "Capabilities",
         key: 0,
@@ -57,8 +60,10 @@ export default class SessionCapabilityDetails extends RouteReactiveComponent<any
   }
 
   getCapabilityEntries() {
-    let capabilityObject =
-      this.state.activeTab == 0 ? this.props.session.capabilities : this.props.session.capabilities.desired;
+    const capabilityObject =
+      this.state.activeTab == 0
+        ? this.props.session.capabilities
+        : this.props.session.capabilities.desired;
     if (!capabilityObject) {
       return React.Children.toArray([]);
     }
@@ -67,16 +72,17 @@ export default class SessionCapabilityDetails extends RouteReactiveComponent<any
         .filter((k) => k != "desired" && capabilityObject[k] != "")
         .map((k) => {
           return (
-            <div className="session-capabilities__entry">
+            <div className="session-capabilities__entry" key={k}>
               <div className="session-capabilities__entry_label">{k}:</div>
               <div className="session-capabilities__entry_value">
-                {typeof capabilityObject[k] == "object" || typeof capabilityObject[k] == "boolean"
+                {typeof capabilityObject[k] == "object" ||
+                typeof capabilityObject[k] == "boolean"
                   ? JSON.stringify(capabilityObject[k])
                   : capabilityObject[k]}
               </div>
             </div>
           );
-        })
+        }),
     );
     //return <div></div>;
   }
@@ -89,7 +95,9 @@ export default class SessionCapabilityDetails extends RouteReactiveComponent<any
           activeTab={this.state.activeTab}
           onTabSwitched={this.onTabSwitched.bind(this)}
         />
-        <div className="session-capabilities__body">{this.getCapabilityEntries()}</div>
+        <div className="session-capabilities__body">
+          {this.getCapabilityEntries()}
+        </div>
       </div>
     );
   }

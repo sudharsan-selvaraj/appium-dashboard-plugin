@@ -14,7 +14,10 @@ export default class CheckBox extends React.Component<any, any> {
           checked={this.props.checked}
           onChange={(event) => this.props.onValueChanged(event.target.checked)}
         />
-        <label className="checkbox-label" onClick={() => this.props.onValueChanged(!this.props.checked)}>
+        <label
+          className="checkbox-label"
+          onClick={() => this.props.onValueChanged(!this.props.checked)}
+        >
           {this.props.label}
         </label>
       </div>

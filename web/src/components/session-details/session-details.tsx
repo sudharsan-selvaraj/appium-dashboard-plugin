@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import SessionDetailsHeader from "./header/session-details-header";
 import LeftDetailsContainer from "./left-container/left-container";
 import "./session-details.css";
@@ -21,11 +21,9 @@ export default class SessionDetails extends RouteReactiveComponent<any, any> {
   deleteSession() {
     if (window.confirm("Are you sure you want to delete this session?")) {
       this.setState({ deleting: true });
-      ApiService.deleteSessionById(this.props.session.session_id)
-        .then((res) => {
-          window.location.reload();
-        })
-        .catch((err) => {});
+      ApiService.deleteSessionById(this.props.session.session_id).then(() => {
+        window.location.reload();
+      });
     }
   }
 
@@ -40,13 +38,18 @@ export default class SessionDetails extends RouteReactiveComponent<any, any> {
         <div className="session-details__wrapper">
           {this.props.session.is_completed && (
             <div className="session-details__action_container">
-              <div className="session-details__action_name">{this.props.session.name || ""}</div>
+              <div className="session-details__action_name">
+                {this.props.session.name || ""}
+              </div>
               {this.state.deleting ? (
                 <div className="session-details__action_items">
                   <Spinner /> Deleting..
                 </div>
               ) : (
-                <div className="session-details__action_items" onClick={this.deleteSession.bind(this)}>
+                <div
+                  className="session-details__action_items"
+                  onClick={this.deleteSession.bind(this)}
+                >
                   <DeleteIcon /> Delete session
                 </div>
               )}
@@ -60,7 +63,9 @@ export default class SessionDetails extends RouteReactiveComponent<any, any> {
               }`}
             >
               <span>Status reason:</span>
-              <div className="session-details__status_message">{this.props.session.session_status_message}</div>
+              <div className="session-details__status_message">
+                {this.props.session.session_status_message}
+              </div>
             </div>
           )}
           <div className="session-details__main_content">

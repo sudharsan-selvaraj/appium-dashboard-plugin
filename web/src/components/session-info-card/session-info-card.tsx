@@ -22,7 +22,9 @@ class SessionInfoCard extends React.Component<any, any> {
   }
 
   getStausClass() {
-    return this.props.session.session_status.toLowerCase() == "passed" ? "success" : "failure";
+    return this.props.session.session_status.toLowerCase() == "passed"
+      ? "success"
+      : "failure";
   }
 
   getStausIcon() {
@@ -36,7 +38,7 @@ class SessionInfoCard extends React.Component<any, any> {
   }
 
   getPlatformIcon() {
-    let os: string = this.props.session.platform_name.toLowerCase();
+    const os: string = this.props.session.platform_name.toLowerCase();
     return {
       android: <img src={android} />,
       ios: <img src={ios} />,
@@ -44,14 +46,17 @@ class SessionInfoCard extends React.Component<any, any> {
   }
 
   getBrowserIcon() {
-    let browser: string = this.props.session.browser_name.toLowerCase();
+    const browser: string = this.props.session.browser_name.toLowerCase();
     return {
       safari: <img src={safari} />,
     }[browser] as any;
   }
 
   getExecutioTime() {
-    let time = CommonUtils.convertTimeToReadableFormat(new Date(this.props.session.start_time), new Date());
+    const time = CommonUtils.convertTimeToReadableFormat(
+      new Date(this.props.session.start_time),
+      new Date(),
+    );
     if (!time.includes("min") && !time.includes("hr")) {
       return "few seconds ago";
     } else {
@@ -63,16 +68,21 @@ class SessionInfoCard extends React.Component<any, any> {
     return (
       <div
         ref={this.elementRef}
-        className={`session-info-card__wrapper ${this.props.isActive ? "active" : ""}`}
+        className={`session-info-card__wrapper ${
+          this.props.isActive ? "active" : ""
+        }`}
         onClick={() => {
           this.props.onCardClicked(this.props.session.session_id);
         }}
       >
         <div className="session-info-card__item">
-          <div className="session-info-card__title">{this.props.session.session_id}</div>
+          <div className="session-info-card__title">
+            {this.props.session.session_id}
+          </div>
           <div className="session-info-card__details_wrapper">
             <div className="session-info-card__platform entry">
-              <div className="device-icon">{this.getPlatformIcon()}</div>v{this.props.session.platform_version}
+              <div className="device-icon">{this.getPlatformIcon()}</div>v
+              {this.props.session.platform_version}
             </div>
             <div className="session-info-card__device_name entry">
               <div className="device-icon">
@@ -96,7 +106,9 @@ class SessionInfoCard extends React.Component<any, any> {
             )}
           </div>
         </div>
-        <div className="session-info-card__status_icon">{this.getStausIcon()}</div>
+        <div className="session-info-card__status_icon">
+          {this.getStausIcon()}
+        </div>
       </div>
     );
   }

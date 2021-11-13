@@ -1,4 +1,5 @@
 class ApiClient {
+  static base_url = process.env.REACT_APP_API_BASE_URL;
   public makeGETRequest(url: string, queryParams: any) {
     return fetch(this.formatUrl(url, queryParams)).then(this.jsonResult);
   }
@@ -18,7 +19,9 @@ class ApiClient {
   }
 
   public formatUrl(url: string, queryParams: any = {}) {
-    return `/dashboard/api${url}?${this.getQueryString(queryParams)}`;
+    return `${ApiClient.base_url}/api${url}?${this.getQueryString(
+      queryParams,
+    )}`;
   }
 
   private jsonResult(res: any) {
@@ -28,7 +31,7 @@ class ApiClient {
   //Parse url query params from json to string
   private getQueryString(queryParams: any) {
     let queryString = "";
-    for (let key in queryParams) {
+    for (const key in queryParams) {
       if (queryString !== "") {
         queryString += "&";
       }
