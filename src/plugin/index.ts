@@ -4,9 +4,9 @@ import { CommandParser } from "./command-parser";
 import { SessionManager } from "./session-manager";
 import { getSessionDetails } from "./utils";
 import { routeToCommand } from "./utils";
-import { pluginLogger } from "./loggers/plugin-logger";
-import { logger } from "./loggers/logger";
-import { PluginCliArgs } from "./interfaces/PluginCliArgs";
+import { pluginLogger } from "../loggers/plugin-logger";
+import { logger } from "../loggers/logger";
+import { PluginCliArgs } from "../interfaces/PluginCliArgs";
 import * as express from "express";
 
 const sessionMap: Map<string, SessionManager> = new Map();

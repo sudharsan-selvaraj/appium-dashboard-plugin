@@ -1,6 +1,6 @@
-import { Session, Logs } from "./models/index";
-import { SessionInfo } from "./interfaces/session-info";
-import { logger } from "./loggers/logger";
+import { Session, Logs } from "../models/index";
+import { SessionInfo } from "../interfaces/session-info";
+import { logger } from "../loggers/logger";
 export class DashboardCommands {
   constructor(private sessionInfo: SessionInfo) {}
 

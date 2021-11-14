@@ -1,4 +1,4 @@
-import { AppiumCommand } from "./interfaces/appium-command";
+import { AppiumCommand } from "../interfaces/appium-command";
 
 export class SessionTimeoutTracker {
   private lastCommandRecievedTime!: Date;

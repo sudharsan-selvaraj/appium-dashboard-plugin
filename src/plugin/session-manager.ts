@@ -1,5 +1,6 @@
-import { SessionInfo } from "./interfaces/session-info";
-import { AppiumCommand } from "./interfaces/appium-command";
+import * as path from "path";
+import { SessionInfo } from "../interfaces/session-info";
+import { AppiumCommand } from "../interfaces/appium-command";
 import { interceptProxyResponse, routeToCommand, isDashboardCommand } from "./utils";
 import {
   getLogs,
@@ -9,16 +10,17 @@ import {
   terminateSession,
 } from "./driver-command-executor";
 import { CommandParser } from "./command-parser";
-import { CommandLogs as commandLogsModel, Session, Logs as LogsTable } from "./models";
+import { CommandLogs as commandLogsModel, Session, Logs as LogsTable } from "../models";
 import { Op } from "sequelize";
-import { logger } from "./loggers/logger";
+import { logger } from "../loggers/logger";
 import * as fs from "fs";
 import "reflect-metadata";
 import { Container } from "typedi";
 import { v4 as uuidv4 } from "uuid";
 import { DashboardCommands } from "./dashboard-commands";
-import { PluginCliArgs } from "./interfaces/PluginCliArgs";
+import { PluginCliArgs } from "../interfaces/PluginCliArgs";
 import { SessionTimeoutTracker } from "./session-timeout-tracker";
+import { getOrCreateNewBuild, getOrCreateNewProject } from "../database-service";
 
 const CREATE_SESSION = "createSession";
 
@@ -93,9 +95,23 @@ class SessionManager {
   }
 
   private async sessionStarted(command: AppiumCommand) {
+    let caps = Object.assign({}, command.args[2].firstMatch[0], command.args[2].alwaysMatch);
+    let buildName = caps["appium:buildName"];
+    let projectName = caps["appium:projectName"];
+
+    let build, project;
+    if (projectName) {
+      project = await getOrCreateNewProject({ projectName });
+    }
+    if (buildName) {
+      build = await getOrCreateNewBuild({ buildName, projectId: project?.id });
+    }
+
     await Session.create({
       ...this.sessionInfo,
       start_time: new Date(),
+      build_id: build?.build_id,
+      project_id: !build ? project?.id : null,
     } as any);
 
     await this.saveCommandLog(command, null);
@@ -185,7 +201,7 @@ class SessionManager {
         if (this.config.takeScreenshotsFor.indexOf(command.commandName) >= 0) {
           let screenShotbase64 = await takeScreenShot(command.driver, this.sessionInfo.session_id);
           if (screenShotbase64.value && typeof screenShotbase64.value === "string") {
-            screenShotPath = `${this.config.screenshotSavePath}/${this.sessionInfo.session_id}/${uuidv4()}.jpg`;
+            screenShotPath = path.join(this.config.screenshotSavePath, this.sessionInfo.session_id, `${uuidv4()}.jpg`);
             fs.writeFileSync(screenShotPath, screenShotbase64.value, "base64");
             logger.info(
               `Screen shot saved for ${command.commandName} command in session ${this.sessionInfo.session_id}`
@@ -219,8 +235,9 @@ class SessionManager {
   }
 
   private async initializeScreenShotFolder() {
-    if (!fs.existsSync(`${this.config.screenshotSavePath}/${this.sessionInfo.session_id}`)) {
-      fs.mkdirSync(`${this.config.screenshotSavePath}/${this.sessionInfo.session_id}`, { recursive: true });
+    let dirPath = path.join(this.config.screenshotSavePath, this.sessionInfo.session_id);
+    if (!fs.existsSync(dirPath)) {
+      fs.mkdirSync(dirPath, { recursive: true });
     }
   }
 
@@ -228,7 +245,7 @@ class SessionManager {
     try {
       let videoBase64String = await stopScreenRecording(driver, this.sessionInfo.session_id);
       if (videoBase64String.value != "" && typeof videoBase64String.value === "string") {
-        let outPath = `${this.config.videoSavePath}/${this.sessionInfo.session_id}.mp4`;
+        let outPath = path.join(this.config.videoSavePath, `${this.sessionInfo.session_id}.mp4`);
         fs.writeFileSync(outPath, videoBase64String.value, "base64");
         logger.info(`Video saved for ${this.sessionInfo.session_id} in ${outPath}`);
         return outPath;

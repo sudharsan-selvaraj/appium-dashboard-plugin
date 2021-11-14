@@ -1,6 +1,8 @@
-import { Model, Table, AllowNull, Column } from "sequelize-typescript";
+import { Model, Table, AllowNull, Column, ForeignKey, HasMany, HasOne, BelongsTo } from "sequelize-typescript";
 import { DataTypes, Op } from "sequelize";
 import { customModelColumn } from "../utils";
+import { Build } from "./build";
+import { Project } from ".";
 
 @Table({
   tableName: "session",
@@ -23,6 +25,20 @@ class Session extends Model<Session> {
     unique: true,
   })
   session_id!: string;
+
+  @AllowNull(true)
+  @Column({
+    type: DataTypes.STRING,
+  })
+  @ForeignKey(() => Build)
+  build_id!: string;
+
+  @AllowNull(true)
+  @Column({
+    type: DataTypes.INTEGER,
+  })
+  @ForeignKey(() => Project)
+  project_id!: number;
 
   @AllowNull(true)
   @Column({
@@ -131,6 +147,12 @@ class Session extends Model<Session> {
     type: DataTypes.TEXT,
   })
   session_status_message?: string;
+
+  @BelongsTo(() => Build)
+  build!: Build;
+
+  @BelongsTo(() => Project)
+  project!: Project;
 }
 
 export { Session };

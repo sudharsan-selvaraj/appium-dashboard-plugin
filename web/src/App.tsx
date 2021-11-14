@@ -21,15 +21,7 @@ class App extends React.Component<any, any> {
       sessions: [],
       activeSession: sessionId && sessionId.length ? sessionId[1] : null,
       filterText: "",
-      sessionListFilters: Object.assign(
-        {
-          name: "",
-          os: "",
-          status: "",
-          device_udid: "",
-        },
-        filters
-      ),
+      sessionListFilters: Object.assign({}, filters),
     };
   }
 
@@ -74,10 +66,10 @@ class App extends React.Component<any, any> {
   fetchSessions() {
     ApiService.getAllSessions(this.state.sessionListFilters).then(
       (result) => {
-        let filteredRows = CommonUtils.filterSessionList(result.rows, this.state.sessionListFilters);
+        let filteredRows = CommonUtils.filterSessionList(result.result.rows, this.state.sessionListFilters);
         this.setState({
           loading: false,
-          sessions: result.rows,
+          sessions: result.result.rows,
           activeSession:
             filteredRows.filter((r: any) => r.session_id == this.state.activeSession).length > 0
               ? this.state.activeSession

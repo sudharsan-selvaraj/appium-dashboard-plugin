@@ -37,10 +37,9 @@ export default class DeviceLogs extends RouteReactiveComponent<any, any> {
   fetchTextLogs() {
     ApiService.getDeviceLogsForSession(this.props.session.session_id).then((result) => {
       this.setState({
-        logs: result.rows,
+        logs: result.result.rows,
         loading: false,
       });
-      console.log(this.props.session.session_id + "===" + this.props.session.is_completed);
       if (this.props.session.is_completed) {
         this.clearPolling();
       }

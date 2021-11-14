@@ -6,7 +6,7 @@ let dbConfig = {};
 ["development", "test", "production"].forEach((env) => {
   dbConfig[env] = {
     dialect: "sqlite",
-    storage: `${config.databasePath}database.sqlite`,
+    storage: path.join(config.databasePath, "database.sqlite"),
   };
 });
 fs.writeFileSync("sequelize-config.json", JSON.stringify(dbConfig, null, 2));
