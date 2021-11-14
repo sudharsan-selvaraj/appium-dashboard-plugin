@@ -93,11 +93,15 @@ class SessionInfoCard extends React.Component<any, any> {
           </div>
           <div className="session-info-card__details_wrapper">
             {this.props.session.is_completed && (
-              <div className={`session-info-card__status entry ${this.getStausClass()}`}>
+              <div
+                className={`session-info-card__status entry ${this.getStausClass()}`}
+              >
                 {this.props.session.session_status}
               </div>
             )}
-            <div className="session-info-card__time">{this.getExecutioTime()}</div>
+            <div className="session-info-card__time">
+              {this.getExecutioTime()}
+            </div>
             {this.props.session.browser_name && (
               <div className="session-info-card__platform">
                 <div className="device-icon">{this.getBrowserIcon()}</div>

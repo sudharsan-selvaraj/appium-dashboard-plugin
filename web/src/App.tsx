@@ -70,7 +70,10 @@ class App extends React.Component<any, any> {
   fetchSessions() {
     ApiService.getAllSessions(this.state.sessionListFilters).then(
       (result) => {
-        let filteredRows = CommonUtils.filterSessionList(result.result.rows, this.state.sessionListFilters);
+        const filteredRows = CommonUtils.filterSessionList(
+          result.result.rows,
+          this.state.sessionListFilters,
+        );
         this.setState({
           loading: false,
           sessions: result.result.rows,

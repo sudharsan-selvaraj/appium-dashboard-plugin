@@ -33,11 +33,12 @@ export default class DebugLogs extends RouteReactiveComponent<any, any> {
   }
 
   fetchTextLogs() {
-    ApiService.getDebugLogsForSession(this.props.session.session_id).then((result) => {
-      this.setState({
-        logs: result.result.rows,
-        loading: false,
-      });
+    ApiService.getDebugLogsForSession(this.props.session.session_id).then(
+      (result) => {
+        this.setState({
+          logs: result.result.rows,
+          loading: false,
+        });
 
         if (this.props.session.is_completed) {
           this.clearPolling();
