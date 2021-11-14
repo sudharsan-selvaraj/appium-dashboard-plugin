@@ -71,11 +71,6 @@ class SessionInfoCard extends React.Component<any, any> {
         <div className="session-info-card__item">
           <div className="session-info-card__title">{this.props.session.session_id}</div>
           <div className="session-info-card__details_wrapper">
-            {this.props.session.is_completed && (
-              <div className={`session-info-card__status entry ${this.getStausClass()}`}>
-                {this.props.session.session_status}
-              </div>
-            )}
             <div className="session-info-card__platform entry">
               <div className="device-icon">{this.getPlatformIcon()}</div>v{this.props.session.platform_version}
             </div>
@@ -83,10 +78,15 @@ class SessionInfoCard extends React.Component<any, any> {
               <div className="device-icon">
                 <PhoneAndroidSharpIcon />
               </div>
-              {this.props.session.device_name}
+              <span>{this.props.session.device_name}</span>
             </div>
           </div>
           <div className="session-info-card__details_wrapper">
+            {this.props.session.is_completed && (
+              <div className={`session-info-card__status entry ${this.getStausClass()}`}>
+                {this.props.session.session_status}
+              </div>
+            )}
             <div className="session-info-card__time">{this.getExecutioTime()}</div>
             {this.props.session.browser_name && (
               <div className="session-info-card__platform">

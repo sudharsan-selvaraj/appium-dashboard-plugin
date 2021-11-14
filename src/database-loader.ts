@@ -9,9 +9,7 @@ export let sequelizeLoader = async ({ dbPath }: { dbPath: string }): Promise<Seq
   const sequelize = new Sequelize({
     dialect: "sqlite",
     storage: path.join(dbPath, "database.sqlite"),
-    logging: (l) => {
-      fs.appendFileSync("/Users/sselvar4/Documents/git/personal/appium-dashboard-plugin/sequelize.log", `${l}\n`);
-    },
+    logging: false,
     /* add all models imported from models package */
     models: Object.keys(models).map((modelName) => {
       return (models as any)[modelName];

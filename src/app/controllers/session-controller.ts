@@ -73,7 +73,7 @@ export class SessionController extends BaseController {
       },
     });
     if (session && session.video_path) {
-      return response.status(200).sendFile(session.video_path.replace("sselvar4", "balajisoundararajan"));
+      return response.status(200).sendFile(session.video_path);
     }
 
     this.sendFailureResponse(response, "Video not available");
@@ -121,7 +121,7 @@ export class SessionController extends BaseController {
       },
     });
     if (log && log.screen_shot) {
-      return response.status(200).sendFile(log.screen_shot.replace("sselvar4", "balajisoundararajan"));
+      return response.status(200).sendFile(log.screen_shot);
     }
     this.sendFailureResponse(response, "Screen shot not available");
   }

@@ -8,3 +8,4 @@ sequelize-config.json
 
 # idea files
 .idea
+sequelize.log
