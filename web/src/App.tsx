@@ -22,19 +22,7 @@ class App extends React.Component<any, any> {
       sessions: [],
       activeSession: sessionId && sessionId.length ? sessionId[1] : null,
       filterText: "",
-<<<<<<< HEAD
       sessionListFilters: Object.assign({}, filters),
-=======
-      sessionListFilters: Object.assign(
-        {
-          name: "",
-          os: "",
-          status: "",
-          device_udid: "",
-        },
-        filters,
-      ),
->>>>>>> a66a44a (chore: Initialize craco, eslint and prettier)
     };
   }
 
