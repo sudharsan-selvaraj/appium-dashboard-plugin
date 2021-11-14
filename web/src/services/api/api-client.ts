@@ -18,7 +18,7 @@ class ApiClient {
   }
 
   public formatUrl(url: string, queryParams: any = {}) {
-    return `http://localhost:4723/dashboard/api${url}?${this.getQueryString(queryParams)}`;
+    return `/dashboard/api${url}?${this.getQueryString(queryParams)}`;
   }
 
   private jsonResult(res: any) {
