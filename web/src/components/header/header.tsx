@@ -17,7 +17,9 @@ export default class Header extends React.Component<any, any> {
             <input
               type="text"
               placeholder="Search for session id"
-              onChange={(e) => this.props.onSessionFilterChanged(e.target.value)}
+              onChange={(e) =>
+                this.props.onSessionFilterChanged(e.target.value)
+              }
             />
           </div>
         </div>

@@ -55,6 +55,7 @@
     "@types/lokijs": "^1.5.7",
     "@types/node": "^16.10.2",
     "@types/uuid": "^8.3.1",
+    "@types/node-fetch": "^3.0.3",
     "typescript": "^4.4.4"
   }
 }

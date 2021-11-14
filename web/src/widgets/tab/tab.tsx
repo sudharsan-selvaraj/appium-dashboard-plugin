@@ -1,6 +1,5 @@
 import React from "react";
 import "./tab.css";
-import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 
 export default class Tab extends React.Component<any, any> {
   constructor(props: any) {
@@ -12,7 +11,10 @@ export default class Tab extends React.Component<any, any> {
       this.props.headers.map((header: any) => {
         return (
           <div
-            className={`tab-header ${header.key == this.props.activeTab ? "active" : ""}`}
+            className={`tab-header ${
+              header.key == this.props.activeTab ? "active" : ""
+            }`}
+            key={header.key}
             onClick={() => {
               this.props.onTabSwitched(header.key);
             }}
@@ -20,7 +22,7 @@ export default class Tab extends React.Component<any, any> {
             <span>{header.label}</span>
           </div>
         );
-      })
+      }),
     );
   }
 

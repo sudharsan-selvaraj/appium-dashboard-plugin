@@ -35,15 +35,17 @@ export default class DeviceLogs extends RouteReactiveComponent<any, any> {
   }
 
   fetchTextLogs() {
-    ApiService.getDeviceLogsForSession(this.props.session.session_id).then((result) => {
-      this.setState({
-        logs: result.result.rows,
-        loading: false,
-      });
-      if (this.props.session.is_completed) {
-        this.clearPolling();
-      }
-    });
+    ApiService.getDeviceLogsForSession(this.props.session.session_id).then(
+      (result) => {
+        this.setState({
+          logs: result.result.rows,
+          loading: false,
+        });
+        if (this.props.session.is_completed) {
+          this.clearPolling();
+        }
+      },
+    );
   }
 
   clearPolling() {
@@ -57,8 +59,12 @@ export default class DeviceLogs extends RouteReactiveComponent<any, any> {
       this.state.logs
         .filter((l: any) => l.message.indexOf(this.state.filterText) >= 0)
         .map((l: any) => {
-          return <div className="console-log-line">{l.message}</div>;
-        })
+          return (
+            <div className="console-log-line" key={l.message}>
+              {l.message}
+            </div>
+          );
+        }),
     );
   }
 
@@ -84,7 +90,11 @@ export default class DeviceLogs extends RouteReactiveComponent<any, any> {
           <div className="session-device-logs__filter_container">
             <div className="session-device-logs__filter_wrapper">
               <SearchIcon />
-              <input type="text" placeholder="Filter logs" onChange={(e) => this.filterLogs(e.target.value)} />
+              <input
+                type="text"
+                placeholder="Filter logs"
+                onChange={(e) => this.filterLogs(e.target.value)}
+              />
             </div>
           </div>
           <div className="session-device-logs__scroll_container">

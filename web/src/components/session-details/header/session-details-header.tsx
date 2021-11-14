@@ -5,7 +5,6 @@ import ios from "../../../assets/ios.svg";
 import android from "../../../assets/android.svg";
 import Moment from "react-moment";
 import CommonUtils from "../../../utils/common-utils";
-import DeleteIcon from "@material-ui/icons/Delete";
 
 export default class SessionDetailsHeader extends React.Component<any, any> {
   private headerProperties: any[] = [
@@ -34,13 +33,19 @@ export default class SessionDetailsHeader extends React.Component<any, any> {
       {
         label: "Start Time",
         formatValue: (session: any) => {
-          return <Moment format="DD-MMM-YYYY HH:mm:ss">{session.start_time}</Moment>;
+          return (
+            <Moment format="DD-MMM-YYYY HH:mm:ss">{session.start_time}</Moment>
+          );
         },
       },
       {
         label: "End Time",
         formatValue: (session: any) => {
-          return session.end_time ? <Moment format="DD-MMM-YYYY HH:mm:ss">{session.end_time}</Moment> : "-";
+          return session.end_time ? (
+            <Moment format="DD-MMM-YYYY HH:mm:ss">{session.end_time}</Moment>
+          ) : (
+            "-"
+          );
         },
       },
       {
@@ -48,7 +53,7 @@ export default class SessionDetailsHeader extends React.Component<any, any> {
         formatValue: (session: any) => {
           return CommonUtils.convertTimeToReadableFormat(
             new Date(session.start_time),
-            session.end_time ? new Date(session.end_time) : new Date()
+            session.end_time ? new Date(session.end_time) : new Date(),
           );
         },
       },
@@ -74,7 +79,7 @@ export default class SessionDetailsHeader extends React.Component<any, any> {
           {
             label: "Browser",
             key: "browser_name",
-            icon: (session: any) => {
+            icon: () => {
               return <img src={safari} />;
             },
           },
@@ -86,8 +91,6 @@ export default class SessionDetailsHeader extends React.Component<any, any> {
   constructor(props: any) {
     super(props);
   }
-
-  componentDidUpdate() {}
 
   getHeaderRow(rowEntries: any[]) {
     return React.Children.toArray(
@@ -102,17 +105,23 @@ export default class SessionDetailsHeader extends React.Component<any, any> {
           return entry.formatValue(this.props.session);
         }
         return (
-          <div className="session-details__header_column_row">
-            <div className="session-details__header_column_label">{entry.label}:</div>
+          <div className="session-details__header_column_row" key={entry.label}>
+            <div className="session-details__header_column_label">
+              {entry.label}:
+            </div>
             <div className="session-details__header_column_value">
               {entry.icon && (
-                <div className="session-details__header_column_value_icon">{entry.icon(this.props.session)}</div>
+                <div className="session-details__header_column_value_icon">
+                  {entry.icon(this.props.session)}
+                </div>
               )}
-              {entry.formatValue ? entry.formatValue(this.props.session) : this.props.session[entry.key]}
+              {entry.formatValue
+                ? entry.formatValue(this.props.session)
+                : this.props.session[entry.key]}
             </div>
           </div>
         );
-      })
+      }),
     );
   }
 
@@ -121,8 +130,12 @@ export default class SessionDetailsHeader extends React.Component<any, any> {
       <div className="session-details__header">
         {React.Children.toArray(
           this.headerProperties.map((entries) => {
-            return <div className="session-details__header_column">{this.getHeaderRow(entries)}</div>;
-          })
+            return (
+              <div className="session-details__header_column" key={entries}>
+                {this.getHeaderRow(entries)}
+              </div>
+            );
+          }),
         )}
       </div>
     );

@@ -1,6 +1,5 @@
 import React from "react";
 import "./session-filter.css";
-import SearchIcon from "@material-ui/icons/Search";
 import { FormControl, MenuItem, Select } from "@material-ui/core";
 
 export default class SessionFilter extends React.Component<any, any> {
@@ -94,7 +93,11 @@ export default class SessionFilter extends React.Component<any, any> {
           <FormControl className="filter-dropdown">
             <Select
               id="status-filter-select"
-              value={this.state.filter.status == "" ? "none" : this.state.filter.status}
+              value={
+                this.state.filter.status == ""
+                  ? "none"
+                  : this.state.filter.status
+              }
               label="Satus"
               onChange={this.onStatusChanged.bind(this)}
             >

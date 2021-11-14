@@ -35,7 +35,9 @@ class ApiService {
   }
 
   public static getScreenshotForLog(sessionId: string, logId: string) {
-    return apiClient.formatUrl(`/sessions/${sessionId}/log/${logId}/screen-shot`);
+    return apiClient.formatUrl(
+      `/sessions/${sessionId}/log/${logId}/screen-shot`,
+    );
   }
 }
 

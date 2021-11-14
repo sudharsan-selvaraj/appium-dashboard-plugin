@@ -5,17 +5,18 @@ import SessionDetails from "./components/session-details/session-details";
 import "./App.css";
 import { ApiService } from "./services/api";
 import Spinner from "./widgets/spinner/spinner";
-import { Router, Route, Redirect, Switch } from "react-router-dom";
+import { Router, Route, Redirect } from "react-router-dom";
 import history from "./history";
 import CommonUtils from "./utils/common-utils";
-import { ISessionFilterQuery } from "./interfaces/filters";
 
 class App extends React.Component<any, any> {
   private polling: any;
   constructor(props: any) {
     super(props);
-    let sessionId = window.location.pathname.match(new RegExp(/dashboard\/session\/(.*)/));
-    let filters = this.getFiltersFromQueryParams();
+    const sessionId = window.location.pathname.match(
+      new RegExp(/dashboard\/session\/(.*)/),
+    );
+    const filters = this.getFiltersFromQueryParams();
     this.state = {
       loading: true,
       sessions: [],
@@ -27,8 +28,8 @@ class App extends React.Component<any, any> {
 
   getFiltersFromQueryParams() {
     const urlParams = new URLSearchParams(window.location.search);
-    let filterObject = {} as any;
-    let allowedFilters: any = {
+    const filterObject = {} as any;
+    const allowedFilters: any = {
       name: "",
       os: {
         valid: ["ios", "android"],
@@ -49,7 +50,10 @@ class App extends React.Component<any, any> {
         if (!allowedFilters[key].valid) {
           filterObject[key] = urlParams.get(key);
         } else if (allowedFilters[key].valid) {
-          if (typeof allowedFilters[key].valid === "function" && allowedFilters[key].valid(urlParams.get(key))) {
+          if (
+            typeof allowedFilters[key].valid === "function" &&
+            allowedFilters[key].valid(urlParams.get(key))
+          ) {
             filterObject[key] = urlParams.get(key);
           } else if (
             Array.isArray(allowedFilters[key].valid) &&
@@ -66,22 +70,27 @@ class App extends React.Component<any, any> {
   fetchSessions() {
     ApiService.getAllSessions(this.state.sessionListFilters).then(
       (result) => {
-        let filteredRows = CommonUtils.filterSessionList(result.result.rows, this.state.sessionListFilters);
+        const filteredRows = CommonUtils.filterSessionList(
+          result.result.rows,
+          this.state.sessionListFilters,
+        );
         this.setState({
           loading: false,
           sessions: result.result.rows,
           activeSession:
-            filteredRows.filter((r: any) => r.session_id == this.state.activeSession).length > 0
+            filteredRows.filter(
+              (r: any) => r.session_id == this.state.activeSession,
+            ).length > 0
               ? this.state.activeSession
               : filteredRows[0]?.session_id,
         });
       },
-      (error) => {
+      () => {
         this.setState({
           loading: false,
           sessions: [],
         });
-      }
+      },
     );
   }
 
@@ -117,14 +126,19 @@ class App extends React.Component<any, any> {
 
   getSessions() {
     if (this.state.filterText) {
-      return this.state.sessions.filter((s: any) => s.session_id.indexOf(this.state.filterText) >= 0);
+      return this.state.sessions.filter(
+        (s: any) => s.session_id.indexOf(this.state.filterText) >= 0,
+      );
     } else {
       return this.state.sessions;
     }
   }
 
   getFilteredSessions() {
-    return CommonUtils.filterSessionList(this.getSessions(), this.state.sessionListFilters);
+    return CommonUtils.filterSessionList(
+      this.getSessions(),
+      this.state.sessionListFilters,
+    );
   }
 
   onFilterApplied(filters: any) {
@@ -137,14 +151,18 @@ class App extends React.Component<any, any> {
       return (
         <div className="app__loading">
           <Spinner />
-          <div className="app__loading_message code">Loading... Please wait</div>
+          <div className="app__loading_message code">
+            Loading... Please wait
+          </div>
         </div>
       );
     } else if (this.state.sessions.length <= 0) {
       return (
         <div className="app__loading">
           <Spinner />
-          <div className="app__loading_message code">Waiting for new session to start</div>
+          <div className="app__loading_message code">
+            Waiting for new session to start
+          </div>
         </div>
       );
     } else {
@@ -163,13 +181,21 @@ class App extends React.Component<any, any> {
               path="/dashboard/session/:sessionId"
               render={(props: any) => (
                 <SessionDetails
-                  session={this.state.sessions.filter((s: any) => s.session_id == props.match.params.sessionId)[0]}
+                  session={
+                    this.state.sessions.filter(
+                      (s: any) => s.session_id == props.match.params.sessionId,
+                    )[0]
+                  }
                 />
               )}
             />
-            {this.getFilteredSessions().length == 0 && <Redirect to={`/dashboard/${window.location.search}`} />}
+            {this.getFilteredSessions().length == 0 && (
+              <Redirect to={`/dashboard/${window.location.search}`} />
+            )}
             {this.state.activeSession && (
-              <Redirect to={`/dashboard/session/${this.state.activeSession}${window.location.search}`} />
+              <Redirect
+                to={`/dashboard/session/${this.state.activeSession}${window.location.search}`}
+              />
             )}
           </Router>
         </div>
@@ -181,7 +207,9 @@ class App extends React.Component<any, any> {
     return (
       <div className="app__container">
         <div className="app__wrapper">
-          <Header onSessionFilterChanged={this.onSessionFilterChanged.bind(this)} />
+          <Header
+            onSessionFilterChanged={this.onSessionFilterChanged.bind(this)}
+          />
           {this.getMainContent()}
         </div>
       </div>

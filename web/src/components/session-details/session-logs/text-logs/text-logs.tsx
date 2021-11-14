@@ -31,22 +31,28 @@ export default class TextLogs extends RouteReactiveComponent<any, any> {
   }
 
   initializeLogs() {
-    this.setState({ loading: true, showScreenShots: true, showExceptions: false });
+    this.setState({
+      loading: true,
+      showScreenShots: true,
+      showExceptions: false,
+    });
     this.fetchTextLogs();
     this.clearPolling();
     this.polling = setInterval(this.fetchTextLogs.bind(this), 5000);
   }
 
   fetchTextLogs() {
-    ApiService.getTextLogsForSession(this.props.session.session_id).then((result) => {
-      this.setState({
-        logs: result.result.rows,
-        loading: false,
-      });
-      if (this.props.session.is_completed) {
-        this.clearPolling();
-      }
-    });
+    ApiService.getTextLogsForSession(this.props.session.session_id).then(
+      (result) => {
+        this.setState({
+          logs: result.result.rows,
+          loading: false,
+        });
+        if (this.props.session.is_completed) {
+          this.clearPolling();
+        }
+      },
+    );
   }
 
   clearPolling() {
@@ -62,8 +68,14 @@ export default class TextLogs extends RouteReactiveComponent<any, any> {
           return this.state.showExceptions ? l.is_error : true;
         })
         .map((l: any) => {
-          return <LogEntry log={l} showScreenShots={this.state.showScreenShots} />;
-        })
+          return (
+            <LogEntry
+              key={l}
+              log={l}
+              showScreenShots={this.state.showScreenShots}
+            />
+          );
+        }),
     );
   }
 
@@ -107,7 +119,8 @@ export default class TextLogs extends RouteReactiveComponent<any, any> {
             </div>
           </div>
           <div className="session-text-logs__scroll_container">
-            {this.getLogEntries()} <div className="session-text-logs__bottom_padding_container" />
+            {this.getLogEntries()}{" "}
+            <div className="session-text-logs__bottom_padding_container" />
           </div>
         </div>
       );

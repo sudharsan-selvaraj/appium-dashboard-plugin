@@ -32,25 +32,31 @@ export default class SessionList extends React.Component<any, any> {
       this.props.sessions.map((session: any) => {
         return (
           <SessionInfoCard
+            key={session}
             session={session}
             onCardClicked={this.props.onSessionCardClicked}
             isActive={this.props.activeSession == session.session_id}
           />
         );
-      })
+      }),
     );
   }
 
   render() {
-    let session = this.getSessions();
+    const session = this.getSessions();
     return (
       <div className="session-list__container">
         <div className="session-list__header">
-          <div className="session-list__filter_header" onClick={() => this.toggleFilter(!this.state.showFilter)}>
+          <div
+            className="session-list__filter_header"
+            onClick={() => this.toggleFilter(!this.state.showFilter)}
+          >
             <FilterListRoundedIcon />
             FILTERS
             {this.getActiveFilterCount() > 0 && (
-              <div className="session-list__filter_count">{this.getActiveFilterCount()}</div>
+              <div className="session-list__filter_count">
+                {this.getActiveFilterCount()}
+              </div>
             )}
           </div>
           {this.state.showFilter && (
@@ -70,7 +76,9 @@ export default class SessionList extends React.Component<any, any> {
           </div>
         ) : (
           <div className="session-list__message_container">
-            <div className="session-list__message_text">No sessions found for given filter..</div>
+            <div className="session-list__message_text">
+              No sessions found for given filter..
+            </div>
           </div>
         )}
       </div>

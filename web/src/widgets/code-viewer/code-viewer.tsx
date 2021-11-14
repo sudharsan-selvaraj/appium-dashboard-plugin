@@ -13,13 +13,18 @@ const Pre = styled.pre`
 export default class CodeViewer extends React.Component<any, any> {
   render() {
     return (
-      <Highlight {...defaultProps} theme={theme} code={this.props.code} language={this.props.language}>
+      <Highlight
+        {...defaultProps}
+        theme={theme}
+        code={this.props.code}
+        language={this.props.language}
+      >
         {({ className, style, tokens, getLineProps, getTokenProps }) => (
           <Pre className={className} style={style}>
             {tokens.map((line, i) => (
-              <div {...getLineProps({ line, key: i })}>
+              <div key={i} {...getLineProps({ line, key: i })}>
                 {line.map((token, key) => (
-                  <span {...getTokenProps({ token, key })} />
+                  <span key={key} {...getTokenProps({ token, key })} />
                 ))}
               </div>
             ))}

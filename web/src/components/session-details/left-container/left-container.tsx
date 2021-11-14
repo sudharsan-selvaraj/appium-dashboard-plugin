@@ -10,11 +10,19 @@ export default class LeftDetailsContainer extends React.Component<any, any> {
 
   getVideoPlayer() {
     if (this.props.session.video_path) {
-      return <VideoPlayer video_path={ApiService.getVideoForSession(this.props.session.session_id)} />;
+      return (
+        <VideoPlayer
+          video_path={ApiService.getVideoForSession(
+            this.props.session.session_id,
+          )}
+        />
+      );
     } else if (!this.props.session.is_completed) {
       return (
         <div className="no-video__banner">
-          <div className="no-video__banner_text">Video will be available once the execution is completed</div>
+          <div className="no-video__banner_text">
+            Video will be available once the execution is completed
+          </div>
         </div>
       );
     }
