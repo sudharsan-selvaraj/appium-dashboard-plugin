@@ -1,5 +1,5 @@
 import React from "react";
-import { ApiService } from "../../../services/api";
+import CommonUtils from "../../../utils/common-utils";
 import SessionCapabilityDetails from "../capability-details/session-capability-details";
 import VideoPlayer from "../video-player/video-player";
 import "./left-container.css";
@@ -12,7 +12,7 @@ export default class LeftDetailsContainer extends React.Component<any, any> {
     if (this.props.session.video_path) {
       return (
         <VideoPlayer
-          video_path={ApiService.getVideoForSession(
+          video_path={CommonUtils.getVideoForSession(
             this.props.session.session_id,
           )}
         />

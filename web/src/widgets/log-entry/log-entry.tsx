@@ -5,7 +5,6 @@ import CommonUtils from "../../utils/common-utils";
 import AccessTimeIcon from "@material-ui/icons/AccessTime";
 
 import "./log-entry.css";
-import { ApiService } from "../../services/api";
 import CodeViewer from "../code-viewer/code-viewer";
 export default class LogEntry extends React.Component<any, any> {
   constructor(props: any) {
@@ -146,14 +145,14 @@ export default class LogEntry extends React.Component<any, any> {
           <a
             className="text-log-screenshot__link"
             target="blank"
-            href={ApiService.getScreenshotForLog(
+            href={CommonUtils.getScreenshotForLog(
               this.props.log.session_id,
               this.props.log.log_id,
             )}
           >
             <img
               className="text-log-screenshot"
-              src={ApiService.getScreenshotForLog(
+              src={CommonUtils.getScreenshotForLog(
                 this.props.log.session_id,
                 this.props.log.log_id,
               )}

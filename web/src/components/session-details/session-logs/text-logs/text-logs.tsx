@@ -1,5 +1,5 @@
 import React from "react";
-import { ApiService } from "../../../../services/api";
+import SessionApi from "../../../../api/sessions";
 import CheckBox from "../../../../widgets/check-box/checkbox";
 import LogEntry from "../../../../widgets/log-entry/log-entry";
 import Spinner from "../../../../widgets/spinner/spinner";
@@ -42,7 +42,7 @@ export default class TextLogs extends RouteReactiveComponent<any, any> {
   }
 
   fetchTextLogs() {
-    ApiService.getTextLogsForSession(this.props.session.session_id).then(
+    SessionApi.getTextLogsForSession(this.props.session.session_id).then(
       (result) => {
         this.setState({
           logs: result.result.rows,

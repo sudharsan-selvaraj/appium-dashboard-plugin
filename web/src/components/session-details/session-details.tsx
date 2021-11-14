@@ -4,10 +4,10 @@ import LeftDetailsContainer from "./left-container/left-container";
 import "./session-details.css";
 import SessionLogs from "./session-logs/session-logs";
 import DeleteIcon from "@material-ui/icons/DeleteOutlineTwoTone";
-import { ApiService } from "../../services/api";
 import Spinner from "../../widgets/spinner/spinner";
 import { RouteReactiveComponent } from "../route-reactive-component";
 import ReactGA from "react-ga";
+import SessionApi from "../../api/sessions";
 
 export default class SessionDetails extends RouteReactiveComponent<any, any> {
   constructor(props: any) {
@@ -21,7 +21,7 @@ export default class SessionDetails extends RouteReactiveComponent<any, any> {
   deleteSession() {
     if (window.confirm("Are you sure you want to delete this session?")) {
       this.setState({ deleting: true });
-      ApiService.deleteSessionById(this.props.session.session_id).then(() => {
+      SessionApi.deleteSessionById(this.props.session.session_id).then(() => {
         window.location.reload();
       });
     }

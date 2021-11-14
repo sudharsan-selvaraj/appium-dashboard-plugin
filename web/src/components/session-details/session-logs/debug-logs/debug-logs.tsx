@@ -1,10 +1,10 @@
 import React from "react";
-import { ApiService } from "../../../../services/api";
 import Spinner from "../../../../widgets/spinner/spinner";
 import { RouteReactiveComponent } from "../../../route-reactive-component";
 import DebugLogEntry from "./debug-log-entry/debug-log-entry";
 import SearchIcon from "@material-ui/icons/Search";
 import "./debug-logs.css";
+import SessionApi from "../../../../api/sessions";
 
 export default class DebugLogs extends RouteReactiveComponent<any, any> {
   private polling: any;
@@ -33,7 +33,7 @@ export default class DebugLogs extends RouteReactiveComponent<any, any> {
   }
 
   fetchTextLogs() {
-    ApiService.getDebugLogsForSession(this.props.session.session_id).then(
+    SessionApi.getDebugLogsForSession(this.props.session.session_id).then(
       (result) => {
         this.setState({
           logs: result.result.rows,

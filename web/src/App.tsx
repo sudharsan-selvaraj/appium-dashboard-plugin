@@ -3,11 +3,11 @@ import Header from "./components/header/header";
 import SessionList from "./components/session-list/session-list";
 import SessionDetails from "./components/session-details/session-details";
 import "./App.css";
-import { ApiService } from "./services/api";
 import Spinner from "./widgets/spinner/spinner";
 import { Router, Route, Redirect } from "react-router-dom";
 import history from "./history";
 import CommonUtils from "./utils/common-utils";
+import SessionApi from "./api/sessions";
 
 class App extends React.Component<any, any> {
   private polling: any;
@@ -68,7 +68,7 @@ class App extends React.Component<any, any> {
   }
 
   fetchSessions() {
-    ApiService.getAllSessions(this.state.sessionListFilters).then(
+    SessionApi.getAllSessions(this.state.sessionListFilters).then(
       (result) => {
         const filteredRows = CommonUtils.filterSessionList(
           result.result.rows,

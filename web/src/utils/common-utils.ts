@@ -1,3 +1,5 @@
+import api from "../api";
+
 export default class CommonUtils {
   public static convertTimeToReadableFormat(startDate: Date, endDate: Date) {
     const seconds = Math.round(
@@ -63,5 +65,13 @@ export default class CommonUtils {
     return filters.reduce((acc: any, filter: any) => {
       return acc.filter(filter);
     }, sessions);
+  }
+
+  static getVideoForSession(sessionId: string) {
+    return `${api.base_url}/api/sessions/${sessionId}/video`;
+  }
+
+  static getScreenshotForLog(sessionId: string, logId: string) {
+    return `${api.base_url}/sessions/${sessionId}/log/${logId}/screen-shot`;
   }
 }
