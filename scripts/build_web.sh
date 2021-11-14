@@ -1,7 +1,7 @@
 cd ../web
-npm install
+yarn install
 export REACT_APP_API_BASE_URL="/dashboard"
-npm run build
+yarn run build
 cd ..
 rm -rf lib/public
 mkdir -p lib/public
