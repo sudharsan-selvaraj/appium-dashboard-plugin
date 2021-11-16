@@ -1,9 +1,12 @@
 import { ListEntityType } from ".";
 import { AppState } from "../..";
+import { PaginatedResponse } from "../../../interfaces/api";
+import { ReduxActionType } from "../../../interfaces/redux";
+import Session from "../../../interfaces/session";
 import createReducer from "../../../utils/createReducer";
 import ReduxActionTypes from "../../redux-action-types";
 
-export type SessionEntityType = ListEntityType<any>;
+export type SessionEntityType = ListEntityType<Session>;
 
 const initialState: SessionEntityType = {
   count: 0,
@@ -12,5 +15,17 @@ const initialState: SessionEntityType = {
 };
 
 export default createReducer(initialState, {
-  [ReduxActionTypes.FETCH_SESSION_SUCCESS]: (state: AppState) => state,
+  [ReduxActionTypes.FETCH_SESSION_INIT]: (state: SessionEntityType) => ({
+    ...state,
+    isLoading: true,
+  }),
+  [ReduxActionTypes.FETCH_SESSION_SUCCESS]: (
+    state: SessionEntityType,
+    action: ReduxActionType<PaginatedResponse<Session>>,
+  ) => ({
+    ...state,
+    count: action.payload?.count,
+    items: action.payload?.rows,
+    isLoading: false,
+  }),
 });

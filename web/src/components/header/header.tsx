@@ -11,6 +11,11 @@ export default function Header(props: any) {
     dispatch({
       type: ReduxActionTypes.INIT_APP,
     });
+    setTimeout(() => {
+      dispatch({
+        type: ReduxActionTypes.FETCH_SESSION_INIT,
+      });
+    }, 1000);
   }, []);
   return (
     <div className="header__wrapper">

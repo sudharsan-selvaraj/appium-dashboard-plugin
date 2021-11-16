@@ -1,6 +1,8 @@
-import { takeEvery } from "redux-saga/effects";
+import { put } from "redux-saga/effects";
 import ReduxActionTypes from "../redux-action-types";
 
 export default function* () {
-  console.log("App initialized");
+  yield put({
+    type: ReduxActionTypes.INIT_SESSION_SAGA,
+  });
 }

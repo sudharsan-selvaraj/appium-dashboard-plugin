@@ -1,6 +1,6 @@
 import React from "react";
 import Header from "./components/header/header";
-import SessionList from "./components/session-list/session-list";
+import SessionList from "./components/UI/organisms/session-list";
 import SessionDetails from "./components/session-details/session-details";
 import "./App.css";
 import Spinner from "./widgets/spinner/spinner";

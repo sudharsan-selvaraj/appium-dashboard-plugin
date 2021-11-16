@@ -7,6 +7,7 @@ import { BrowserRouter } from "react-router-dom";
 import { Provider } from "react-redux";
 import Store from "./store";
 import ReactGA from "react-ga";
+import AppRouter from "./App-router";
 ReactGA.initialize("G-0M0KXZV1WM", {
   gaOptions: {
     cookieDomain: "none",
@@ -16,9 +17,10 @@ ReactGA.initialize("G-0M0KXZV1WM", {
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={Store}>
-      <BrowserRouter>
+      {/* <BrowserRouter>
         <App />
-      </BrowserRouter>
+      </BrowserRouter> */}
+      <AppRouter />
     </Provider>
   </React.StrictMode>,
   document.getElementById("root"),

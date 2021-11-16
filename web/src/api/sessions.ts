@@ -3,8 +3,10 @@ import Api from "./index";
 import { AxiosResponse } from "axios";
 
 type ListResponse = {
-  count: number;
-  rows: any[];
+  result: {
+    count: number;
+    rows: any[];
+  };
 };
 
 export default class SessionApi {
