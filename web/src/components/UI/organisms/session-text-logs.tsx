@@ -1,102 +1,66 @@
 import React from "react";
+import { useState } from "react";
+import { useSelector } from "react-redux";
 import styled from "styled-components";
-import SessionApi from "../../../../api/sessions";
 import CheckBox from "../../../../widgets/check-box/checkbox";
 import LogEntry from "../../../../widgets/log-entry/log-entry";
 import Spinner from "../../../../widgets/spinner/spinner";
 import Session from "../../../interfaces/session";
-import { RouteReactiveComponent } from "../../../route-reactive-component";
+import { getisTextLogsLoading, getTextLogs } from "../../../store/selectors/entities/logs-selector";
 import "./text-logs.css";
 
-export default class TextLogs extends RouteReactiveComponent<any, any> {
 
+function useLogs(showScreenShots: boolean, showExceptions: boolean) {
+  const logs = useSelector(getTextLogs);
 
-  protected componentUpdated(): void {
-    this.initializeLogs();
-  }
-
-  fetchTextLogs() {
-    SessionApi.getTextLogsForSession(this.props.session.session_id).then(
-      (result) => {
-        this.setState({
-          logs: result.result.rows,
-          loading: false,
-        });
-        if (this.props.session.is_completed) {
-          this.clearPolling();
-        }
-      },
-    );
-  }
-
-  clearPolling() {
-    if (this.polling) {
-      clearInterval(this.polling);
-    }
-  }
-
-  getLogEntries() {
-    return React.Children.toArray(
-      this.state.logs
-        .filter((l: any) => {
-          return this.state.showExceptions ? l.is_error : true;
-        })
-        .map((l: any) => {
-          return (
-            <LogEntry
-              key={l}
-              log={l}
-              showScreenShots={this.state.showScreenShots}
-            />
-          );
-        }),
-    );
-  }
+  return logs.filter((log: any) => !showExceptions || log.is_error)
+    .map((log: any) => (
+      <LogEntry
+        key={log}
+        log={log}
+        showScreenShots={showScreenShots}
+      />
+    ));
 }
 
 const Container = styled.div``;
+
+const Header = styled.div``;
+
+const Content = styled.div``;
 
 type PropsType = {
   session: Session;
 };
 
 export default function SessionTextLogs(props: PropsType) {
-  const { session } = props; 
-  const isLoading =
+  const { session } = props;
+  const [showScreenShots, setShowScreenShots] = useState(false);
+  const [showExceptions, setShowExceptions] = useState(false);
+  const logs = useLogs(showScreenShots, showExceptions);
+  const isLoading = useSelector(getisTextLogsLoading);
 
-  if (this.state.loading) {
-      return (
-        <div className="session-text-logs__wrapper">
-          <div className="loading-container">
-            <Spinner />
-            Loading..
-          </div>
-        </div>
-      );
-    }
-
-  return (
-    <Container>
-      <div className="session-text-logs__wrapper">
-        <div className="session-text-logs__filter_container">
-          <div className="session-text-logs__filter_input_wrapper">
-            <CheckBox
-              label="Show Images"
-              checked={this.state.showScreenShots}
-              onValueChanged={this.toggleScreenShots.bind(this)}
-            />
-            <CheckBox
-              label="Show Errors Only"
-              checked={this.state.showExceptions}
-              onValueChanged={this.toggleExceptions.bind(this)}
-            />
-          </div>
-        </div>
-        <div className="session-text-logs__scroll_container">
-          {this.getLogEntries()}{" "}
-          <div className="session-text-logs__bottom_padding_container" />
-        </div>
-      </div>
-    </Container>
-  );
+  if (isLoading) {
+    return <Spinner />;
+  } else {
+    return (
+      <Container>
+        <Header>
+          <CheckBox
+            label="Show Images"
+            checked={showScreenShots}
+            onValueChanged={() => setShowScreenShots(true)}
+          />
+          <CheckBox
+            label="Show Errors Only"
+            checked={showExceptions}
+            onValueChanged={() => setShowExceptions(true)}
+          />
+        </Header>
+        <Content>
+          {logs}
+        </Content>
+      </Container>
+    );
+  }
 }
