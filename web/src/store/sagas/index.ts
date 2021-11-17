@@ -1,11 +1,13 @@
 import { all, takeLatest } from "redux-saga/effects";
 import ReduxActionTypes from "../redux-action-types";
-import applicationSaga from "./application-saga";
-import sessionSaga from "./session-saga";
+import ApplicationSaga from "./application-saga";
+import PollingSaga from "./polling-saga";
+import SessionSaga from "./session-saga";
 
 export default function* initSaga() {
   yield all([
-    takeLatest(ReduxActionTypes.INIT_APP, applicationSaga),
-    takeLatest(ReduxActionTypes.INIT_SESSION_SAGA, sessionSaga),
+    takeLatest(ReduxActionTypes.INIT_APP, ApplicationSaga),
+    takeLatest(ReduxActionTypes.INIT_SESSION_SAGA, SessionSaga),
+    takeLatest(ReduxActionTypes.INIT_POLLING_SAGA, PollingSaga),
   ]);
 }

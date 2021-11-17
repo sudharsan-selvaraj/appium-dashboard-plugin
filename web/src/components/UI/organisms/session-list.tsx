@@ -13,6 +13,7 @@ import { getSelectedSession, getSessions } from "../../../store/selectors/entiti
 import { useCallback } from "react";
 import { setSelectedSession } from "../../../store/actions/session-actions";
 import Session from "../../../interfaces/session";
+import SessionCard from "./session-card";
 
 const Container = styled.div`
   display: flex;
@@ -70,12 +71,10 @@ export default function SessionList(props: SessionListPropsType) {
         <Row height={`calc(100vh - ${HEADER_HEIGHT})`}>
           {sessions.length > 0 ? (
             <>
-              {sessions.map((session: any) => (
-                <SessionInfoCard
-                  key={session}
+              {sessions.map((session: Session) => (
+                <SessionCard
+                  key={session.session_id}
                   session={session}
-                  onCardClicked={selectSession}
-                  isActive={SelectedSession == session.session_id}
                 />
               ))}
             </>

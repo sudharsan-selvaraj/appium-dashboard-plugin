@@ -27,7 +27,12 @@ export default class CommonUtils {
           ? levels[i][1].substr(0, levels[i][1].length - 1)
           : levels[i][1]);
     }
-    return returntext.trim();
+
+    if (!returntext.includes("min") && !returntext.includes("hr")) {
+      return "few seconds ago";
+    } else {
+      return `${returntext.replace(/[0-9]{1,} (secs|sec)/g, "")} ago`;
+    }
   }
 
   public static filterSessionList(sessions: any[], filter: any) {

@@ -34,7 +34,7 @@ const Container = styled.div`
 
 type ParallelLayoutType = {
   className?: string;
-  children: JSX.Element;
+  children: JSX.Element[];
 };
 
 export default function ParallelLayout(props: ParallelLayoutType) {
