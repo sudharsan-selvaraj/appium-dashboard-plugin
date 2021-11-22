@@ -1,5 +1,4 @@
 import React from "react";
-import "./session-details-header.css";
 import Moment from "react-moment";
 import CommonUtils from "../../../utils/common-utils";
 import Session from "../../../interfaces/session";
@@ -83,22 +82,15 @@ const SUMMARY_CONFIG: any[] = [
 ];
 
 const Container = styled.div`
-  width: 100%;
-  padding-bottom: 20px;
-  background: #f9f9f9;
-  border-bottom: 1px solid #ced8e1;
-  border-top: 1px solid #ced8e1;
-  display: flex;
+  background: ${(props) => props.theme.colors.greyscale[5]};
+  padding: 10px;
+  border-bottom: 1px solid ${(props) => props.theme.colors.border};
 `;
 
 const Entry = styled.div`
-  display: flex;
-  width: auto;
-  flex-direction: column;
-  height: 100%;
-  margin-right: 35px;
-  padding-left: 20px;
-  padding-top: 0;
+  display: inline-block;
+  width: 33%;
+  padding: 10px 0px;
 `;
 
 const Label = styled.div`
@@ -132,24 +124,18 @@ const getEntry = (session: Session, entry: any) => {
   }
   return (
     <ParallelLayout>
-      <Column grid={5}>
-        <Label>
-          {entry.label}:
-        </Label>
+      <Column grid={3}>
+        <Label>{entry.label}:</Label>
       </Column>
-      <Column grid={7}>
+      <Column grid={9}>
         <Value>
-          {entry.icon && (
-            entry.icon(session)
-          )}
-          {entry.formatValue
-            ? entry.formatValue(session)
-            : session[entry.key]}
+          {entry.icon && entry.icon(session)}
+          {entry.formatValue ? entry.formatValue(session) : session[entry.key]}
         </Value>
       </Column>
     </ParallelLayout>
   );
-}
+};
 
 type PropsType = {
   session: Session;
@@ -160,9 +146,7 @@ export default function SessionSummary(props: PropsType) {
   return (
     <Container>
       {SUMMARY_CONFIG.map((entry) => (
-        <Entry>
-          {getEntry(session, entry)}
-        </Entry>
+        <Entry key={entry}>{getEntry(session, entry)}</Entry>
       ))}
     </Container>
   );

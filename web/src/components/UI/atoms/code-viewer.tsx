@@ -6,7 +6,6 @@ import theme from "prism-react-renderer/themes/github";
 const Pre = styled.pre`
   text-align: left;
   margin: 5px 0;
-  overflow: scroll;
   background: transparent !important;
 `;
 

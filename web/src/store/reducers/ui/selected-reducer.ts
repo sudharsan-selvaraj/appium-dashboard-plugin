@@ -5,7 +5,7 @@ import createReducer from "../../../utils/createReducer";
 import ReduxActionTypes from "../../redux-action-types";
 
 export type SelectedState = {
-  session: Session | null; 
+  session: Session | null;
 };
 
 const initialState: SelectedState = {
@@ -13,7 +13,10 @@ const initialState: SelectedState = {
 };
 
 export default createReducer(initialState, {
-  [ReduxActionTypes.SELECT_SESSION]: (state: AppState, action: ReduxActionType<Session>) => ({
+  [ReduxActionTypes.SELECT_SESSION]: (
+    state: AppState,
+    action: ReduxActionType<Session>,
+  ) => ({
     ...state,
     session: action.payload,
   }),

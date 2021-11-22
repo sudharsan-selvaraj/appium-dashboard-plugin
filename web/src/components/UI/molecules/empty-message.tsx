@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import Banner from "./Banner";
+import Banner from "./centered";
 
 const Message = styled.p<{ size?: keyof typeof EmptyMessageSize }>`
   font-size: ${(props) => props.size || EmptyMessageSize.XL};
@@ -10,7 +10,7 @@ export enum EmptyMessageSize {
   "L" = "10px",
   "XL" = "15px",
   "XXL" = "20px",
-};
+}
 
 export type PropsType = {
   children: string;
@@ -22,9 +22,7 @@ export default function EmptyMessage(props: PropsType) {
 
   return (
     <Banner>
-      <Message size={size}>
-        {children}
-      </Message>
+      <Message size={size}>{children}</Message>
     </Banner>
   );
 }

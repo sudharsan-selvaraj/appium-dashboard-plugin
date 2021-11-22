@@ -1,57 +1,135 @@
-import React from "react";
+import React, { useCallback, useEffect } from "react";
 import { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
-import Spinner from "../../../../widgets/spinner/spinner";
+import {
+  APP_HEADER_HEIGHT,
+  SUB_APP_HEADER_HEIGHT,
+} from "../../../constants/ui";
 import Session from "../../../interfaces/session";
-import { getDeviceLogs, getisDeviceLogsLoading, getisTextLogsLoading } from "../../../store/selectors/entities/logs-selector";
-import "./text-logs.css";
+import {
+  addPollingTask,
+  removePollingTask,
+} from "../../../store/actions/polling-actions";
+import { fetchSessionDeviceLogs } from "../../../store/actions/session-actions";
+import {
+  getDeviceLogs,
+  getisDeviceLogsLoading,
+} from "../../../store/selectors/entities/logs-selector";
+import { getHeaderStyle } from "../../../utils/ui";
+import CheckboxComponent from "../atoms/checkbox";
+import Input from "../atoms/input";
+import Spinner from "../atoms/spinner";
+import ParallelLayout, { Column } from "../layouts/parallel-layout";
+import SerialLayout, { Row } from "../layouts/serial-layout";
+import { TAB_HEADER_HEIGHT } from "../layouts/tab-layout";
+import Centered from "../molecules/centered";
+import { SUMMARY_HEIGHT } from "./session-details";
 
 const LogsEntry = styled.div``;
 
 function useLogs(filterText: string) {
   const logs = useSelector(getDeviceLogs);
 
-  return logs.filter((log: any) => log.message.indexOf(filterText) >= 0)
-    .map((log: any) => (
-      <LogsEntry key={log.message}>
-        {log.message}
-      </LogsEntry>
-    ));
+  return logs
+    .filter((log: any) => log.message && log.message.indexOf(filterText) >= 0)
+    .map((log: any) => <LogsEntry key={log.message}>{log.message}</LogsEntry>);
 }
+
+const HEADER_HEIGHT = 50;
 
 const Container = styled.div``;
 
-const Header = styled.div``;
+const Header = styled.div`
+  ${(props) => getHeaderStyle(props.theme)};
+  padding: 10px;
+`;
 
-const Content = styled.div``;
+const Content = styled.div`
+  background: #000;
+  color: #0f0;
+  padding: 10px;
+  word-break: break-word;
+`;
 
 type PropsType = {
   session: Session;
 };
 
-export default function SessionTextLogs(props: PropsType) {
+export default function SessionDeviceLogs(props: PropsType) {
   const { session } = props;
   const [filterText, setFilterText] = useState("");
   const logs = useLogs(filterText);
   const isLoading = useSelector(getisDeviceLogsLoading);
+  const dispatch = useDispatch();
+  const [enablePolling, setEnablePolling] = useState(true);
+
+  useEffect(() => {
+    dispatch(fetchSessionDeviceLogs(session.session_id));
+    if (enablePolling) {
+      togglePolling(true);
+    }
+
+    return () => {
+      togglePolling(false);
+    };
+  }, [session.session_id]);
+
+  const togglePolling = useCallback((on: boolean) => {
+    if (on) {
+      dispatch(addPollingTask(fetchSessionDeviceLogs(session.session_id)));
+    } else {
+      dispatch(removePollingTask(fetchSessionDeviceLogs(session.session_id)));
+    }
+    setEnablePolling(on);
+  }, []);
 
   if (isLoading) {
-    return <Spinner />;
+    return (
+      <Centered>
+        <Spinner />
+      </Centered>
+    );
   } else {
     return (
       <Container>
-        <Header>
-          <input
-            type="text"
-            placeholder="Filter logs"
-            onChange={(e) => setFilterText(e.target.value)}
-            value={filterText}
-          />
-        </Header>
-        <Content>
-          {logs}
-        </Content>
+        <SerialLayout>
+          <Row height={`${HEADER_HEIGHT}px`}>
+            <Header>
+              <ParallelLayout>
+                <Column grid={4}>
+                  <Input
+                    name="search"
+                    type="text"
+                    leftIcon="search"
+                    placeholder="Filter logs"
+                    value={filterText}
+                    onChange={(e) => setFilterText(e.target.value)}
+                  />
+                </Column>
+                <Column grid={4} padding="0px 10px">
+                  <CheckboxComponent
+                    label="enable polling"
+                    checked={enablePolling}
+                    onChange={(checked: boolean) => togglePolling(checked)}
+                  />
+                </Column>
+              </ParallelLayout>
+            </Header>
+          </Row>
+          <Row
+            height={`calc(100vh - ${
+              HEADER_HEIGHT +
+              TAB_HEADER_HEIGHT +
+              SUMMARY_HEIGHT +
+              APP_HEADER_HEIGHT +
+              SUB_APP_HEADER_HEIGHT
+            }px)`}
+            scrollable
+          >
+            <Content>{logs}</Content>
+          </Row>
+        </SerialLayout>
       </Container>
     );
   }

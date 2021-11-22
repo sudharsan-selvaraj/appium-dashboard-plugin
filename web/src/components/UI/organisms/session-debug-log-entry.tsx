@@ -1,32 +1,32 @@
 import React from "react";
-import "./debug-log-entry.css";
-import ArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
-import ArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import Moment from "react-moment";
-import CodeViewer from "../../../../../widgets/code-viewer/code-viewer";
 import styled from "styled-components";
 import { useState } from "react";
 import ParallelLayout, { Column } from "../layouts/parallel-layout";
 import Icon from "../atoms/icon";
+import CodeViewer from "../atoms/code-viewer";
 
-const Container = styled.div``;
-
-const Header = styled.div`
-  display: flex;
-  width: 100%;
-  flex-direction: row;
-  margin: 2px;
-  justify-content: space-between;
-  align-items: center;
+const Container = styled.div<{ expandable: boolean }>`
+  padding: 10px;
+  border-bottom: 1px solid ${(props) => props.theme.colors.border};
+  ${(props) => {
+    return props.expandable
+      ? `
+        cursor: pointer;
+        &:hover {
+          background: ${props.theme.colors.tertiary};
+        }
+      `
+      : "";
+  }}
 `;
+
+const Header = styled.div``;
 
 const Content = styled.div``;
 
 const Time = styled.div`
-  font-size: 11px;
-  min-width: 150px;
-  font-style: italic;
-  color: grey;
+  color: ${(props) => props.theme.colors.greyscale[3]};
 `;
 
 const Message = styled.div`
@@ -34,20 +34,18 @@ const Message = styled.div`
   margin-left: 15px;
 `;
 
-const Expand = styled.div``;
+const Expand = styled.div`
+  text-align: right;
+`;
 
 const CodeViewerWrapper = styled.div`
-  width: 90%;
+  border: 1px solid ${(props) => props.theme.colors.border};
+  background: ${(props) => props.theme.colors.greyscale[5]};
+  margin: 20px 10px 10px;
   padding: 10px;
-  padding-right: 20px;
-  padding-left: 20px;
-  border: 1px solid #ced8e1;
-  background: #f9f9f9;
-  margin: auto;
-  margin-bottom: 15px;
-  border-radius: 5px;
+  border-radius: ${(props) => props.theme.borderRadius.M};
   max-height: 200px;
-  overflow: scroll;
+  overflow: auto;
 `;
 
 type PropsType = {
@@ -58,31 +56,30 @@ export default function SessionDebugLogEntry(props: PropsType) {
   const { entry } = props;
   const [isExpanded, setIsExpanded] = useState(false);
   return (
-    <Container>
+    <Container
+      onClick={() => setIsExpanded(!isExpanded)}
+      expandable={!!entry.args}
+    >
       <Header>
         <ParallelLayout>
-          <Column grid={11}>
-            <>
-              <Time>
-                <Moment format="DD-MM-YYYY HH:mm:ss">
-                  {entry.timestamp}
-                </Moment>
-              </Time>
-              <Message>
-                {entry.message}
-              </Message>
-            </>
+          <Column grid={5}>
+            <Time>
+              <Moment format="DD-MM-YYYY HH:mm:ss">{entry.timestamp}</Moment>
+            </Time>
           </Column>
-          <Column grid={11}>
+          <Column grid={6}>
+            <Message>{entry.message}</Message>
+          </Column>
+          <Column grid={1}>
             {entry.args && (
-            <Expand>
-              {isExpanded ? (
-                <Icon name="arrow-up" onClick={() => setIsExpanded(false)} />
-              ) : (
-                <Icon name="arrow-down" onClick={() => setIsExpanded(false)} />
-              )}
-            </Expand>
-          )}
+              <Expand>
+                {isExpanded ? (
+                  <Icon name="arrow-up" />
+                ) : (
+                  <Icon name="arrow-down" />
+                )}
+              </Expand>
+            )}
           </Column>
         </ParallelLayout>
       </Header>
@@ -94,7 +91,7 @@ export default function SessionDebugLogEntry(props: PropsType) {
               language={"json"}
             />
           </CodeViewerWrapper>
-        )}          
+        )}
       </Content>
     </Container>
   );

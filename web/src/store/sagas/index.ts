@@ -8,6 +8,6 @@ export default function* initSaga() {
   yield all([
     takeLatest(ReduxActionTypes.INIT_APP, ApplicationSaga),
     takeLatest(ReduxActionTypes.INIT_SESSION_SAGA, SessionSaga),
-    takeLatest(ReduxActionTypes.INIT_POLLING_SAGA, PollingSaga),
+    takeLatest(ReduxActionTypes.POLLING_INIT, PollingSaga),
   ]);
 }

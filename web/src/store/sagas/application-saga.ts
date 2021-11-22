@@ -5,4 +5,7 @@ export default function* () {
   yield put({
     type: ReduxActionTypes.INIT_SESSION_SAGA,
   });
+  yield put({
+    type: ReduxActionTypes.POLLING_INIT,
+  });
 }

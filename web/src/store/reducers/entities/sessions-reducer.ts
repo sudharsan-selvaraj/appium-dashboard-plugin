@@ -15,11 +15,11 @@ const initialState: SessionEntityType = {
 };
 
 export default createReducer(initialState, {
-  [ReduxActionTypes.FETCH_SESSION_INIT]: (state: SessionEntityType) => ({
+  [ReduxActionTypes.FETCH_SESSIONS_INIT]: (state: SessionEntityType) => ({
     ...state,
     isLoading: true,
   }),
-  [ReduxActionTypes.FETCH_SESSION_SUCCESS]: (
+  [ReduxActionTypes.FETCH_SESSIONS_SUCCESS]: (
     state: SessionEntityType,
     action: ReduxActionType<PaginatedResponse<Session>>,
   ) => ({

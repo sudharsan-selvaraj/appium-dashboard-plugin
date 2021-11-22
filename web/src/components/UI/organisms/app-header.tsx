@@ -11,7 +11,7 @@ export default function AppHeader() {
   return (
     <Container>
       <ParallelLayout>
-        <Column grid={2}>
+        <Column grid={3}>
           <HeaderLogo />
         </Column>
       </ParallelLayout>

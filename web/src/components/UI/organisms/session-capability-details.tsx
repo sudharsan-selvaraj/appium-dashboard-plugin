@@ -1,10 +1,11 @@
 import React from "react";
-import "./session-capability-details.css";
 import styled from "styled-components";
 import TabsLayout, { Tab } from "../layouts/tab-layout";
 import Session from "../../../interfaces/session";
 
-const Container = styled.div``;
+const Container = styled.div`
+  word-break: break-word;
+`;
 
 const Entry = styled.div`
   width: 100%;
@@ -24,13 +25,11 @@ const Value = styled.div`
 
 const getCapabilityEntries = (tab: string, session: Session) => {
   const capabilityObject =
-    tab == "Capabilities"
-      ? session.capabilities
-      : session.capabilities.desired;
+    tab == "Capabilities" ? session.capabilities : session.capabilities.desired;
   if (!capabilityObject) {
     return null;
   }
-  
+
   return Object.keys(capabilityObject)
     .filter((k) => k != "desired" && capabilityObject[k] != "")
     .map((k) => {
@@ -46,7 +45,7 @@ const getCapabilityEntries = (tab: string, session: Session) => {
         </Entry>
       );
     });
-}
+};
 
 type Propstype = {
   session: Session;
@@ -56,16 +55,12 @@ export default function SessionCapabilityDetails(props: Propstype) {
   const { session } = props;
   return (
     <Container>
-      <TabsLayout>
+      <TabsLayout selected="Capabilities">
         <Tab name="Capabilities">
-          <>
-            {getCapabilityEntries("Capabilities", session)}
-          </>
+          <>{getCapabilityEntries("Capabilities", session)}</>
         </Tab>
         <Tab name="Desired Capabilities">
-          <>
-            {getCapabilityEntries("Desired Capabilities", session)}
-          </>
+          <>{getCapabilityEntries("Desired Capabilities", session)}</>
         </Tab>
       </TabsLayout>
     </Container>

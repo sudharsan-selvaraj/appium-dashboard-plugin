@@ -1,9 +1,9 @@
 import createReducer from "../../../utils/createReducer";
-import themes, { themeConfig, DEFAULT_THEME } from "../../../constants/themes";
+import themes, { ThemeConfig, DEFAULT_THEME } from "../../../constants/themes";
 
 export type ThemeState = {
   name: string;
-  config: themeConfig;
+  config: ThemeConfig;
 };
 
 const initialState: ThemeState = {
