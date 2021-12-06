@@ -117,8 +117,8 @@ export default function SessionCard(props: PropsType) {
             </Row>
             <Row padding="10px 0px">
               <ParallelLayout>
-                <Column grid={4}>
-                  <PlatformVersion>{platform_version}</PlatformVersion>
+                <Column grid={3}>
+                  <PlatformVersion>v{platform_version}</PlatformVersion>
                 </Column>
                 <Column grid={8}>
                   <DeviceName>{device_name}</DeviceName>
@@ -130,7 +130,7 @@ export default function SessionCard(props: PropsType) {
                 <Column grid={3}>
                   <StatusLabel>{session_status}</StatusLabel>
                 </Column>
-                <Column grid={9}>
+                <Column grid={8}>
                   <ExecutionTime>{formattedStartTime}</ExecutionTime>
                 </Column>
               </ParallelLayout>

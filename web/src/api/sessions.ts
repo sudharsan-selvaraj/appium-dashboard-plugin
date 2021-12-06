@@ -11,7 +11,7 @@ type ListResponse = {
 
 export default class SessionApi {
   public static getAllSessions(
-    filterParams?: ISessionFilterQuery,
+    filterParams?: Record<string, string>,
   ): Promise<ListResponse> {
     return Api.get("/sessions", filterParams || {});
   }
@@ -39,7 +39,7 @@ export default class SessionApi {
   }
 
   public static deleteSessionById(sessionId: string) {
-    return Api.get(`/sessions/${sessionId}`);
+    return Api.delete(`/sessions/${sessionId}`);
   }
 
   public static getSessionTextLogs(sessionId: string) {

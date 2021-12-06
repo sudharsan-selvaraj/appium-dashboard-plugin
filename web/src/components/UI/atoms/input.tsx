@@ -12,12 +12,10 @@ const Container = styled.div<{
   hasIcon: boolean;
 }>`
   background: ${(props) => props.theme.colors.controls.background};
-  border: 1px solid ${(props) => props.theme.colors.border};
-  border-radius: ${(props) => props.theme.borderRadius.M};
   width: ${(props) => props.width};
 
   & .${Classes.INPUT_GROUP} {
-    padding: 2px 4px;
+    border: none;
     span {
       display: inline-block;
       width: ${ICON_WIDTH};
@@ -28,7 +26,10 @@ const Container = styled.div<{
       width: ${(props) =>
         props.hasIcon ? `calc(100% - ${ICON_WIDTH})` : `100%`};
       vertical-align: super;
-      border: none;
+      border: 1px solid ${(props) => props.theme.colors.border};
+      border-radius: ${(props) => props.theme.borderRadius.M};
+      font-size: 12px;
+      padding: 14px 8px;
 
       &:focus {
         outline: none;
@@ -38,9 +39,9 @@ const Container = styled.div<{
 `;
 
 type PropsType = {
-  name: string;
-  value: string;
-  type: string;
+  name?: string;
+  value?: string;
+  type?: string;
   leftIcon?: IconName;
   placeholder?: string;
   rightElement?: JSX.Element;
@@ -53,7 +54,7 @@ export default function Input(props: PropsType) {
   const {
     name,
     value,
-    type,
+    type = "text",
     leftIcon,
     placeholder,
     rightElement,

@@ -25,6 +25,7 @@ import ParallelLayout, { Column } from "../layouts/parallel-layout";
 import SerialLayout, { Row } from "../layouts/serial-layout";
 import { TAB_HEADER_HEIGHT } from "../layouts/tab-layout";
 import Centered from "../molecules/centered";
+import EmptyMessage from "../molecules/empty-message";
 import { SUMMARY_HEIGHT } from "./session-details";
 import LogEntry from "./session-text-logs-entry";
 
@@ -88,6 +89,8 @@ export default function SessionTextLogs(props: PropsType) {
         <Spinner />
       </Centered>
     );
+  } else if (!logs.length) {
+    return <EmptyMessage>No logs</EmptyMessage>;
   } else {
     return (
       <Container>

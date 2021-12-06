@@ -5,6 +5,7 @@ import Session from "../../../interfaces/session";
 
 const Container = styled.div`
   word-break: break-word;
+  padding: 10px;
 `;
 
 const Entry = styled.div`

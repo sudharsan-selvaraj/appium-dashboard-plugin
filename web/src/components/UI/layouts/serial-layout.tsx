@@ -6,10 +6,12 @@ const RowContainer = styled.div<{
   height?: string;
   padding?: string;
   scrollable?: boolean;
+  align?: string;
 }>`
   height: ${(props) => props.height};
   display: flex;
   padding: ${(props) => props.padding};
+  text-align: ${(props) => props.align};
   ${(props) => (props.scrollable ? "overflow: auto" : "")};
 
   & > * {
@@ -24,16 +26,18 @@ type RowPropsType = {
   height?: string;
   padding?: string;
   scrollable?: boolean;
+  align?: "center" | "left" | "right";
 };
 
 export function Row(props: RowPropsType) {
-  const { children, className, height, padding, scrollable } = props;
+  const { children, className, height, padding, scrollable, align } = props;
   return (
     <RowContainer
       className={className}
       height={height}
       padding={padding}
       scrollable={scrollable}
+      align={align}
     >
       {children}
     </RowContainer>

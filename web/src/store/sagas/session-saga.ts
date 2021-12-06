@@ -10,10 +10,12 @@ import {
   fetchSessionDebugLogsSuccess,
 } from "../actions/session-actions";
 import ReduxActionTypes from "../redux-action-types";
+import { omitBy, isNil } from "lodash";
 
-function* fetchSessions() {
+function* fetchSessions(action?: ReduxActionType<Record<string, string>>) {
+  const payload = omitBy(action?.payload, (d) => !d);
   const sessions: ApiResponse<PaginatedResponse<Session>> =
-    yield SessionApi.getAllSessions();
+    yield SessionApi.getAllSessions(payload);
   if (sessions.success) {
     yield put(
       fetchSessionSuccess({
@@ -60,6 +62,10 @@ function* fetchSessionDebugLog(action: ReduxActionType<string>) {
   }
 }
 
+function* deleteSession(action: ReduxActionType<string>) {
+  yield SessionApi.deleteSessionById(action.payload);
+}
+
 export default function* () {
   yield all([
     takeEvery(ReduxActionTypes.FETCH_SESSIONS_INIT, fetchSessions),
@@ -70,5 +76,7 @@ export default function* () {
       fetchSessionDeviceLog,
     ),
     takeLatest(ReduxActionTypes.FETCH_SESSION_DEBUG_LOG, fetchSessionDebugLog),
+    takeLatest(ReduxActionTypes.DELETE_SESSION, deleteSession),
+    takeLatest(ReduxActionTypes.SET_SESSION_FILTER, fetchSessions),
   ]);
 }

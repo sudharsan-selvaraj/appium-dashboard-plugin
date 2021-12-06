@@ -50,3 +50,13 @@ export const fetchSessionDebugLogsSuccess = (payload: any) => ({
   type: ReduxActionTypes.FETCH_SESSION_DEBUG_LOG_SUCCESS,
   payload,
 });
+
+export const setSessionFilter = (payload: any) => ({
+  type: ReduxActionTypes.SET_SESSION_FILTER,
+  payload,
+});
+
+export const deleteSession = (payload: string) => ({
+  type: ReduxActionTypes.DELETE_SESSION,
+  payload,
+});

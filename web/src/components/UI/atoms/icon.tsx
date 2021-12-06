@@ -4,7 +4,7 @@ import { FcAndroidOs } from "react-icons/fc";
 import { FaApple } from "react-icons/fa";
 import { DiSafari } from "react-icons/di";
 import { AiFillCloseCircle } from "react-icons/ai";
-import { BsClockFill } from "react-icons/bs";
+import { BsClockFill, BsFilterRight, BsTrash } from "react-icons/bs";
 import styled from "styled-components";
 
 export enum Sizes {
@@ -58,6 +58,12 @@ export default function Icon(props: IconProps) {
       break;
     case "time":
       icon = <BsClockFill />;
+      break;
+    case "filter":
+      icon = <BsFilterRight />;
+      break;
+    case "delete":
+      icon = <BsTrash />;
       break;
     default:
       icon = null;

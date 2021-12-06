@@ -20,4 +20,18 @@ export default class Api {
       })
       .then((response) => response.data);
   }
+
+  static delete(
+    url: string,
+    params?: any,
+    config: Partial<AxiosRequestConfig> = {},
+  ) {
+    return axios
+      .delete(url, {
+        ...defaultConfig,
+        ...config,
+        params,
+      })
+      .then((response) => response.data);
+  }
 }

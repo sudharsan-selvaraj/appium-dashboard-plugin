@@ -79,4 +79,8 @@ export default class CommonUtils {
   static getScreenshotForLog(sessionId: string, logId: string) {
     return `${api.base_url}/sessions/${sessionId}/log/${logId}/screen-shot`;
   }
+
+  static hash(object: any) {
+    return JSON.stringify(object);
+  }
 }

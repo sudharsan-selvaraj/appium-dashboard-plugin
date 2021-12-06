@@ -85,8 +85,6 @@ export default function SessionDebugLogs(props: PropsType) {
         <Spinner />
       </Centered>
     );
-  } else if (!logs.length) {
-    return <EmptyMessage>No Logs available</EmptyMessage>;
   } else {
     return (
       <Container>
@@ -124,7 +122,15 @@ export default function SessionDebugLogs(props: PropsType) {
             }px)`}
             scrollable
           >
-            <Content>{logs}</Content>
+            <Content>
+              {logs.length ? (
+                logs
+              ) : (
+                <Centered>
+                  <EmptyMessage>No Logs available</EmptyMessage>
+                </Centered>
+              )}
+            </Content>
           </Row>
         </SerialLayout>
       </Container>

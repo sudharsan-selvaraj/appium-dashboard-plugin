@@ -1,6 +1,6 @@
+import { Switch } from "@material-ui/core";
 import React from "react";
 import styled from "styled-components";
-import { Switch } from "@blueprintjs/core";
 
 const Container = styled.div``;
 
@@ -17,11 +17,11 @@ export default function SwitchComponent(props: PropsType) {
     <Container>
       <Switch
         checked={checked}
-        label={label}
         onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
           onChange && onChange(event.target.checked)
         }
       />
+      {label}
     </Container>
   );
 }

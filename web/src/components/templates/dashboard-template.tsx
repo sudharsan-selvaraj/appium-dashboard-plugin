@@ -21,7 +21,6 @@ import SessionList from "../UI/organisms/session-list";
 
 export default function DashboardTemplate() {
   const history = useHistory();
-  const match = useRouteMatch();
 
   return (
     <SerialLayout>
@@ -36,7 +35,7 @@ export default function DashboardTemplate() {
           <Column grid={9}>
             <Router history={history}>
               <Switch>
-                <Route path={`${match.path}${SESSION_DETAILS}`}>
+                <Route>
                   <SessionDetails />
                 </Route>
               </Switch>

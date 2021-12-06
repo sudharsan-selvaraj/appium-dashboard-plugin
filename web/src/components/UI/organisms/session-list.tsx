@@ -8,7 +8,10 @@ import {
   getSessions,
 } from "../../../store/selectors/entities/sessions-selector";
 import { useCallback } from "react";
-import { setSelectedSession } from "../../../store/actions/session-actions";
+import {
+  setSelectedSession,
+  setSessionFilter,
+} from "../../../store/actions/session-actions";
 import Session from "../../../interfaces/session";
 import SessionCard from "./session-card";
 import { useEffect } from "react";
@@ -18,6 +21,13 @@ import {
   SUB_APP_HEADER_HEIGHT,
 } from "../../../constants/ui";
 import { getHeaderStyle } from "../../../utils/ui";
+import Dropdown from "../atoms/dropdown";
+import Icon from "../atoms/icon";
+import ParallelLayout, { Column } from "../layouts/parallel-layout";
+import SessionListFilter from "./session-list-filter";
+import { useState } from "react";
+import { Badge } from "@material-ui/core";
+import { getSessionFilterCount } from "../../../store/selectors/ui/filter-selector";
 
 const Container = styled.div`
   border-right: 1px solid #ced8e1;
@@ -28,8 +38,21 @@ const Container = styled.div`
 
 const List = styled.div``;
 
-const Filter = styled.div`
+const Header = styled.div`
   ${(props) => getHeaderStyle(props.theme)};
+  padding: 7px 5px;
+`;
+
+const FilterTrigger = styled.div`
+  padding: 10px;
+`;
+
+const FilterDropdown = styled.div``;
+
+const StyledBadge = styled(Badge)`
+  positive: relative;
+  left: 17px;
+  top: -2px;
 `;
 
 type SessionListPropsType = any;
@@ -46,35 +69,38 @@ export default function SessionList(props: SessionListPropsType) {
       type: ReduxActionTypes.FETCH_SESSIONS_INIT,
     });
   }, []);
+  const setFilter = useCallback((payload) => {
+    dispatch(setSessionFilter(payload));
+  }, []);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const filterCount = useSelector(getSessionFilterCount);
 
   return (
     <Container>
       <SerialLayout>
         <Row height={`${SUB_APP_HEADER_HEIGHT}px`}>
-          <Filter>Filter</Filter>
-          {/* <div>
-            <div
-              className="session-list__filter_header"
-              onClick={() => this.toggleFilter(!this.state.showFilter)}
+          <Header>
+            <Dropdown
+              controlled
+              onOpen={() => setIsFilterOpen(true)}
+              onClose={() => setIsFilterOpen(false)}
+              open={isFilterOpen}
             >
-              <FilterListRoundedIcon />
-              FILTERS
-              {this.getActiveFilterCount() > 0 && (
-                <div className="session-list__filter_count">
-                  {this.getActiveFilterCount()}
-                </div>
-              )}
-            </div>
-            {this.state.showFilter && (
-              <SessionFilter
-                filter={this.props.filters}
-                onFilterApplied={(filter: any) => {
-                  this.props.onFilterApplied(filter);
-                  this.toggleFilter(!this.state.showFilter);
-                }}
-              />
-            )}
-          </div> */}
+              <FilterTrigger>
+                <Icon name="filter" />
+                <span>Filter</span>
+                <StyledBadge badgeContent={filterCount} color="secondary" />
+              </FilterTrigger>
+              <FilterDropdown>
+                <SessionListFilter
+                  onApply={(payload) => {
+                    setFilter(payload);
+                    setIsFilterOpen(false);
+                  }}
+                />
+              </FilterDropdown>
+            </Dropdown>
+          </Header>
         </Row>
         <Row
           height={`calc(100vh - ${

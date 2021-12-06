@@ -13,7 +13,7 @@ type PropsType = {
 export default function SessionLogs(props: PropsType) {
   const { session } = props;
   return (
-    <TabsLayout selected="Debug Logs">
+    <TabsLayout selected="Text Logs">
       <Tab name="Text Logs">
         <SessionTextLogs session={session} />
       </Tab>

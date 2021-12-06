@@ -39,3 +39,7 @@ body {
   font-size: 12px;
   color: #111;
 }
+
+.MuiMenuItem-root {
+  font-size: 12px !important;
+}

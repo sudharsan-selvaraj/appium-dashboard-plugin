@@ -4,7 +4,7 @@ import CommonUtils from "../../../utils/common-utils";
 import Session from "../../../interfaces/session";
 import styled from "styled-components";
 import ParallelLayout, { Column } from "../layouts/parallel-layout";
-import Icon from "../atoms/icon";
+import Icon, { Sizes } from "../atoms/icon";
 
 const SUMMARY_CONFIG: any[] = [
   {
@@ -16,9 +16,9 @@ const SUMMARY_CONFIG: any[] = [
     key: "platform_name",
     icon: (session: any) => {
       if (session.platform_name.toLowerCase() == "android") {
-        return <Icon name="android" />;
+        return <Icon name="android" size={Sizes.XL} />;
       } else {
-        return <Icon name="ios" />;
+        return <Icon name="ios" size={Sizes.XL} />;
       }
     },
   },
