@@ -1,7 +1,6 @@
 import { PaginatedResponse } from "../../interfaces/api";
 import { ReduxActionType } from "../../interfaces/redux";
 import Session from "../../interfaces/session";
-import { ListEntityType } from "../reducers/entities";
 import ReduxActionTypes from "../redux-action-types";
 
 export const fetchSessionsSuccess = (payload: PaginatedResponse<Session>) => ({

@@ -8,10 +8,7 @@ import {
   getSessions,
 } from "../../../store/selectors/entities/sessions-selector";
 import { useCallback } from "react";
-import {
-  setSelectedSession,
-  setSessionFilter,
-} from "../../../store/actions/session-actions";
+import { setSessionFilter } from "../../../store/actions/session-actions";
 import Session from "../../../interfaces/session";
 import SessionCard from "./session-card";
 import { useEffect } from "react";
@@ -23,7 +20,6 @@ import {
 import { getHeaderStyle } from "../../../utils/ui";
 import Dropdown from "../atoms/dropdown";
 import Icon from "../atoms/icon";
-import ParallelLayout, { Column } from "../layouts/parallel-layout";
 import SessionListFilter from "./session-list-filter";
 import { useState } from "react";
 import { Badge } from "@material-ui/core";
@@ -55,15 +51,11 @@ const StyledBadge = styled(Badge)`
   top: -2px;
 `;
 
-type SessionListPropsType = any;
-
-export default function SessionList(props: SessionListPropsType) {
+export default function SessionList() {
   const dispatch = useDispatch();
   const sessions = useSelector(getSessions);
   const SelectedSession = useSelector(getSelectedSession);
-  const selectSession = useCallback((session: Session) => {
-    dispatch(setSelectedSession(session));
-  }, []);
+
   useEffect(() => {
     dispatch({
       type: ReduxActionTypes.FETCH_SESSIONS_INIT,
@@ -112,7 +104,13 @@ export default function SessionList(props: SessionListPropsType) {
             {sessions.length > 0 ? (
               <>
                 {sessions.map((session: Session) => (
-                  <SessionCard key={session.session_id} session={session} />
+                  <SessionCard
+                    key={session.session_id}
+                    selected={
+                      SelectedSession?.session_id === session.session_id
+                    }
+                    session={session}
+                  />
                 ))}
               </>
             ) : (

@@ -1,4 +1,3 @@
-import { Action } from "lottie-react";
 import { Channel, channel, EventChannel, eventChannel, Task } from "redux-saga";
 import {
   call,

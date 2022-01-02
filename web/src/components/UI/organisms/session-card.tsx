@@ -10,9 +10,6 @@ import CommonUtils from "../../../utils/common-utils";
 import Centered from "../molecules/centered";
 import { useHistory } from "react-router-dom";
 import { getSessionDetailsUrl } from "../../../constants/routes";
-import { useCallback } from "react";
-import { useDispatch } from "react-redux";
-import { setSelectedSession } from "../../../store/actions/session-actions";
 
 const getStatusIcon = (is_completed: boolean, session_status: string) => {
   if (!is_completed) {
@@ -24,27 +21,16 @@ const getStatusIcon = (is_completed: boolean, session_status: string) => {
   }
 };
 
-const getPlatformIcon = (platform_name: string) => {
-  const os: string = platform_name.toLowerCase();
-  return {
-    android: <Icon name="android" />,
-    ios: <Icon name="ios" />,
-  }[os] as any;
-};
-
-const getBrowserIcon = (browser_name: string) => {
-  const browser: string = browser_name.toLowerCase();
-  return {
-    safari: <Icon name="safari" />,
-  }[browser] as any;
-};
-
 const Container = styled.div`
   padding: 10px 15px;
   border-bottom: 1px solid ${(props) => props.theme.colors.border};
   cursor: pointer;
 
   &:hover {
+    background-color: ${(props) => props.theme.colors.greyscale[5]};
+  }
+
+  &.active {
     background-color: ${(props) => props.theme.colors.greyscale[5]};
   }
 `;
@@ -79,6 +65,7 @@ const ExecutionTime = styled.div`
 
 type PropsType = {
   session: Session;
+  selected: boolean;
 };
 
 export default function SessionCard(props: PropsType) {
@@ -97,16 +84,13 @@ export default function SessionCard(props: PropsType) {
       new Date(),
     );
   }, [start_time]);
-  const dispatch = useDispatch();
   const history = useHistory();
-  const select = useCallback((session: Session) => {
-    dispatch(setSelectedSession(session));
-  }, []);
+
   return (
     <Container
+      className={props.selected ? "active" : ""}
       onClick={() => {
         history.push(getSessionDetailsUrl(session_id));
-        select(session);
       }}
     >
       <ParallelLayout>

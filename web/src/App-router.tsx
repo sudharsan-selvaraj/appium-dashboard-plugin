@@ -1,6 +1,6 @@
 import React from "react";
 import { useEffect } from "react";
-import { connect, useDispatch, useSelector } from "react-redux";
+import { connect, useDispatch } from "react-redux";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import styled, { ThemeProvider } from "styled-components";
 import Dashboard from "./components/pages/dashboard";

@@ -1,5 +1,4 @@
 import { ListEntityType } from ".";
-import { AppState } from "../..";
 import { PaginatedResponse } from "../../../interfaces/api";
 import { ReduxActionType } from "../../../interfaces/redux";
 import Session from "../../../interfaces/session";

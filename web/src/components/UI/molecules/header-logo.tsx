@@ -1,7 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import Icon from "../atoms/icon";
-import { Sizes } from "../atoms/spinner";
+import Icon, { Sizes } from "../atoms/icon";
 
 const Container = styled.div`
   padding: 12px 10px;
@@ -11,7 +10,8 @@ const Container = styled.div`
 const Header = styled.h3``;
 
 const IconContainer = styled.span`
-  vertical-align: middle;
+  position: relative;
+  top: 2px;
 `;
 
 const Title = styled.span`
@@ -26,7 +26,7 @@ export default function HeaderLogo() {
     <Container>
       <Header>
         <IconContainer>
-          <Icon name="home" size={Sizes.L} />
+          <Icon name="home" size={Sizes.XL} />
         </IconContainer>
         <Title>Dashboard</Title>
       </Header>

@@ -1,4 +1,3 @@
-import { JSXElement } from "@babel/types";
 import React from "react";
 import styled from "styled-components";
 

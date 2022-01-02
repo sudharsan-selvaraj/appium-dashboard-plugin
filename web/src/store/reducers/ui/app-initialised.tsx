@@ -1,4 +1,3 @@
-import { ReduxActionType } from "../../../interfaces/redux";
 import createReducer from "../../../utils/createReducer";
 import ReduxActionTypes from "../../redux-action-types";
 

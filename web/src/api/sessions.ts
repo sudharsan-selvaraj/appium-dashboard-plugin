@@ -1,6 +1,4 @@
-import { ISessionFilterQuery } from "../interfaces/filters";
 import Api from "./index";
-import { AxiosResponse } from "axios";
 
 type ListResponse = {
   result: {

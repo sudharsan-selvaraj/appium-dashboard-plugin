@@ -58,24 +58,25 @@ export default function TabsLayout(props: TabsLayoutPropsType) {
   const { selected } = props;
   const tabs = useTabs(props.children);
   const defaultTab = tabs.find((tab) => tab.name === selected);
-  const [selectedTab, setSelectedTab] = useState<TabType>(
-    defaultTab as TabType,
+  const [selectedTabName, setSelectedTabName] = useState<string | undefined>(
+    defaultTab?.name,
   );
+  const selectedTab = tabs.find((tab) => tab.name === selectedTabName);
 
   return (
     <TabsLayoutContainer>
       <Header>
         {tabs.map((tab: TabType) => (
           <TabName
-            active={selectedTab.name === tab.name}
-            onClick={() => setSelectedTab(tab)}
+            active={selectedTab?.name === tab.name}
+            onClick={() => setSelectedTabName(tab.name)}
             key={tab.name}
           >
             {tab.name}
           </TabName>
         ))}
       </Header>
-      <Body>{selectedTab.children}</Body>
+      <Body>{selectedTab?.children}</Body>
     </TabsLayoutContainer>
   );
 }

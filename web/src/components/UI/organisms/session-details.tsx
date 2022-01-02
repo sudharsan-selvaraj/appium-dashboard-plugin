@@ -1,7 +1,5 @@
-import { Tab } from "@material-ui/core";
 import React from "react";
 import { useCallback } from "react";
-import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import {
@@ -14,7 +12,6 @@ import { getHeaderStyle } from "../../../utils/ui";
 import Icon from "../atoms/icon";
 import ParallelLayout, { Column } from "../layouts/parallel-layout";
 import SerialLayout, { Row } from "../layouts/serial-layout";
-import TabsLayout from "../layouts/tab-layout";
 import EmptyMessage from "../molecules/empty-message";
 import SessionCapabilityDetails from "./session-capability-details";
 import SessionLogs from "./session-logs";
@@ -45,9 +42,7 @@ const StyledColumn = styled(Column)`
 
 export const SUMMARY_HEIGHT = 140;
 
-type PropsType = any;
-
-export default function SessionDetails(props: PropsType) {
+export default function SessionDetails() {
   const session = useSelector(getSelectedSession);
   const dispatch = useDispatch();
   const onDelete = useCallback((id: string) => {

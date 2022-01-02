@@ -74,14 +74,17 @@ export default function SessionTextLogs(props: PropsType) {
     };
   }, [session.session_id]);
 
-  const togglePolling = useCallback((on: boolean) => {
-    if (on) {
-      dispatch(addPollingTask(fetchSessionTextLogs(session.session_id)));
-    } else {
-      dispatch(removePollingTask(fetchSessionTextLogs(session.session_id)));
-    }
-    setEnablePolling(on);
-  }, []);
+  const togglePolling = useCallback(
+    (on: boolean) => {
+      if (on) {
+        dispatch(addPollingTask(fetchSessionTextLogs(session.session_id)));
+      } else {
+        dispatch(removePollingTask(fetchSessionTextLogs(session.session_id)));
+      }
+      setEnablePolling(on);
+    },
+    [session.session_id],
+  );
 
   if (isLoading) {
     return (

@@ -7,9 +7,9 @@ const Container = styled.div<{ size?: keyof typeof Sizes }>`
     switch (props.size) {
       case "M":
         return "50px";
-      case "M":
+      case "L":
         return "100px";
-      case "M":
+      case "XL":
         return "200px";
       default:
         return "100px";

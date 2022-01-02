@@ -128,8 +128,6 @@ const TitleInfo = styled.div`
   letter-spacing: -0.2px;
 `;
 
-const TitleExtra = styled.div``;
-
 const Time = styled.div`
   color: ${(props) => props.theme.colors.greyscale[3]};
 `;

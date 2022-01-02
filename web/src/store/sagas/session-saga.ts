@@ -10,7 +10,7 @@ import {
   fetchSessionDebugLogsSuccess,
 } from "../actions/session-actions";
 import ReduxActionTypes from "../redux-action-types";
-import { omitBy, isNil } from "lodash";
+import { omitBy } from "lodash";
 
 function* fetchSessions(action?: ReduxActionType<Record<string, string>>) {
   const payload = omitBy(action?.payload, (d) => !d);

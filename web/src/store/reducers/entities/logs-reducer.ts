@@ -28,10 +28,7 @@ const initialState: LogsState = {
 };
 
 export default createReducer(initialState, {
-  [ReduxActionTypes.FETCH_SESSION_TEXT_LOG]: (
-    state: LogsState,
-    action: ReduxActionType<any>,
-  ) => ({
+  [ReduxActionTypes.FETCH_SESSION_TEXT_LOG]: (state: LogsState) => ({
     ...state,
     text: {
       ...state.text,
@@ -49,10 +46,7 @@ export default createReducer(initialState, {
       isLoading: false,
     },
   }),
-  [ReduxActionTypes.FETCH_SESSION_DEVICE_LOG]: (
-    state: LogsState,
-    action: ReduxActionType<any>,
-  ) => ({
+  [ReduxActionTypes.FETCH_SESSION_DEVICE_LOG]: (state: LogsState) => ({
     ...state,
     device: {
       ...state.text,
@@ -70,10 +64,7 @@ export default createReducer(initialState, {
       isLoading: false,
     },
   }),
-  [ReduxActionTypes.FETCH_SESSION_DEBUG_LOG]: (
-    state: LogsState,
-    action: ReduxActionType<any>,
-  ) => ({
+  [ReduxActionTypes.FETCH_SESSION_DEBUG_LOG]: (state: LogsState) => ({
     ...state,
     debug: {
       ...state.text,
