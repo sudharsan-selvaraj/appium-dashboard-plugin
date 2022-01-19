@@ -26,14 +26,35 @@ import { TAB_HEADER_HEIGHT } from "../layouts/tab-layout";
 import Centered from "../molecules/centered";
 import { SUMMARY_HEIGHT } from "./session-details";
 
-const LogsEntry = styled.div``;
+const LineNumber = styled.div`
+  color: #6a707a;
+`;
+
+const LogsEntry = styled.div`
+  padding: 3px 3px 3px 3px;
+  font-size: 13px;
+  line-height: 20px;
+  &:hover {
+    background: #32383f;
+  }
+`;
 
 function useLogs(filterText: string) {
   const logs = useSelector(getDeviceLogs);
 
   return logs
     .filter((log: any) => log.message && log.message.indexOf(filterText) >= 0)
-    .map((log: any) => <LogsEntry key={log.message}>{log.message}</LogsEntry>);
+    .map((log: any, index: number) => (
+      <LogsEntry key={index}>
+        {/* <ParallelLayout>
+          <Column grid={1}>
+            <LineNumber>{index + 1}</LineNumber>
+          </Column>
+          <Column grid={11}>{log.message}</Column>
+        </ParallelLayout> */}
+        {log.message}
+      </LogsEntry>
+    ));
 }
 
 const HEADER_HEIGHT = 50;
@@ -46,18 +67,20 @@ const Header = styled.div`
 `;
 
 const Content = styled.div`
-  background: #000;
-  color: #0f0;
+  background: #24292e;
+  color: #cfd6dc;
   padding: 10px;
   word-break: break-word;
+  overflow: scroll;
 `;
 
 type PropsType = {
   session: Session;
+  parentHeight: number;
 };
 
 export default function SessionDeviceLogs(props: PropsType) {
-  const { session } = props;
+  const { session, parentHeight } = props;
   const [filterText, setFilterText] = useState("");
   const logs = useLogs(filterText);
   const isLoading = useSelector(getisDeviceLogsLoading);
@@ -68,6 +91,10 @@ export default function SessionDeviceLogs(props: PropsType) {
     dispatch(fetchSessionDeviceLogs(session.session_id));
     if (enablePolling) {
       togglePolling(true);
+    }
+
+    if (session.is_completed) {
+      dispatch(removePollingTask(fetchSessionDeviceLogs(session.session_id)));
     }
 
     return () => {
@@ -109,7 +136,7 @@ export default function SessionDeviceLogs(props: PropsType) {
                 </Column>
                 <Column grid={4} padding="0px 10px">
                   <CheckboxComponent
-                    label="enable polling"
+                    label="Enable Polling"
                     checked={enablePolling}
                     onChange={(checked: boolean) => togglePolling(checked)}
                   />
@@ -119,11 +146,7 @@ export default function SessionDeviceLogs(props: PropsType) {
           </Row>
           <Row
             height={`calc(100vh - ${
-              HEADER_HEIGHT +
-              TAB_HEADER_HEIGHT +
-              SUMMARY_HEIGHT +
-              APP_HEADER_HEIGHT +
-              SUB_APP_HEADER_HEIGHT
+              HEADER_HEIGHT + TAB_HEADER_HEIGHT + parentHeight
             }px)`}
             scrollable
           >

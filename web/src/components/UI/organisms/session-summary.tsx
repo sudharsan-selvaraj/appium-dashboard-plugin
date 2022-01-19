@@ -47,7 +47,7 @@ const SUMMARY_CONFIG: any[] = [
   {
     label: "Duration",
     formatValue: (session: any) => {
-      return CommonUtils.convertTimeToReadableFormat(
+      return CommonUtils.getReadableDuration(
         new Date(session.start_time),
         session.end_time ? new Date(session.end_time) : new Date(),
       );
@@ -74,7 +74,7 @@ const SUMMARY_CONFIG: any[] = [
         label: "Browser",
         key: "browser_name",
         icon: () => {
-          return <Icon name="safari" />;
+          return <Icon name="safari" size={Sizes.M} />;
         },
       },
     ],
@@ -90,7 +90,7 @@ const Container = styled.div`
 const Entry = styled.div`
   display: inline-block;
   width: 33%;
-  padding: 10px 0px;
+  padding: 5px 0px;
 `;
 
 const Label = styled.div`
@@ -110,6 +110,10 @@ const Value = styled.div`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis !important;
+
+  & > span {
+    margin-right: 5px;
+  }
 `;
 
 const getEntry = (session: Session, entry: any) => {
@@ -145,8 +149,8 @@ export default function SessionSummary(props: PropsType) {
   const { session } = props;
   return (
     <Container>
-      {SUMMARY_CONFIG.map((entry) => (
-        <Entry key={entry}>{getEntry(session, entry)}</Entry>
+      {SUMMARY_CONFIG.map((entry, index) => (
+        <Entry key={index}>{getEntry(session, entry)}</Entry>
       ))}
     </Container>
   );

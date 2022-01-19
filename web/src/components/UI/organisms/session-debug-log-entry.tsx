@@ -14,7 +14,7 @@ const Container = styled.div<{ expandable: boolean }>`
       ? `
         cursor: pointer;
         &:hover {
-          background: ${props.theme.colors.tertiary};
+          background: ${props.theme.colors.components.log_entry_hover};
         }
       `
       : "";
@@ -62,12 +62,12 @@ export default function SessionDebugLogEntry(props: PropsType) {
     >
       <Header>
         <ParallelLayout>
-          <Column grid={5}>
+          <Column grid={2}>
             <Time>
               <Moment format="DD-MM-YYYY HH:mm:ss">{entry.timestamp}</Moment>
             </Time>
           </Column>
-          <Column grid={6}>
+          <Column grid={9}>
             <Message>{entry.message}</Message>
           </Column>
           <Column grid={1}>

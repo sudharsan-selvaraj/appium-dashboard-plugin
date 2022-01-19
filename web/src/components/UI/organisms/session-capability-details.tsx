@@ -11,12 +11,15 @@ const Container = styled.div`
 const Entry = styled.div`
   width: 100%;
   display: flex;
-  margin: 5px;
-  margin-top: 15px;
+  padding: 5px;
+  margin-top: 10px;
+  &:hover {
+    background: ${(props) => props.theme.colors.greyscale[5]};
+  }
 `;
 
 const Label = styled.div`
-  min-width: 200px;
+  min-width: 230px;
   font-weight: 600;
 `;
 
@@ -36,11 +39,11 @@ const getCapabilityEntries = (tab: string, session: Session) => {
     .map((k) => {
       return (
         <Entry key={k}>
-          <Label>{k}:</Label>
+          <Label>{k}</Label>
           <Value>
             {typeof capabilityObject[k] == "object" ||
             typeof capabilityObject[k] == "boolean"
-              ? JSON.stringify(capabilityObject[k])
+              ? JSON.stringify(capabilityObject[k], null, 2)
               : capabilityObject[k]}
           </Value>
         </Entry>

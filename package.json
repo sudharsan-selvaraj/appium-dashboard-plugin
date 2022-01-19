@@ -8,9 +8,9 @@
     "sequelize:migrate": "sequelize-cli db:migrate",
     "sequelize:migrate:undo": "sequelize-cli db:migrate:undo",
     "clean:cache": "node ./scripts/cleanup-cache-dir.js",
-    "postinstalll": "(node ./scripts/is-prod.js || tsc) && npm run clean:cache && npm run sequelize:migrate",
+    "postinstall": "(node ./scripts/is-prod.js || tsc) && npm run clean:cache && npm run sequelize:migrate",
     "i": "tsc && (appium plugin uninstall appium-dashboard || exit 0) && appium plugin install --source=local $(pwd)",
-    "server": "appium --plugins=appium-dashboard"
+    "server": "appium --use-plugins=appium-dashboard --relaxed-security"
   },
   "repository": {
     "type": "git",

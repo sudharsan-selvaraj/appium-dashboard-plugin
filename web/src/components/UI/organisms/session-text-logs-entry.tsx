@@ -12,7 +12,7 @@ const ParamsContainer = styled.div`
   border: 1px solid ${(props) => props.theme.colors.border};
   background: ${(props) => props.theme.colors.greyscale[5]};
   padding: 15px 15px 5px;
-  margin: 25px 0px 15px 0px;
+  margin: 20px 0 5px 0px;
   max-height: 200px;
   overflow: auto;
   border-radius: ${(props) => props.theme.borderRadius.M};
@@ -29,11 +29,19 @@ const ParamsTitle = styled.div`
 const ErrorContainer = styled(ParamsContainer)`
   border: 1px solid ${(props) => chroma(props.theme.colors.error).hex()};
   border-left: 5px solid ${(props) => chroma(props.theme.colors.error).hex()};
-  background: ${(props) => chroma(props.theme.colors.error).brighten(3).hex()};
+  background: ${(props) =>
+    chroma(props.theme.colors.error).brighten(3.5).hex()};
 
   & .text-log-params-json-entry-key {
     text-transform: capitalize;
   }
+`;
+
+const WarningContainer = styled(ErrorContainer)`
+  border: 1px solid ${(props) => chroma(props.theme.colors.warning).hex()};
+  border-left: 5px solid ${(props) => chroma(props.theme.colors.warning).hex()};
+  background: ${(props) =>
+    chroma(props.theme.colors.warning).brighten(3.5).hex()};
 `;
 
 const StringValue = styled.div`
@@ -43,7 +51,13 @@ const StringValue = styled.div`
 
 const JsonValue = styled(StringValue)``;
 
-const JsonEntryKey = styled(StringValue)``;
+const JsonEntryKey = styled(StringValue)`
+  font-weight: 500;
+`;
+
+const ErrorNameLabel = styled(JsonEntryKey)`
+  text-transform: capitalize;
+`;
 
 const JsonEntryValue = styled(StringValue)``;
 
@@ -53,48 +67,24 @@ const ParamsJsonRow = styled.div`
 `;
 
 function getLogBody(logTitle: string, logBody: any) {
-  if (logBody.type == "string" || logBody.value == null) {
+  const code =
+    typeof logBody.value !== "string"
+      ? JSON.stringify(logBody.value, null, 2)
+      : logBody.value;
+  if (logBody.type == "error") {
     return (
-      <ParamsContainer>
-        <ParamsTitle>{logTitle}</ParamsTitle>
-        <StringValue>
-          {logBody.value != null ? logBody.value.toString() : "null"}
-        </StringValue>
-      </ParamsContainer>
-    );
-  } else if (Array.isArray(logBody.value)) {
-    return (
-      <ParamsContainer>
-        <ParamsTitle>{logTitle}</ParamsTitle>
-        <JsonValue>
-          <CodeViewer
-            code={JSON.stringify(logBody.value, null, 2)}
-            language="json"
-          />
-        </JsonValue>
-      </ParamsContainer>
-    );
-  } else if (logBody.type == "error") {
-    return (
-      <ErrorContainer>
-        <JsonEntryKey>{logBody.value.error}:</JsonEntryKey>
+      <WarningContainer>
+        <ErrorNameLabel>{logBody.value.error}:</ErrorNameLabel>
         <JsonValue>{logBody.value.message}</JsonValue>
-      </ErrorContainer>
+      </WarningContainer>
     );
   } else {
     return (
       <ParamsContainer>
         <ParamsTitle>{logTitle}</ParamsTitle>
-        {React.Children.toArray(
-          Object.keys(logBody.value).map((k) => {
-            return (
-              <ParamsJsonRow key={k}>
-                <JsonEntryKey>{k}:</JsonEntryKey>
-                <JsonEntryValue>{logBody.value[k].toString()}</JsonEntryValue>
-              </ParamsJsonRow>
-            );
-          }),
-        )}
+        <JsonValue>
+          <CodeViewer code={code} language="json" />
+        </JsonValue>
       </ParamsContainer>
     );
   }
@@ -115,12 +105,28 @@ function getDuration(entry: any) {
   }
 }
 
-const Container = styled.div`
+const Container = styled.div<{ expandable: boolean }>`
   padding: 10px;
   border-bottom: 1px solid ${(props) => props.theme.colors.border};
+  ${(props) => {
+    if (props.expandable) {
+      return `
+        cursor: pointer;
+      `;
+    }
+  }}
+  &:hover {
+    background: ${(props) => props.theme.colors.components.log_entry_hover};
+  }
 `;
 
-const Title = styled.div``;
+const Title = styled.div<{ isError: boolean }>`
+    color: ${(props) =>
+      props.isError
+        ? chroma(props.theme.colors.warning).brighten(-1).hex()
+        : "inherit"};
+  }
+`;
 
 const TitleInfo = styled.div`
   color: ${(props) => props.theme.colors.greyscale[3]};
@@ -163,17 +169,20 @@ export default function LogEntry(props: PropsType) {
   const [expanded, setExpanded] = useState(false);
   const { entry, showScreenShots } = props;
   return (
-    <Container onClick={() => setExpanded(!expanded)}>
+    <Container
+      onClick={() => setExpanded(!expanded)}
+      expandable={!!entry.params}
+    >
       <SerialLayout>
         <Row>
           <ParallelLayout>
             <Column grid={4}>
-              <Title>{entry.title}</Title>
+              <Title isError={entry.is_error}>{entry.title}</Title>
             </Column>
-            <Column grid={4}>
+            <Column grid={6}>
               <TitleInfo>{entry.title_info}</TitleInfo>
             </Column>
-            <Column grid={3}>
+            <Column grid={1}>
               {getDuration(entry) != "" ? (
                 <Time>
                   <Icon name="time" />

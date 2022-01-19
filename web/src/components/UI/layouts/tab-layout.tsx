@@ -26,9 +26,15 @@ const Header = styled.div`
 const TabName = styled.div<{ active: boolean }>`
   display: inline-block;
   border-bottom: 3px solid
-    ${(props) => (props.active ? props.theme.colors.primary : "transparent")};
+    ${(props) =>
+      props.active ? props.theme.colors.tab_active_header : "transparent"};
   padding: 10px;
   cursor: ${(props) => (props.active ? "default" : "pointer")};
+  color: ${(props) =>
+    props.active ? props.theme.colors.tab_active_header : "inherit"};
+  margin-right: 20px;
+  font-weight: 600;
+  font-size: 13px;
 `;
 
 const Body = styled.div``;

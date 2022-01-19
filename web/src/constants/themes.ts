@@ -15,8 +15,10 @@ const LightTheme: ThemeConfig = {
     tertiary: "#62727b",
     border: "#BDBDBD",
     font: "rgba(33,33,33,.7)",
-    success: "#77D970",
-    error: "#FF4848",
+    success: "#0F720B",
+    error: "#AE2727",
+    warning: "#EED202",
+    tab_active_header: "#0070F0",
     greyscale: [
       "#000000",
       "#333333",
@@ -28,6 +30,13 @@ const LightTheme: ThemeConfig = {
     ],
     controls: {
       background: "#fff",
+    },
+    components: {
+      session_card_running_status: "#1271EE",
+      session_card_active_bg: "#ABD2ED",
+      session_card_default_bg: "#f0f4f7",
+
+      log_entry_hover: "#fffdea",
     },
   },
   fonts: {

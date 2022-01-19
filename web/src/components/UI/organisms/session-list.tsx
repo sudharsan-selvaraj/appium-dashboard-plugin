@@ -19,11 +19,12 @@ import {
 } from "../../../constants/ui";
 import { getHeaderStyle } from "../../../utils/ui";
 import Dropdown from "../atoms/dropdown";
-import Icon from "../atoms/icon";
+import Icon, { Sizes } from "../atoms/icon";
 import SessionListFilter from "./session-list-filter";
 import { useState } from "react";
 import { Badge } from "@material-ui/core";
 import { getSessionFilterCount } from "../../../store/selectors/ui/filter-selector";
+import Utils from "../../../utils/common-utils";
 
 const Container = styled.div`
   border-right: 1px solid #ced8e1;
@@ -43,6 +44,12 @@ const FilterTrigger = styled.div`
   padding: 10px;
 `;
 
+const FilterTriggerLabel = styled.div`
+  display: inline-block;
+  font-size: 13px;
+  padding-left: 4px;
+`;
+
 const FilterDropdown = styled.div``;
 
 const StyledBadge = styled(Badge)`
@@ -51,16 +58,47 @@ const StyledBadge = styled(Badge)`
   top: -2px;
 `;
 
+function getFiltersFromQueryParams(searchQuery: string) {
+  const urlParams = new URLSearchParams(searchQuery);
+
+  const allowedFilters: any = {
+    name: "",
+    os: {
+      valid: ["ios", "android"],
+    },
+    status: {
+      valid: ["running", "failed", "passed", "timeout"],
+    },
+    device_udid: "",
+    start_time: {
+      valid: (dateString: string) => {
+        return !isNaN(new Date(dateString).getDate());
+      },
+    },
+  };
+
+  return Utils.parseJsonSchema(
+    allowedFilters,
+    Utils.urlParamsToObject(urlParams),
+  );
+}
+
 export default function SessionList() {
   const dispatch = useDispatch();
   const sessions = useSelector(getSessions);
   const SelectedSession = useSelector(getSelectedSession);
+  const urlFilters = getFiltersFromQueryParams(window.location.search);
 
   useEffect(() => {
-    dispatch({
-      type: ReduxActionTypes.FETCH_SESSIONS_INIT,
-    });
+    if (Object.keys(urlFilters).length) {
+      setFilter(urlFilters);
+    } else {
+      dispatch({
+        type: ReduxActionTypes.FETCH_SESSIONS_INIT,
+      });
+    }
   }, []);
+
   const setFilter = useCallback((payload) => {
     dispatch(setSessionFilter(payload));
   }, []);
@@ -79,8 +117,8 @@ export default function SessionList() {
               open={isFilterOpen}
             >
               <FilterTrigger>
-                <Icon name="filter" />
-                <span>Filter</span>
+                <Icon name="filter" size={Sizes.S} />
+                <FilterTriggerLabel>FILTERS</FilterTriggerLabel>
                 <StyledBadge badgeContent={filterCount} color="secondary" />
               </FilterTrigger>
               <FilterDropdown>
@@ -114,7 +152,7 @@ export default function SessionList() {
                 ))}
               </>
             ) : (
-              <EmptyMessage>No sessions found for given filter1.</EmptyMessage>
+              <EmptyMessage>No sessions found for given filter.</EmptyMessage>
             )}
           </List>
         </Row>

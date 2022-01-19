@@ -1,10 +1,22 @@
 import React from "react";
-import { FaHome, FaAngleDown, FaAngleUp, FaCheckCircle } from "react-icons/fa";
+import {
+  FaHome,
+  FaAngleDown,
+  FaAngleUp,
+  FaCheckCircle,
+  FaFilter,
+} from "react-icons/fa";
 import { FcAndroidOs } from "react-icons/fc";
 import { FaApple } from "react-icons/fa";
-import { DiSafari } from "react-icons/di";
+import { SiSafari } from "react-icons/si";
+import { IoPhonePortraitOutline } from "react-icons/io5";
 import { AiFillCloseCircle } from "react-icons/ai";
-import { BsClockFill, BsFilterRight, BsTrash } from "react-icons/bs";
+import {
+  BsClockFill,
+  BsFilterRight,
+  BsTrash,
+  BsFillExclamationTriangleFill,
+} from "react-icons/bs";
 import styled from "styled-components";
 
 export enum Sizes {
@@ -42,7 +54,7 @@ export default function Icon(props: IconProps) {
       icon = <FaApple />;
       break;
     case "safari":
-      icon = <DiSafari />;
+      icon = <SiSafari />;
       break;
     case "arrow-up":
       icon = <FaAngleUp />;
@@ -60,10 +72,16 @@ export default function Icon(props: IconProps) {
       icon = <BsClockFill />;
       break;
     case "filter":
-      icon = <BsFilterRight />;
+      icon = <FaFilter />;
       break;
     case "delete":
       icon = <BsTrash />;
+      break;
+    case "mobile":
+      icon = <IoPhonePortraitOutline />;
+      break;
+    case "exclamation":
+      icon = <BsFillExclamationTriangleFill />;
       break;
     default:
       icon = null;

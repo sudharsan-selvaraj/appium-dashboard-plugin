@@ -107,6 +107,14 @@ class SessionManager {
       build = await getOrCreateNewBuild({ buildName, projectId: project?.id });
     }
 
+    if (!this.sessionInfo.capabilities.desired) {
+      this.sessionInfo.capabilities.desired = Object.assign(
+        {},
+        command.args[2].firstMatch[0],
+        command.args[2].alwaysMatch
+      );
+    }
+
     await Session.create({
       ...this.sessionInfo,
       start_time: new Date(),

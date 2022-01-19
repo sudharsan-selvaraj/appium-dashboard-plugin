@@ -17,6 +17,8 @@ import SessionCapabilityDetails from "./session-capability-details";
 import SessionLogs from "./session-logs";
 import SessionSummary from "./session-summary";
 import SessionVideo from "./session-video";
+import chroma from "chroma-js";
+import Session from "../../../interfaces/session";
 
 const Container = styled.div``;
 
@@ -36,11 +38,33 @@ const Delete = styled.div`
   cursor: pointer;
 `;
 
-const StyledColumn = styled(Column)`
-  border-right: 1px solid ${(props) => props.theme.colors.border};
+const ErrorContainer = styled.div`
+  border: 1px solid ${(props) => chroma(props.theme.colors.error).hex()};
+  border-left: 5px solid ${(props) => chroma(props.theme.colors.error).hex()};
+  background: ${(props) =>
+    chroma(props.theme.colors.error).brighten(3.5).hex()};
+  border-radius: ${(props) => props.theme.borderRadius.M};
+  overflow: scroll;
+  padding: 10px;
+  margin: 0 15px 0 15px;
+  z-index: 1;
 `;
 
-export const SUMMARY_HEIGHT = 140;
+export const SUMMARY_HEIGHT = 120;
+export const FAIL_MESSAGE_CONTAINER_HEIGHT = 100;
+
+function hasSessionFailureMessage(session: Session) {
+  return session.session_status === "FAILED" && session.session_status_message;
+}
+
+function getSessiobDetailsMainContainerHeight(session: Session) {
+  return (
+    SUMMARY_HEIGHT +
+    APP_HEADER_HEIGHT +
+    SUB_APP_HEADER_HEIGHT +
+    (hasSessionFailureMessage(session) ? FAIL_MESSAGE_CONTAINER_HEIGHT : 0)
+  );
+}
 
 export default function SessionDetails() {
   const session = useSelector(getSelectedSession);
@@ -53,6 +77,9 @@ export default function SessionDetails() {
     return <EmptyMessage>Select a Session</EmptyMessage>;
   }
 
+  const MAIN_CONTENT_CONTAINER_HEIGHT =
+    getSessiobDetailsMainContainerHeight(session);
+
   return (
     <Container>
       <SerialLayout>
@@ -60,7 +87,7 @@ export default function SessionDetails() {
           <HEADER>
             <ParallelLayout>
               <Column grid={11}>
-                <Name>{session.session_id}</Name>
+                <Name>{session.name || session.session_id}</Name>
               </Column>
               <Column grid={1}>
                 <Delete onClick={() => onDelete(session.session_id)}>
@@ -74,13 +101,14 @@ export default function SessionDetails() {
         <Row height={`${SUMMARY_HEIGHT}px`}>
           <SessionSummary session={session} />
         </Row>
-        <Row
-          height={`calc(100vh - ${
-            SUMMARY_HEIGHT + APP_HEADER_HEIGHT + SUB_APP_HEADER_HEIGHT
-          }px)`}
-        >
+        {hasSessionFailureMessage(session) && (
+          <Row height={`${FAIL_MESSAGE_CONTAINER_HEIGHT}px`} padding={"10px"}>
+            <ErrorContainer>{session.session_status_message}</ErrorContainer>
+          </Row>
+        )}
+        <Row height={`calc(100vh - ${MAIN_CONTENT_CONTAINER_HEIGHT}px)`}>
           <ParallelLayout>
-            <StyledColumn grid={4} scrollable>
+            <Column grid={4} scrollable>
               <SerialLayout>
                 <Row>
                   <SessionVideo session={session} />
@@ -89,9 +117,12 @@ export default function SessionDetails() {
                   <SessionCapabilityDetails session={session} />
                 </Row>
               </SerialLayout>
-            </StyledColumn>
+            </Column>
             <Column grid={8}>
-              <SessionLogs session={session} />
+              <SessionLogs
+                session={session}
+                parentHeight={MAIN_CONTENT_CONTAINER_HEIGHT}
+              />
             </Column>
           </ParallelLayout>
         </Row>

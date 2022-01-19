@@ -10,57 +10,100 @@ import CommonUtils from "../../../utils/common-utils";
 import Centered from "../molecules/centered";
 import { useHistory } from "react-router-dom";
 import { getSessionDetailsUrl } from "../../../constants/routes";
+import chroma from "chroma-js";
+import { retry } from "redux-saga/effects";
 
 const getStatusIcon = (is_completed: boolean, session_status: string) => {
   if (!is_completed) {
-    return <Spinner />;
+    return <Spinner size="M" />;
   } else if (session_status === "PASSED") {
-    return <Icon name="success" size={Sizes.XXXL} />;
+    return <Icon name="success" size={Sizes.XXL} />;
+  } else if (session_status === "TIMEOUT") {
+    return <Icon name="exclamation" size={Sizes.XXL} />;
   } else {
-    return <Icon name="error" size={Sizes.XXXL} />;
+    return <Icon name="error" size={Sizes.XXL} />;
+  }
+};
+
+const getTilte = (session: Session) => {
+  if (session.name) {
+    return session.name;
+  } else {
+    let title =
+      `${session.platform_name} ${session.platform_version}`.toLowerCase();
+    if (session.browser_name) {
+      title += `, ${session.browser_name}`;
+    }
+    return title;
   }
 };
 
 const Container = styled.div`
   padding: 10px 15px;
-  border-bottom: 1px solid ${(props) => props.theme.colors.border};
+  border-bottom: 1px solid
+    ${(props) => chroma(props.theme.colors.border).brighten(0.7).hex()};
   cursor: pointer;
+  background-color: ${(props) =>
+    props.theme.colors.components.session_card_default_bg};
 
   &:hover {
-    background-color: ${(props) => props.theme.colors.greyscale[5]};
+    background-color: ${(props) => props.theme.colors.greyscale[4]};
   }
 
   &.active {
-    background-color: ${(props) => props.theme.colors.greyscale[5]};
+    background-color: ${(props) =>
+      props.theme.colors.components.session_card_active_bg};
   }
 `;
 
 const Name = styled.div`
-  font-weight: 600;
+  font-weight: 400;
+  font-size: 13px;
+  text-transform: capitalize;
 `;
 
-const PlatformVersion = styled.div``;
+const ExecutionTime = styled.div`
+  color: ${(props) => props.theme.colors.greyscale[2]};
+`;
 
-const DeviceName = styled.div``;
-
-const StatusIcon = styled.div<{ status: string }>`
+const StausColor = styled.div<{ status: string }>`
   color: ${(props) => {
     switch (props.status) {
       case "PASSED":
         return props.theme.colors.success;
-      case "error":
+      case "RUNNING":
+        return props.theme.colors.components.session_card_running_status;
+      case "FAILED":
       case "TIMEOUT":
         return props.theme.colors.error;
     }
   }};
 `;
 
-const StatusLabel = styled.div`
-  color: ${(props) => props.theme.colors.success};
+const StatusIcon = styled(StausColor)``;
+
+const StatusLabel = styled(StausColor)`
+  font-weight: 600;
+  font-size: 11px;
 `;
 
-const ExecutionTime = styled.div`
+const TextWithIcon = styled.div`
+  font-size: 12px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis !important;
+
+  & > span {
+    padding-right: 5px;
+  }
+`;
+
+const DeviceName = styled(TextWithIcon)`
   color: ${(props) => props.theme.colors.greyscale[2]};
+  font-weight: 500;
 `;
 
 type PropsType = {
@@ -68,9 +111,18 @@ type PropsType = {
   selected: boolean;
 };
 
+function getPlatformIcon(session: Session) {
+  if (session.platform_name.toLowerCase() == "android") {
+    return <Icon name="android" size={Sizes.XL} />;
+  } else {
+    return <Icon name="ios" size={Sizes.XL} />;
+  }
+}
+
 export default function SessionCard(props: PropsType) {
   const { session } = props;
   const {
+    name,
     session_id,
     platform_version,
     device_name,
@@ -96,26 +148,24 @@ export default function SessionCard(props: PropsType) {
       <ParallelLayout>
         <Column grid={11}>
           <SerialLayout>
-            <Row padding="10px 0px">
-              <Name>{session_id}</Name>
+            <Row padding="10px 30px 10px 0">
+              <Name>{getTilte(session)}</Name>
             </Row>
-            <Row padding="10px 0px">
+            <Row padding="0 0 5px 0">
               <ParallelLayout>
                 <Column grid={3}>
-                  <PlatformVersion>v{platform_version}</PlatformVersion>
+                  <StatusLabel status={session_status}>
+                    {session_status}
+                  </StatusLabel>
                 </Column>
-                <Column grid={8}>
-                  <DeviceName>{device_name}</DeviceName>
+                <Column grid={5}>
+                  <DeviceName>
+                    <Icon name="mobile" />
+                    {device_name}
+                  </DeviceName>
                 </Column>
-              </ParallelLayout>
-            </Row>
-            <Row padding="10px 0px">
-              <ParallelLayout>
-                <Column grid={3}>
-                  <StatusLabel>{session_status}</StatusLabel>
-                </Column>
-                <Column grid={8}>
-                  <ExecutionTime>{formattedStartTime}</ExecutionTime>
+                <Column grid={4}>
+                  <ExecutionTime>{formattedStartTime} ago</ExecutionTime>
                 </Column>
               </ParallelLayout>
             </Row>

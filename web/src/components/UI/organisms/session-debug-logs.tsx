@@ -49,10 +49,11 @@ const Content = styled.div``;
 
 type PropsType = {
   session: Session;
+  parentHeight: number;
 };
 
 export default function SessionDebugLogs(props: PropsType) {
-  const { session } = props;
+  const { session, parentHeight } = props;
   const [filterText, setFilterText] = useState("");
   const logs = useLogs(filterText);
   const isLoading = useSelector(getisDebugLogsLoading);
@@ -63,6 +64,10 @@ export default function SessionDebugLogs(props: PropsType) {
     dispatch(fetchSessionDebugLogs(session.session_id));
     if (enablePolling) {
       togglePolling(true);
+    }
+
+    if (session.is_completed) {
+      dispatch(removePollingTask(fetchSessionDebugLogs(session.session_id)));
     }
 
     return () => {
@@ -104,7 +109,7 @@ export default function SessionDebugLogs(props: PropsType) {
                 </Column>
                 <Column grid={4} padding="0px 10px">
                   <CheckboxComponent
-                    label="enable polling"
+                    label="Enable Polling"
                     checked={enablePolling}
                     onChange={(checked: boolean) => togglePolling(checked)}
                   />
@@ -114,11 +119,7 @@ export default function SessionDebugLogs(props: PropsType) {
           </Row>
           <Row
             height={`calc(100vh - ${
-              HEADER_HEIGHT +
-              TAB_HEADER_HEIGHT +
-              SUMMARY_HEIGHT +
-              APP_HEADER_HEIGHT +
-              SUB_APP_HEADER_HEIGHT
+              HEADER_HEIGHT + TAB_HEADER_HEIGHT + parentHeight
             }px)`}
             scrollable
           >

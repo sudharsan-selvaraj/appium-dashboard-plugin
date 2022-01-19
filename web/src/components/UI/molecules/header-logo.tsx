@@ -4,7 +4,6 @@ import Icon, { Sizes } from "../atoms/icon";
 
 const Container = styled.div`
   padding: 12px 10px;
-  border-right: 1px solid ${(props) => props.theme.colors.border};
 `;
 
 const Header = styled.h3``;
@@ -18,7 +17,6 @@ const Title = styled.span`
   vertical-align: middle;
   font-size: 18px;
   margin-left: 10px;
-  font-weight: 700;
 `;
 
 export default function HeaderLogo() {
@@ -28,7 +26,7 @@ export default function HeaderLogo() {
         <IconContainer>
           <Icon name="home" size={Sizes.XL} />
         </IconContainer>
-        <Title>Dashboard</Title>
+        <Title>APPIUM DASHBOARD</Title>
       </Header>
     </Container>
   );

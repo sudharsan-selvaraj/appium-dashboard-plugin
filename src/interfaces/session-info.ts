@@ -8,6 +8,6 @@ export interface SessionInfo {
   automation_name: string;
   app: string;
   udid: string;
-  capabilities: [string: any];
+  capabilities: Record<string, any>;
   is_completed?: boolean;
 }

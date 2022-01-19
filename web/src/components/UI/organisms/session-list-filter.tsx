@@ -1,5 +1,6 @@
 import React from "react";
 import { useCallback } from "react";
+import { useEffect } from "react";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
@@ -39,6 +40,7 @@ export default function SessionListFilter(props: Propstype) {
   const [os, setOs] = useState(filterState.os);
   const [status, setStatus] = useState(filterState.status);
   const [device_udid, setUuid] = useState(filterState.device_udid);
+  const [showClearButton, setShowClearButton] = useState(false);
 
   const apply = useCallback(() => {
     onApply({
@@ -47,6 +49,19 @@ export default function SessionListFilter(props: Propstype) {
       status: status,
       device_udid,
     });
+  }, [name, os, status, device_udid]);
+
+  const reset = useCallback(() => {
+    onApply({
+      name: "",
+      os: "",
+      status: "",
+      device_udid: "",
+    });
+  }, [name, os, status, device_udid]);
+
+  useEffect(() => {
+    setShowClearButton([name, os, status, device_udid].some((val) => !!val));
   }, [name, os, status, device_udid]);
 
   return (
@@ -112,9 +127,22 @@ export default function SessionListFilter(props: Propstype) {
           </ParallelLayout>
         </Row>
         <Row align="center" padding="20px 0px 0px">
-          <Actions>
-            <StyledButton onClick={apply}>Apply</StyledButton>
-          </Actions>
+          <ParallelLayout>
+            <Column grid={6}>
+              <Actions>
+                <StyledButton onClick={apply}>Apply</StyledButton>
+              </Actions>
+            </Column>
+            {showClearButton ? (
+              <Column grid={6}>
+                <Actions>
+                  <StyledButton onClick={reset}>Clear</StyledButton>
+                </Actions>
+              </Column>
+            ) : (
+              <></>
+            )}
+          </ParallelLayout>
         </Row>
       </SerialLayout>
     </Container>

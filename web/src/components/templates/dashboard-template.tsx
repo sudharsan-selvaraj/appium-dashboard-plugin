@@ -17,17 +17,24 @@ import AppHeader from "../UI/organisms/app-header";
 import SessionDetails from "../UI/organisms/session-details";
 import SessionList from "../UI/organisms/session-list";
 
+function extractSessionidFromUrl(url: string): string | null {
+  const matches = url.match(new RegExp(/dashboard\/session\/(.*)/));
+  return matches?.length ? matches[1] : null;
+}
+
 export default function DashboardTemplate() {
   const history = useHistory();
   const dispatch = useDispatch();
   const location = useLocation();
-  const session_id = location.pathname.split("/").pop();
   const sessions = useSelector(getSessions);
+  const session_id = extractSessionidFromUrl(location.pathname);
+
   useEffect(() => {
-    if (session_id) {
-      const SelectedSession = sessions.find((d) => d.session_id === session_id);
-      SelectedSession && dispatch(setSelectedSession(SelectedSession));
-    }
+    const SelectedSession = !!session_id
+      ? sessions.find((d) => d.session_id === session_id) || sessions[0]
+      : sessions[0];
+
+    SelectedSession && dispatch(setSelectedSession(SelectedSession));
   }, [session_id, sessions]);
 
   return (
@@ -37,10 +44,10 @@ export default function DashboardTemplate() {
       </Row>
       <Row height={`calc(100vh - ${APP_HEADER_HEIGHT}px)`}>
         <ParallelLayout>
-          <Column grid={3}>
+          <Column grid={2.5}>
             <SessionList />
           </Column>
-          <Column grid={9}>
+          <Column grid={9.5}>
             <Router history={history}>
               <Switch>
                 <Route>

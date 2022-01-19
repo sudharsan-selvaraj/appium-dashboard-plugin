@@ -6,7 +6,7 @@ const Container = styled.div<{ size?: keyof typeof Sizes }>`
   width: ${(props) => {
     switch (props.size) {
       case "M":
-        return "50px";
+        return "70px";
       case "L":
         return "100px";
       case "XL":
@@ -18,6 +18,7 @@ const Container = styled.div<{ size?: keyof typeof Sizes }>`
 `;
 
 export enum Sizes {
+  "S" = "S",
   "M" = "M",
   "L" = "L",
   "XL" = "XL",

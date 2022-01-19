@@ -34,8 +34,8 @@ function useLogs(showScreenShots: boolean, showExceptions: boolean) {
 
   return logs
     .filter((log: any) => !showExceptions || log.is_error)
-    .map((log: any) => (
-      <LogEntry key={log} entry={log} showScreenShots={showScreenShots} />
+    .map((log: any, index: number) => (
+      <LogEntry key={index} entry={log} showScreenShots={showScreenShots} />
     ));
 }
 
@@ -52,11 +52,12 @@ const HEADER_HEIGHT = 50;
 
 type PropsType = {
   session: Session;
+  parentHeight: number;
 };
 
 export default function SessionTextLogs(props: PropsType) {
-  const { session } = props;
-  const [showScreenShots, setShowScreenShots] = useState(false);
+  const { session, parentHeight } = props;
+  const [showScreenShots, setShowScreenShots] = useState(true);
   const [showExceptions, setShowExceptions] = useState(false);
   const [enablePolling, setEnablePolling] = useState(true);
   const logs = useLogs(showScreenShots, showExceptions);
@@ -67,6 +68,10 @@ export default function SessionTextLogs(props: PropsType) {
     dispatch(fetchSessionTextLogs(session.session_id));
     if (enablePolling) {
       togglePolling(true);
+    }
+
+    if (session.is_completed) {
+      dispatch(removePollingTask(fetchSessionTextLogs(session.session_id)));
     }
 
     return () => {
@@ -92,8 +97,6 @@ export default function SessionTextLogs(props: PropsType) {
         <Spinner />
       </Centered>
     );
-  } else if (!logs.length) {
-    return <EmptyMessage>No logs</EmptyMessage>;
   } else {
     return (
       <Container>
@@ -108,7 +111,7 @@ export default function SessionTextLogs(props: PropsType) {
                     onChange={(checked: boolean) => setShowScreenShots(checked)}
                   />
                 </Column>
-                <Column grid={2}>
+                <Column grid={2.5}>
                   <CheckBox
                     label="Show Errors Only"
                     checked={showExceptions}
@@ -117,7 +120,7 @@ export default function SessionTextLogs(props: PropsType) {
                 </Column>
                 <Column grid={2}>
                   <CheckBox
-                    label="enable polling"
+                    label="Enable Polling"
                     checked={enablePolling}
                     onChange={(checked: boolean) => togglePolling(checked)}
                   />
@@ -127,15 +130,15 @@ export default function SessionTextLogs(props: PropsType) {
           </Row>
           <Row
             height={`calc(100vh - ${
-              HEADER_HEIGHT +
-              TAB_HEADER_HEIGHT +
-              SUMMARY_HEIGHT +
-              APP_HEADER_HEIGHT +
-              SUB_APP_HEADER_HEIGHT
+              HEADER_HEIGHT + TAB_HEADER_HEIGHT + parentHeight
             }px)`}
             scrollable
           >
-            <Content>{logs}</Content>
+            {logs.length ? (
+              <Content>{logs}</Content>
+            ) : (
+              <EmptyMessage>No logs</EmptyMessage>
+            )}
           </Row>
         </SerialLayout>
       </Container>
