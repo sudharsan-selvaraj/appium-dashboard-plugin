@@ -1,6 +1,6 @@
 import { NextFunction, Router, Request, Response } from "express";
 import { Session } from "../../models/session";
-import { Op } from "sequelize";
+import { Op, Sequelize } from "sequelize";
 import { BaseController } from "../commons/base-controller";
 import fs from "fs";
 import { CommandLogs, Logs } from "../../models";
@@ -19,15 +19,48 @@ export class SessionController extends BaseController {
   }
 
   public async getSessions(request: Request, response: Response, next: NextFunction) {
-    let start_time = request.query.start_time as string;
-    let filter: any = {};
+    let { start_time, name, os, status, device_udid } = request.query as any;
+    let filters: any = [];
     if (start_time) {
-      filter.start_time = { [Op.gte]: new Date(start_time) };
+      filters.push({ start_time: { [Op.gte]: new Date(start_time) } });
     }
+    if (name) {
+      filters.push({
+        [Op.or]: [
+          {
+            session_id: {
+              [Op.like]: `%${name.trim()}%`,
+            },
+          },
+          {
+            name: {
+              [Op.like]: `%${name.trim()}%`,
+            },
+          },
+        ],
+      });
+    }
+
+    if (status) {
+      filters.push({
+        session_status: status.toUpperCase(),
+      });
+    }
+
+    if (device_udid) {
+      filters.push(Sequelize.where(Sequelize.fn("LOWER", Sequelize.col("udid")), device_udid.toLowerCase()));
+    }
+
+    if (os) {
+      filters.push(Sequelize.where(Sequelize.fn("LOWER", Sequelize.col("platform_name")), os.toLowerCase()));
+    }
+
     this.sendSuccessResponse(
       response,
       await Session.findAndCountAll({
-        where: filter,
+        where: {
+          [Op.and]: filters,
+        },
         order: [["start_time", "DESC"]],
       })
     );
