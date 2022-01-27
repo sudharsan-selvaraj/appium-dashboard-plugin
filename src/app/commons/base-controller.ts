@@ -1,9 +1,10 @@
 import { Request, Response, Router } from "express";
+import { Config } from "../../config";
 import { IExpressController, IExpressRequest } from "../../interfaces/express-controller";
 import { ExpressUtils } from "../utils/express-utils";
 
 export abstract class BaseController implements IExpressController {
-  abstract initializeRoutes(router: Router, config: any): void;
+  abstract initializeRoutes(router: Router, config: Config): void;
 
   public sendPaginatedResponse(result: { rows: any[]; count: number }, request: IExpressRequest, response: Response) {
     if (request.parsedQuery.paginate == true) {

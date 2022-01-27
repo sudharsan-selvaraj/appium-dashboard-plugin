@@ -8,6 +8,7 @@ import { pluginLogger } from "../loggers/plugin-logger";
 import { logger } from "../loggers/logger";
 import { PluginCliArgs } from "../interfaces/PluginCliArgs";
 import * as express from "express";
+import { registerDebugMiddlware } from "./debugger";
 
 const sessionMap: Map<string, SessionManager> = new Map();
 const IGNORED_COMMANDS = ["getScreenshot", "stopRecordingScreen", "startRecordingScreen"];
@@ -25,6 +26,7 @@ class AppiumDashboardPlugin extends BasePlugin {
   }
 
   public static async updateServer(expressApp: express.Application) {
+    registerDebugMiddlware(expressApp);
     expressApp.use("/dashboard", Container.get("expressRouter") as any);
     pluginLogger.info("Dashboard plugin is enabled and will be served at http://localhost:4723/dashboard");
     pluginLogger.info(
@@ -52,13 +54,13 @@ class AppiumDashboardPlugin extends BasePlugin {
       /**
        * Append additional log capabilities to payload
        */
-      args[2]["appium:clearDeviceLogsOnStart"] = true;
-      args[2].firstMatch[0]["appium:clearDeviceLogsOnStart"] = true;
+      let rawCapabilities = Object.assign({}, args[2].firstMatch[0], args[2].alwaysMatch);
+      this.constructDesiredCapabilities(args);
       var response = await next();
       if (response.error) {
         return response;
       } else {
-        let sessionInfo = getSessionDetails(args, response);
+        let sessionInfo = getSessionDetails(rawCapabilities, response);
         let sessionManager = new SessionManager(sessionInfo, new CommandParser(sessionInfo), response, this.cliArgs);
         sessionMap.set(sessionInfo.session_id, sessionManager);
         await sessionManager.onCommandRecieved(appiumCommand);
@@ -69,10 +71,30 @@ class AppiumDashboardPlugin extends BasePlugin {
 
     let sessionId = args[args.length - 1];
     if (sessionMap.has(sessionId)) {
-      return await sessionMap.get(sessionId)?.onCommandRecieved(appiumCommand);
+      return await this.getSessionManager(sessionId)?.onCommandRecieved(appiumCommand);
     } else {
       return await next();
     }
+  }
+
+  private getSessionManager(sessionId: string) {
+    return sessionMap.get(sessionId);
+  }
+
+  private constructDesiredCapabilities(args: any) {
+    ["newCommandTimeout"].forEach((capability) => {
+      delete args[2][capability];
+      delete args[2].firstMatch[0][capability];
+    });
+
+    let newCapabilities: Record<string, any> = {
+      "appium:clearDeviceLogsOnStart": true,
+    };
+
+    Object.keys(newCapabilities).forEach((k) => {
+      args[2][k] = newCapabilities[k];
+      args[2].firstMatch[0][k] = newCapabilities[k];
+    });
   }
 }
 

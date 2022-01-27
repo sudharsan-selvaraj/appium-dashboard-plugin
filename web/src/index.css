@@ -44,3 +44,36 @@ body {
 .MuiMenuItem-root {
   font-size: 12px !important;
 }
+
+.custom-tooltip-container {
+	background-color: #000!important;
+	height: 30px;
+	min-width: 50px;
+	display: flex;
+	align-items: center;
+	font-size: 12px!important;
+}
+
+.custom-tooltip-arrow {
+	color: #000!important;
+}
+
+@-webkit-keyframes progress {
+    0% {
+        background-position: 0 0
+    }
+
+    to {
+        background-position: 200px 0
+    }
+}
+
+@keyframes progress {
+    0% {
+        background-position: 0 0
+    }
+
+    to {
+        background-position: 200px 0
+    }
+}

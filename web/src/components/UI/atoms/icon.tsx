@@ -7,17 +7,15 @@ import {
   FaFilter,
 } from "react-icons/fa";
 import { FcAndroidOs } from "react-icons/fc";
-import { FaApple } from "react-icons/fa";
+import { FaApple, FaTrash, FaPlay } from "react-icons/fa";
 import { SiSafari } from "react-icons/si";
 import { IoPhonePortraitOutline } from "react-icons/io5";
 import { AiFillCloseCircle } from "react-icons/ai";
-import {
-  BsClockFill,
-  BsFilterRight,
-  BsTrash,
-  BsFillExclamationTriangleFill,
-} from "react-icons/bs";
+import { GiPauseButton } from "react-icons/gi";
+import { BiArrowFromRight } from "react-icons/bi";
+import { BsClockFill, BsFillExclamationTriangleFill } from "react-icons/bs";
 import styled from "styled-components";
+import Tooltip from "@mui/material/Tooltip";
 
 export enum Sizes {
   S = "12",
@@ -37,7 +35,30 @@ type IconProps = {
   name: string;
   onClick?: () => void;
   size?: string;
+  tooltip?: string;
+  tooltipPosition?: "top" | "bottom" | "right" | "left";
 };
+
+function wrapIconWithTooltip(icon: any, props: IconProps) {
+  const { tooltip, tooltipPosition } = props;
+  if (!tooltip) {
+    return icon;
+  } else {
+    return (
+      <Tooltip
+        title={tooltip}
+        placement={tooltipPosition}
+        arrow
+        classes={{
+          tooltip: "custom-tooltip-container",
+          arrow: "custom-tooltip-arrow",
+        }}
+      >
+        {icon}
+      </Tooltip>
+    );
+  }
+}
 
 export default function Icon(props: IconProps) {
   const { name, onClick, size } = props;
@@ -75,7 +96,7 @@ export default function Icon(props: IconProps) {
       icon = <FaFilter />;
       break;
     case "delete":
-      icon = <BsTrash />;
+      icon = <FaTrash />;
       break;
     case "mobile":
       icon = <IoPhonePortraitOutline />;
@@ -83,12 +104,22 @@ export default function Icon(props: IconProps) {
     case "exclamation":
       icon = <BsFillExclamationTriangleFill />;
       break;
+    case "pause":
+      icon = <GiPauseButton />;
+      break;
+    case "play":
+      icon = <FaPlay />;
+      break;
+    case "collapse":
+      icon = <BiArrowFromRight />;
+      break;
     default:
       icon = null;
   }
-  return (
-    <Container onClick={onClick} size={size}>
+  const container = (
+    <Container onClick={onClick} size={size} className="icon">
       {icon}
     </Container>
   );
+  return wrapIconWithTooltip(container, props);
 }

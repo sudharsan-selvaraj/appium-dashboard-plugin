@@ -86,16 +86,18 @@ export class SessionController extends BaseController {
       },
     });
 
-    if (session) {
+    if (session && session.session_status != "RUNNING") {
       await session.destroy();
       if (session.video_path) {
         fs.unlinkSync(session.video_path);
       }
       fs.rmdirSync(path.join(config.screenshotSavePath, session.session_id), { recursive: true });
+      this.sendSuccessResponse(response, {
+        success: true,
+      });
+    } else {
+      this.sendFailureResponse(response, "Cannnot delete running session");
     }
-    this.sendSuccessResponse(response, {
-      success: true,
-    });
   }
 
   public async getVideoForSession(request: Request, response: Response, next: NextFunction) {

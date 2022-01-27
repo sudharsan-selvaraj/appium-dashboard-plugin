@@ -99,6 +99,14 @@ export default function SessionList() {
     }
   }, []);
 
+  useEffect(() => {
+    if (SelectedSession == null) {
+      dispatch({
+        type: ReduxActionTypes.FETCH_SESSIONS_INIT,
+      });
+    }
+  }, [SelectedSession]);
+
   const setFilter = useCallback((payload) => {
     dispatch(setSessionFilter(payload));
   }, []);

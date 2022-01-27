@@ -43,4 +43,12 @@ export default class SessionApi {
   public static getSessionTextLogs(sessionId: string) {
     return Api.get(`/sessions/${sessionId}/logs/text`, {});
   }
+
+  public static pauseSession(sessionId: string) {
+    return Api.post(`/debug/${sessionId}/pause`, {});
+  }
+
+  public static resumeSession(sessionId: string) {
+    return Api.post(`/debug/${sessionId}/play`, {});
+  }
 }

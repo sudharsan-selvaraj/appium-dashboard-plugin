@@ -82,7 +82,7 @@ function* TaskAggregator(tasks: TasksType) {
   }
 }
 
-const INTERVAL_IN_MS = 20000;
+const INTERVAL_IN_MS = 10000;
 
 type TasksType = Array<ReduxActionType<any>>;
 

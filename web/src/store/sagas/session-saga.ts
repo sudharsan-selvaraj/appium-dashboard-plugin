@@ -8,6 +8,8 @@ import {
   fetchSessionTextLogsSuccess,
   fetchSessionDeviceLogsSuccess,
   fetchSessionDebugLogsSuccess,
+  deleteSessionFinish,
+  sessionStateChangeFinish,
 } from "../actions/session-actions";
 import ReduxActionTypes from "../redux-action-types";
 import { omitBy } from "lodash";
@@ -63,7 +65,24 @@ function* fetchSessionDebugLog(action: ReduxActionType<string>) {
 }
 
 function* deleteSession(action: ReduxActionType<string>) {
-  yield SessionApi.deleteSessionById(action.payload);
+  const response: ApiResponse<any> = yield SessionApi.deleteSessionById(
+    action.payload,
+  );
+  yield put(deleteSessionFinish(response));
+}
+
+function* pauseSession(action: ReduxActionType<string>) {
+  const response: ApiResponse<any> = yield SessionApi.pauseSession(
+    action.payload,
+  );
+  yield put(sessionStateChangeFinish(response));
+}
+
+function* resumeSession(action: ReduxActionType<string>) {
+  const response: ApiResponse<any> = yield SessionApi.resumeSession(
+    action.payload,
+  );
+  yield put(sessionStateChangeFinish(response));
 }
 
 export default function* () {
@@ -78,5 +97,7 @@ export default function* () {
     takeLatest(ReduxActionTypes.FETCH_SESSION_DEBUG_LOG, fetchSessionDebugLog),
     takeLatest(ReduxActionTypes.DELETE_SESSION, deleteSession),
     takeLatest(ReduxActionTypes.SET_SESSION_FILTER, fetchSessions),
+    takeLatest(ReduxActionTypes.PAUSE_SESSION, pauseSession),
+    takeLatest(ReduxActionTypes.RESUME_SESSION, resumeSession),
   ]);
 }

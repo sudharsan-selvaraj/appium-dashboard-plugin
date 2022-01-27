@@ -55,6 +55,7 @@ var createSessionTable = function (queryInterface, Sequelize) {
     start_time: { type: Sequelize.DATE, allowNull: false },
     end_time: { type: Sequelize.DATE, defaultValue: null },
     is_test_passed: { type: Sequelize.BOOLEAN, allowNull: true },
+    is_paused: { type: Sequelize.BOOLEAN, allowNull: true, default: false },
     session_status: {
       type: Sequelize.ENUM,
       values: ["PASSED", "FAILED", "TIMEOUT", "RUNNING"],

@@ -21,6 +21,21 @@ export default class Api {
       .then((response) => response.data);
   }
 
+  static post(
+    url: string,
+    payload: any = {},
+    params?: any,
+    config: Partial<AxiosRequestConfig> = {},
+  ) {
+    return axios
+      .post(url, payload, {
+        ...defaultConfig,
+        ...config,
+        params,
+      })
+      .then((response) => response.data);
+  }
+
   static delete(
     url: string,
     params?: any,

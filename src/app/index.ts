@@ -3,8 +3,9 @@ import bodyParser from "body-parser";
 import * as path from "path";
 const cors = require("cors");
 import { registerRoutes } from "./routes";
+import { Config } from "../config";
 
-function getRouter({ config }: { config: any }) {
+function getRouter({ config, dependencies }: { config: Config; dependencies: Record<string, any> }) {
   let router = express.Router();
   let apiRouter = express.Router();
   router.use(bodyParser.json());
@@ -23,7 +24,7 @@ function getRouter({ config }: { config: any }) {
     });
   });
 
-  registerRoutes(apiRouter, config);
+  registerRoutes(apiRouter, config, dependencies);
 
   router.use("/api", apiRouter);
   router.get("*", async (req: express.Request, res: express.Response, next: express.NextFunction) => {

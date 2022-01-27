@@ -5,7 +5,9 @@ const Container = styled.div`
   padding: 10px;
 `;
 
-const StyledVideo = styled.video``;
+const StyledVideo = styled.video`
+  background: #c9c7c7;
+`;
 
 type PropsType = {
   url: string;
