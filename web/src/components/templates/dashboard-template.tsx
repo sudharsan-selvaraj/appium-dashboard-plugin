@@ -8,6 +8,7 @@ import {
   useHistory,
   useLocation,
 } from "react-router-dom";
+import { getSessionDetailsUrl } from "../../constants/routes";
 import { APP_HEADER_HEIGHT } from "../../constants/ui";
 import { setSelectedSession } from "../../store/actions/session-actions";
 import { getSessions } from "../../store/selectors/entities/sessions-selector";
@@ -34,7 +35,12 @@ export default function DashboardTemplate() {
       ? sessions.find((d) => d.session_id === session_id) || sessions[0]
       : sessions[0];
 
-    SelectedSession && dispatch(setSelectedSession(SelectedSession));
+    if (SelectedSession) {
+      if (session_id && session_id != SelectedSession.session_id) {
+        history.push(getSessionDetailsUrl(SelectedSession.session_id));
+      }
+      dispatch(setSelectedSession(SelectedSession));
+    }
   }, [session_id, sessions]);
 
   return (

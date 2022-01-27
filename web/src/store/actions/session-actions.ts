@@ -13,7 +13,7 @@ export const fetchSessionSuccess = (payload: Session) => ({
   payload,
 });
 
-export const setSelectedSession = (payload: Session) => ({
+export const setSelectedSession = (payload: Session | null) => ({
   type: ReduxActionTypes.SELECT_SESSION,
   payload,
 });
@@ -57,5 +57,25 @@ export const setSessionFilter = (payload: any) => ({
 
 export const deleteSession = (payload: string) => ({
   type: ReduxActionTypes.DELETE_SESSION,
+  payload,
+});
+
+export const deleteSessionFinish = (payload: any) => ({
+  type: ReduxActionTypes.SESSION_DELETE_FINISH,
+  payload,
+});
+
+export const pauseSession = (payload: string) => ({
+  type: ReduxActionTypes.PAUSE_SESSION,
+  payload,
+});
+
+export const resumeSession = (payload: string) => ({
+  type: ReduxActionTypes.RESUME_SESSION,
+  payload,
+});
+
+export const sessionStateChangeFinish = (payload: any) => ({
+  type: ReduxActionTypes.SESSION_STATE_CHANGE_FINISH,
   payload,
 });

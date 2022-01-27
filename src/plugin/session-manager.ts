@@ -1,4 +1,5 @@
 import * as path from "path";
+import _ from "lodash";
 import { SessionInfo } from "../interfaces/session-info";
 import { AppiumCommand } from "../interfaces/appium-command";
 import { interceptProxyResponse, routeToCommand, isDashboardCommand } from "./utils";
@@ -21,6 +22,8 @@ import { DashboardCommands } from "./dashboard-commands";
 import { PluginCliArgs } from "../interfaces/PluginCliArgs";
 import { SessionTimeoutTracker } from "./session-timeout-tracker";
 import { getOrCreateNewBuild, getOrCreateNewProject } from "../database-service";
+import sessionDebugMap from "./session-debug-map";
+import EventEmitter from "events";
 
 const CREATE_SESSION = "createSession";
 
@@ -29,6 +32,8 @@ class SessionManager {
   private config: any = Container.get("config");
   private dashboardCommands: DashboardCommands;
   private sessionTimeoutTracker: SessionTimeoutTracker;
+  private debugEventNotifier: EventEmitter;
+  private driver: any;
 
   constructor(
     private sessionInfo: SessionInfo,
@@ -36,23 +41,52 @@ class SessionManager {
     private sessionResponse: any,
     private cliArgs: PluginCliArgs
   ) {
+    logger.info(`new command timeout ${sessionInfo.capabilities.newCommandTimeout}`);
     this.sessionInfo.is_completed = false;
     this.dashboardCommands = new DashboardCommands(sessionInfo);
     this.sessionTimeoutTracker = new SessionTimeoutTracker({
-      timeout: this.cliArgs?.sessionTimeout || 60, //defaults to 60 seconds
-      pollingInterval: 30 * 1000, //30 seconds
+      timeout: sessionInfo.capabilities.newCommandTimeout || 300, //defaults to 5 minutes
+      pollingInterval: 1000, //1 seconds
       timeoutCallback: this.onSessionTimeOut.bind(this),
+    });
+    this.debugEventNotifier = Container.get("debugEventEmitter");
+    this.resgisterEventListeners(this.debugEventNotifier);
+  }
+
+  public resgisterEventListeners(notifier: EventEmitter) {
+    notifier.on(`${this.sessionInfo.session_id}`, async (data) => {
+      if (data.event == "change_state") {
+        sessionDebugMap.set(this.sessionInfo.session_id, {
+          is_paused: data.state == "pause",
+        });
+        await Session.update(
+          {
+            is_paused: data.state == "pause",
+          },
+          {
+            where: {
+              session_id: this.sessionInfo.session_id,
+            },
+          }
+        );
+        return;
+      }
+
+      if (data.callback && _.isFunction(data.callback)) {
+        data.callback();
+      }
     });
   }
 
   public async onCommandRecieved(command: AppiumCommand): Promise<any> {
     if (command.commandName == CREATE_SESSION) {
+      this.driver = command.driver;
       this.sessionTimeoutTracker.start();
       this.sessionTimeoutTracker.tick(command);
       return await this.sessionStarted(command);
     } else if (command.commandName == "deleteSession") {
       this.sessionTimeoutTracker.stop();
-      await this.sessionTerminated(command);
+      await this.sessionTerminated();
     } else if (command.commandName == "execute" && isDashboardCommand(this.dashboardCommands, command.args[0])) {
       await this.executeCommand(command);
       return true;
@@ -95,9 +129,10 @@ class SessionManager {
   }
 
   private async sessionStarted(command: AppiumCommand) {
-    let caps = Object.assign({}, command.args[2].firstMatch[0], command.args[2].alwaysMatch);
-    let buildName = caps["appium:buildName"];
-    let projectName = caps["appium:projectName"];
+    sessionDebugMap.createNewSession(this.sessionInfo.session_id);
+    let { desired } = this.sessionInfo.capabilities;
+    let buildName = desired["appium:buildName"];
+    let projectName = desired["appium:projectName"];
 
     let build, project;
     if (projectName) {
@@ -105,14 +140,6 @@ class SessionManager {
     }
     if (buildName) {
       build = await getOrCreateNewBuild({ buildName, projectId: project?.id });
-    }
-
-    if (!this.sessionInfo.capabilities.desired) {
-      this.sessionInfo.capabilities.desired = Object.assign(
-        {},
-        command.args[2].firstMatch[0],
-        command.args[2].alwaysMatch
-      );
     }
 
     await Session.create({
@@ -127,10 +154,7 @@ class SessionManager {
     return await this.startScreenRecording(command.driver);
   }
 
-  private async sessionTerminated(
-    command: AppiumCommand,
-    options: { sessionTimedOut: boolean } = { sessionTimedOut: false }
-  ) {
+  public async sessionTerminated(options: { sessionTimedOut: boolean } = { sessionTimedOut: false }) {
     let session = await Session.findOne({
       where: {
         session_id: this.sessionInfo.session_id,
@@ -143,7 +167,7 @@ class SessionManager {
     }
 
     this.sessionInfo.is_completed = true;
-    let videoPath = await this.saveScreenRecording(command.driver);
+    let videoPath = await this.saveScreenRecording(this.driver);
     let errorCount = await commandLogsModel.count({
       where: {
         session_id: this.sessionInfo.session_id,
@@ -154,10 +178,12 @@ class SessionManager {
       },
     });
 
-    let updateObject: Partial<Session> = {};
-    updateObject.is_completed = true;
-    updateObject.end_time = new Date();
-    updateObject.video_path = videoPath ? videoPath : null;
+    let updateObject: Partial<Session> = {
+      is_completed: true,
+      is_paused: false,
+      end_time: new Date(),
+      video_path: videoPath || null,
+    };
 
     if (session?.session_status?.toLowerCase() == "running") {
       updateObject.session_status = options.sessionTimedOut ? "TIMEOUT" : errorCount > 0 ? "FAILED" : "PASSED";
@@ -274,18 +300,21 @@ class SessionManager {
     await (this.dashboardCommands[scriptName as keyof DashboardCommands] as any)(command.args[1]);
   }
 
-  private async onSessionTimeOut(lastCommand: AppiumCommand, timeoutValue: number) {
+  private async onSessionTimeOut(timeoutValue: number) {
     logger.warn(`Session ${this.sessionInfo.session_id} timed out after ${timeoutValue} seconds`);
     await this.saveCommandLog(
       {
-        ...lastCommand,
+        driver: this.driver,
+        startTime: new Date(),
+        endTime: new Date(),
         commandName: "sessionTimedout",
         args: [timeoutValue],
+        next: async () => {},
       },
       {}
     );
-    await this.sessionTerminated(lastCommand, { sessionTimedOut: true });
-    await terminateSession(lastCommand.driver, this.sessionInfo.session_id);
+    await this.sessionTerminated({ sessionTimedOut: true });
+    await terminateSession(this.driver, this.sessionInfo.session_id);
   }
 }
 

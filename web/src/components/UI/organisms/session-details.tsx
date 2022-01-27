@@ -1,15 +1,12 @@
 import React from "react";
-import { useCallback } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import styled from "styled-components";
 import {
   APP_HEADER_HEIGHT,
   SUB_APP_HEADER_HEIGHT,
 } from "../../../constants/ui";
-import { deleteSession } from "../../../store/actions/session-actions";
 import { getSelectedSession } from "../../../store/selectors/entities/sessions-selector";
 import { getHeaderStyle } from "../../../utils/ui";
-import Icon from "../atoms/icon";
 import ParallelLayout, { Column } from "../layouts/parallel-layout";
 import SerialLayout, { Row } from "../layouts/serial-layout";
 import EmptyMessage from "../molecules/empty-message";
@@ -19,6 +16,8 @@ import SessionSummary from "./session-summary";
 import SessionVideo from "./session-video";
 import chroma from "chroma-js";
 import Session from "../../../interfaces/session";
+import SessionMenuItems from "./session-details-menu-items";
+import { Tooltip } from "@mui/material";
 
 const Container = styled.div``;
 
@@ -50,8 +49,33 @@ const ErrorContainer = styled.div`
   z-index: 1;
 `;
 
+const ProgressIndicator = styled.div`
+  animation: progress 2s linear infinite;
+`;
+
+const RunningProgressIndicator = styled(ProgressIndicator)`
+  background: repeating-linear-gradient(
+    -45deg,
+    #3d85c6,
+    #3d85c6 10px,
+    #9fc5e8 0,
+    #9fc5e8 20px
+  );
+`;
+
+const PausedProgressIndicator = styled(ProgressIndicator)`
+  background: repeating-linear-gradient(
+    -45deg,
+    #f1c232,
+    #f1c232 10px,
+    #fff2cc 0,
+    #fff2cc 20px
+  );
+`;
+
 export const SUMMARY_HEIGHT = 120;
-export const FAIL_MESSAGE_CONTAINER_HEIGHT = 100;
+export const FAIL_MESSAGE_CONTAINER_HEIGHT = 80;
+export const PADDING = 25;
 
 function hasSessionFailureMessage(session: Session) {
   return session.session_status === "FAILED" && session.session_status_message;
@@ -62,16 +86,31 @@ function getSessiobDetailsMainContainerHeight(session: Session) {
     SUMMARY_HEIGHT +
     APP_HEADER_HEIGHT +
     SUB_APP_HEADER_HEIGHT +
+    PADDING +
     (hasSessionFailureMessage(session) ? FAIL_MESSAGE_CONTAINER_HEIGHT : 0)
   );
 }
 
+function getLoadingIndicator(session: Session) {
+  if (session.is_paused) {
+    return (
+      <Tooltip title="Paused" arrow>
+        <PausedProgressIndicator />
+      </Tooltip>
+    );
+  } else if (!session.is_completed) {
+    return (
+      <Tooltip title="Running" arrow>
+        <RunningProgressIndicator />
+      </Tooltip>
+    );
+  } else {
+    return <></>;
+  }
+}
+
 export default function SessionDetails() {
   const session = useSelector(getSelectedSession);
-  const dispatch = useDispatch();
-  const onDelete = useCallback((id: string) => {
-    dispatch(deleteSession(id));
-  }, []);
 
   if (!session) {
     return <EmptyMessage>Select a Session</EmptyMessage>;
@@ -86,14 +125,11 @@ export default function SessionDetails() {
         <Row height={`${SUB_APP_HEADER_HEIGHT}px`}>
           <HEADER>
             <ParallelLayout>
-              <Column grid={11}>
+              <Column grid={10}>
                 <Name>{session.name || session.session_id}</Name>
               </Column>
-              <Column grid={1}>
-                <Delete onClick={() => onDelete(session.session_id)}>
-                  <Icon name="delete" />
-                  &nbsp;Delete
-                </Delete>
+              <Column grid={2}>
+                <SessionMenuItems session={session} />
               </Column>
             </ParallelLayout>
           </HEADER>
@@ -101,6 +137,10 @@ export default function SessionDetails() {
         <Row height={`${SUMMARY_HEIGHT}px`}>
           <SessionSummary session={session} />
         </Row>
+        {/* Animated indicator of the session status */}
+        {(!session.is_completed || session.is_paused) && (
+          <Row height="4px">{getLoadingIndicator(session)}</Row>
+        )}
         {hasSessionFailureMessage(session) && (
           <Row height={`${FAIL_MESSAGE_CONTAINER_HEIGHT}px`} padding={"10px"}>
             <ErrorContainer>{session.session_status_message}</ErrorContainer>

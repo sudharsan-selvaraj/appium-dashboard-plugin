@@ -5,7 +5,10 @@ import { AppiumDashboardPlugin } from "./plugin";
 import { config } from "./config";
 import * as fs from "fs";
 import { pluginLogger } from "./loggers/plugin-logger";
-var ffmpeg = require("@ffmpeg-installer/ffmpeg").path;
+import { EventEmitter } from "events";
+
+const ffmpeg = require("@ffmpeg-installer/ffmpeg").path;
+const DebugEventNotifier = new EventEmitter();
 
 async function createVideoDirectoryPath(fullPath: string) {
   if (!fs.existsSync(fullPath)) {
@@ -13,7 +16,9 @@ async function createVideoDirectoryPath(fullPath: string) {
     pluginLogger.info("Video directory created " + fullPath);
   }
 }
-Container.set("expressRouter", getRouter({ config }));
+
+Container.set("debugEventEmitter", DebugEventNotifier);
+Container.set("expressRouter", getRouter({ config, dependencies: { debugEventEmitter: DebugEventNotifier } }));
 Container.set("config", config);
 
 (async () => {

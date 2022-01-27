@@ -3,13 +3,12 @@ import { AppiumCommand } from "../interfaces/appium-command";
 export class SessionTimeoutTracker {
   private lastCommandRecievedTime!: Date;
   private timer: any;
-  private lastAppiumCommand!: AppiumCommand;
 
   constructor(
     private options: {
       timeout: number;
       pollingInterval: number;
-      timeoutCallback: (command: AppiumCommand, timeoutvalue: number) => any;
+      timeoutCallback: (timeout: number) => any;
     }
   ) {}
 
@@ -24,7 +23,6 @@ export class SessionTimeoutTracker {
 
   public tick(command: AppiumCommand) {
     this.lastCommandRecievedTime = new Date();
-    this.lastAppiumCommand = command;
   }
 
   public stop() {
@@ -38,7 +36,7 @@ export class SessionTimeoutTracker {
     const timediffInSeconds = Math.round((new Date().getTime() - this.lastCommandRecievedTime.getTime()) / 1000);
     if (timediffInSeconds > this.options.timeout) {
       this.stop();
-      this.options.timeoutCallback(this.lastAppiumCommand, timediffInSeconds);
+      this.options.timeoutCallback(this.options.timeout);
     }
   }
 }

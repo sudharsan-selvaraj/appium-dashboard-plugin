@@ -110,6 +110,13 @@ class Session extends Model<Session> {
 
   @AllowNull(false)
   @Column({
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+  })
+  is_paused?: boolean;
+
+  @AllowNull(false)
+  @Column({
     type: DataTypes.DATE,
     defaultValue: false,
   })

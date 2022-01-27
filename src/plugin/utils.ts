@@ -3,8 +3,9 @@ import fetch from "node-fetch";
 import { routeToCommandName as _routeToCommandName } from "appium-base-driver";
 import { DashboardCommands } from "./dashboard-commands";
 
-function getSessionDetails(args: any, sessionResponse: any): any {
+function getSessionDetails(rawCapabilities: any, sessionResponse: any): any {
   let [session_id, caps] = sessionResponse.value;
+
   let sessionInfo: SessionInfo = {
     session_id,
     platform: caps.platform,
@@ -15,7 +16,10 @@ function getSessionDetails(args: any, sessionResponse: any): any {
     platform_version: caps.platformVersion,
     app: caps.app,
     udid: caps.platformName.toLowerCase() == "ios" ? caps.udid : caps.deviceUDID,
-    capabilities: JSON.parse(JSON.stringify(args[0])),
+    capabilities: {
+      ...caps,
+      desired: rawCapabilities,
+    },
   };
 
   Object.keys(caps)
@@ -44,7 +48,7 @@ function constructBasePath(basePath: string) {
 }
 
 async function makePostCall(driver: any, sessionId: string, path: string, body: any): Promise<any> {
-  const response = await fetch(`${getDriverEndpoint(driver)}/session/${sessionId}${path}`, {
+  const response = await fetch(`${getDriverEndpoint(driver)}/session/${sessionId}${path}${getQueryString()}`, {
     method: "post",
     body: body ? JSON.stringify(body) : "{}",
     headers: { "Content-Type": "application/json" },
@@ -53,15 +57,18 @@ async function makePostCall(driver: any, sessionId: string, path: string, body: 
 }
 
 async function makeGETCall(driver: any, sessionId: string, path: string): Promise<any> {
-  const response = await fetch(`${getDriverEndpoint(driver)}/session/${sessionId}${path}`);
+  const response = await fetch(`${getDriverEndpoint(driver)}/session/${sessionId}${path}${getQueryString()}`);
   return await response.json();
 }
 
 async function makeDELETECall(driver: any, sessionId: string, path: string): Promise<any> {
-  const response = await fetch(`${getDriverEndpoint(driver)}/session/${sessionId}${path}`, {
+  const response = await fetch(`${getDriverEndpoint(driver)}/session/${sessionId}${path}${getQueryString()}`, {
     method: "delete",
   });
   return await response.json();
+}
+function getQueryString() {
+  return "?internal=true";
 }
 
 function interceptProxyResponse(response: any): Promise<any> {
