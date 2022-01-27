@@ -9,9 +9,11 @@ import { logger } from "../loggers/logger";
 import { PluginCliArgs } from "../interfaces/PluginCliArgs";
 import * as express from "express";
 import { registerDebugMiddlware } from "./debugger";
+import { config } from "bluebird";
 
 const sessionMap: Map<string, SessionManager> = new Map();
 const IGNORED_COMMANDS = ["getScreenshot", "stopRecordingScreen", "startRecordingScreen"];
+
 class AppiumDashboardPlugin extends BasePlugin {
   constructor(pluginName: string) {
     super(pluginName);
@@ -61,7 +63,13 @@ class AppiumDashboardPlugin extends BasePlugin {
         return response;
       } else {
         let sessionInfo = getSessionDetails(rawCapabilities, response);
-        let sessionManager = new SessionManager(sessionInfo, new CommandParser(sessionInfo), response, this.cliArgs);
+        let sessionManager = new SessionManager({
+          sessionInfo,
+          commandParser: new CommandParser(sessionInfo),
+          sessionResponse: response,
+          cliArgs: this.cliArgs,
+          adb: Container.get("adb"),
+        });
         sessionMap.set(sessionInfo.session_id, sessionManager);
         await sessionManager.onCommandRecieved(appiumCommand);
         logger.info(`New Session created with session id ${sessionInfo.session_id}`);

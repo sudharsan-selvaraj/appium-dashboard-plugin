@@ -101,6 +101,13 @@ class Session extends Model<Session> {
   })
   capabilities!: any;
 
+  @AllowNull(true)
+  @Column({
+    type: DataTypes.STRING,
+    ...customModelColumn({ name: "device_info", json: true }),
+  })
+  device_info!: any;
+
   @AllowNull(false)
   @Column({
     type: DataTypes.BOOLEAN,
@@ -133,7 +140,14 @@ class Session extends Model<Session> {
   @Column({
     type: DataTypes.BOOLEAN,
   })
-  is_test_passed?: Boolean;
+  is_test_passed?: boolean;
+
+  @AllowNull(false)
+  @Column({
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+  })
+  is_profiling_available?: boolean;
 
   @AllowNull(false)
   @Column({

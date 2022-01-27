@@ -6,6 +6,7 @@ import { config } from "./config";
 import * as fs from "fs";
 import { pluginLogger } from "./loggers/plugin-logger";
 import { EventEmitter } from "events";
+import ADB from "appium-adb";
 
 const ffmpeg = require("@ffmpeg-installer/ffmpeg").path;
 const DebugEventNotifier = new EventEmitter();
@@ -22,6 +23,14 @@ Container.set("expressRouter", getRouter({ config, dependencies: { debugEventEmi
 Container.set("config", config);
 
 (async () => {
+  //Create ADB instance
+  try {
+    Container.set("adb", await ADB.createADB({}));
+  } catch (ignore) {
+    pluginLogger.error("Unable to create adb instance");
+    pluginLogger.error(ignore);
+  }
+
   //Add FFMPEG to path
   process.env.PATH = process.env.PATH + ":" + ffmpeg.replace(/ffmpeg$/g, "");
 
