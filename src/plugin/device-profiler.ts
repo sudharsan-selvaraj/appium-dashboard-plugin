@@ -72,7 +72,10 @@ class DeviceProfiler extends EventEmitter {
         };
         for (let line of slicedLines) {
           if (new RegExp(/\r/g).test(line)) {
-            line.split(/\r/g).forEach((l: string) => this.outputHandler(sysInfo, _.trim(l)));
+            line
+              .split(/\r/g)
+              .filter((l: string) => !!l)
+              .forEach((l: string) => this.outputHandler(sysInfo, _.trim(l)));
           } else {
             this.outputHandler(sysInfo, _.trim(line));
           }
@@ -86,7 +89,7 @@ class DeviceProfiler extends EventEmitter {
     //remove all ascii chanracters from the log line
     output = output.replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, "");
     let [cpu, memory, pkg] = output.split(" ");
-    if (!output || pkg.indexOf(this.appPackage) == -1) {
+    if (!output || pkg != this.appPackage) {
       return;
     }
     const outputObj = {
@@ -121,13 +124,13 @@ class DeviceProfiler extends EventEmitter {
   }
 
   private async getTotalCpus() {
-    const args = [...this.adb.defaultArgs, "shell", "cat", "/proc/cpuinfo"];
+    const args = [...this.adb.defaultArgs, "-s", this.deviceUDID, "shell", "cat", "/proc/cpuinfo"];
     let out = await exec(this.adb.path, args);
     return out.stdout.match(/processor/g)?.length;
   }
 
   private async getTotalMemory() {
-    const args = [...this.adb.defaultArgs, "shell", "cat", "/proc/meminfo"];
+    const args = [...this.adb.defaultArgs, "-s", this.deviceUDID, "shell", "cat", "/proc/meminfo"];
     let out = await exec(this.adb.path, args);
     let match = out.stdout.match(/MemTotal:.*[0-9]/g);
     if (match && match.length) {
@@ -140,12 +143,13 @@ class DeviceProfiler extends EventEmitter {
     if (!logLine) {
       return;
     }
-    let out = 0;
-    ["user", "nice", "sys", "iow", "irq", "sirq", "host"].forEach((type: string) => {
+    let data: Record<string, any> = {};
+    ["cpu", "idle"].forEach((type: string) => {
       let match = logLine.match(new RegExp(`([0-9]{0,})%${type}`));
-      out += match && match.length > 1 ? Number(match[1]) : 0;
+      data[type] = match && match.length > 1 ? Number(match[1]) : 0;
     });
-    return out;
+    let cpuUsage = data["cpu"] - data["idle"];
+    return cpuUsage > 0 ? cpuUsage : 0;
   }
 
   private getSystemMemoryUsage(logLine: string) {
@@ -155,8 +159,9 @@ class DeviceProfiler extends EventEmitter {
     let match = logLine.match(new RegExp(/([0-9]{0,})k used/i));
     /* In some devices, memory will be shows in GB, so convert it back to KB */
     if (!match) {
-      match = logLine.match(new RegExp(/([0-9]{0,})g used/i));
-      return match && match.length > 1 ? Number(match[1]) * 1024 * 1024 : 0;
+      /* sample logLine "Mem:      5.5G total,      5.4G used,       71M free,       36M buffers" */
+      match = logLine.match(new RegExp(/(\d+(\.\d+))G used/i));
+      return match && match.length > 1 ? Math.ceil(parseFloat(match[1]) * 1024 * 1024) : 0;
     }
     return match && match.length > 1 ? Number(match[1]) : 0;
   }

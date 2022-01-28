@@ -1,6 +1,10 @@
 import api from "../api";
 
 export default class CommonUtils {
+  public static getTimeDiffInSecs(startDate: Date, endDate: Date) {
+    return Math.ceil((endDate.getTime() - startDate.getTime()) / 1000);
+  }
+
   public static convertTimeToReadableFormat(startDate: Date, endDate: Date) {
     const readableDuration = CommonUtils.getReadableDuration(
       startDate,

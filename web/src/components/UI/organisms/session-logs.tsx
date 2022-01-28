@@ -5,6 +5,7 @@ import TabsLayout, { Tab } from "../layouts/tab-layout";
 import SessionDebugLogs from "./session-debug-logs";
 import SessionDeviceLogs from "./session-device-logs";
 import SessionTextLogs from "./session-text-logs";
+import Profiling from "./app-profiling";
 
 type PropsType = {
   session: Session;
@@ -32,6 +33,11 @@ export default function SessionLogs(props: PropsType) {
         <Tab name="Debug Logs">
           <SessionDebugLogs session={session} parentHeight={parentHeight} />
         </Tab>
+        {session.is_completed && session.is_profiling_available && (
+          <Tab name="App profiling">
+            <Profiling session={session} parentHeight={parentHeight} />
+          </Tab>
+        )}
       </TabsLayout>
     </Container>
   );

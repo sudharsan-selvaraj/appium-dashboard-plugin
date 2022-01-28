@@ -7,6 +7,7 @@ export type LogsState = {
   text: ListEntityType<any>;
   device: ListEntityType<any>;
   debug: ListEntityType<any>;
+  profiling: ListEntityType<any>;
 };
 
 const initialState: LogsState = {
@@ -21,6 +22,11 @@ const initialState: LogsState = {
     isLoading: false,
   },
   debug: {
+    count: 0,
+    items: [],
+    isLoading: false,
+  },
+  profiling: {
     count: 0,
     items: [],
     isLoading: false,
@@ -77,6 +83,24 @@ export default createReducer(initialState, {
   ) => ({
     ...state,
     debug: {
+      count: action.payload.count,
+      items: action.payload.rows,
+      isLoading: false,
+    },
+  }),
+  [ReduxActionTypes.FETCH_SESSION_PROFILING_DATA]: (state: LogsState) => ({
+    ...state,
+    debug: {
+      ...state.text,
+      isLoading: true,
+    },
+  }),
+  [ReduxActionTypes.FETCH_SESSION_PROFILING_DATA_SUCCESS]: (
+    state: LogsState,
+    action: ReduxActionType<any>,
+  ) => ({
+    ...state,
+    profiling: {
       count: action.payload.count,
       items: action.payload.rows,
       isLoading: false,

@@ -44,12 +44,14 @@ type TabType = TabPropsType;
 const useTabs = (children: JSX.Element[]) => {
   const tabs: TabType[] = [];
   React.Children.forEach(children, (children) => {
-    const props: TabType = children.props as TabType;
+    if (children) {
+      const props: TabType = children.props as TabType;
 
-    tabs.push({
-      name: props.name,
-      children: props.children,
-    });
+      tabs.push({
+        name: props.name,
+        children: props.children,
+      });
+    }
   });
 
   return tabs;
