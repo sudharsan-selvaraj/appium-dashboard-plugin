@@ -15,11 +15,11 @@ const SUMMARY_CONFIG: any[] = [
     label: "OS",
     key: "platform_name",
     icon: (session: any) => {
-      if (session.platform_name.toLowerCase() == "android") {
-        return <Icon name="android" size={Sizes.XL} />;
-      } else {
-        return <Icon name="ios" size={Sizes.XL} />;
-      }
+      const icons: any = {
+        android: <Icon name="android" size={Sizes.XL} />,
+        ios: <Icon name="ios" size={Sizes.XL} />,
+      };
+      return icons[session.platform_name.toLowerCase()];
     },
   },
   {
@@ -73,8 +73,12 @@ const SUMMARY_CONFIG: any[] = [
       {
         label: "Browser",
         key: "browser_name",
-        icon: () => {
-          return <Icon name="safari" size={Sizes.M} />;
+        icon: (session: any) => {
+          const icons: any = {
+            safari: <Icon name="safari" size={Sizes.M} />,
+            chrome: <Icon name="chrome" size={Sizes.M} />,
+          };
+          return icons[session.browser_name];
         },
       },
     ],

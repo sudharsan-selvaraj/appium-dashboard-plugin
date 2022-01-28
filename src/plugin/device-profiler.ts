@@ -70,6 +70,10 @@ class DeviceProfiler extends EventEmitter {
           raw_cpu_log: lines[3],
           raw_memory_log: lines[1],
         };
+        /* Logs recieved is not in proper format so ignore the entry */
+        if (sysInfo.total_cpu_used == 0 && sysInfo.total_memory_used == 0) {
+          return;
+        }
         for (let line of slicedLines) {
           if (new RegExp(/\r/g).test(line)) {
             line
@@ -113,7 +117,7 @@ class DeviceProfiler extends EventEmitter {
   }
 
   getLogs() {
-    return this.logs;
+    return _.uniqBy(this.logs, "timestamp");
   }
 
   async getDeviceInfo() {
@@ -148,8 +152,13 @@ class DeviceProfiler extends EventEmitter {
       let match = logLine.match(new RegExp(`([0-9]{0,})%${type}`));
       data[type] = match && match.length > 1 ? Number(match[1]) : 0;
     });
-    let cpuUsage = data["cpu"] - data["idle"];
-    return cpuUsage > 0 ? cpuUsage : 0;
+
+    let out = 0;
+    ["user", "nice", "sys", "iow", "irq", "sirq", "host"].forEach((type: string) => {
+      let match = logLine.match(new RegExp(`([0-9]{0,})%${type}`));
+      out += match && match.length > 1 ? Number(match[1]) : 0;
+    });
+    return out > data["cpu"] ? data["cpu"] : out;
   }
 
   private getSystemMemoryUsage(logLine: string) {
@@ -160,7 +169,7 @@ class DeviceProfiler extends EventEmitter {
     /* In some devices, memory will be shows in GB, so convert it back to KB */
     if (!match) {
       /* sample logLine "Mem:      5.5G total,      5.4G used,       71M free,       36M buffers" */
-      match = logLine.match(new RegExp(/(\d+(\.\d+))G used/i));
+      match = logLine.match(new RegExp(/(([1-9]\d*)(\.\d+)?)G used/i));
       return match && match.length > 1 ? Math.ceil(parseFloat(match[1]) * 1024 * 1024) : 0;
     }
     return match && match.length > 1 ? Number(match[1]) : 0;

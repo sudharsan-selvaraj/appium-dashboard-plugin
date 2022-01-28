@@ -69,7 +69,8 @@ export default function TabsLayout(props: TabsLayoutPropsType) {
   const [selectedTabName, setSelectedTabName] = useState<string | undefined>(
     defaultTab?.name,
   );
-  const selectedTab = tabs.find((tab) => tab.name === selectedTabName);
+  const selectedTab =
+    tabs.find((tab) => tab.name === selectedTabName) || tabs[0];
 
   return (
     <TabsLayoutContainer>

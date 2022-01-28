@@ -83,7 +83,9 @@ function getCpuChartOptions(session: Session, profilingData: any[]) {
       },
       title: {
         display: true,
-        text: "CPU",
+        text: `CPU [${session.device_info.total_cpu} processors = ${
+          session.device_info.total_cpu * 100
+        } %]`,
       },
       tooltip: {
         callbacks: {
@@ -99,7 +101,7 @@ function getCpuChartOptions(session: Session, profilingData: any[]) {
     },
     scales: {
       y: {
-        min: 0,
+        min: -1,
         max: session.device_info.total_cpu * 100,
       },
     },
