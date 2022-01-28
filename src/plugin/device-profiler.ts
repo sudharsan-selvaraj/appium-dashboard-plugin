@@ -153,6 +153,11 @@ class DeviceProfiler extends EventEmitter {
       return;
     }
     let match = logLine.match(new RegExp(/([0-9]{0,})k used/i));
+    /* In some devices, memory will be shows in GB, so convert it back to KB */
+    if (!match) {
+      match = logLine.match(new RegExp(/([0-9]{0,})g used/i));
+      return match && match.length > 1 ? Number(match[1]) * 1024 * 1024 : 0;
+    }
     return match && match.length > 1 ? Number(match[1]) : 0;
   }
 }
