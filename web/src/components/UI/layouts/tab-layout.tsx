@@ -44,12 +44,14 @@ type TabType = TabPropsType;
 const useTabs = (children: JSX.Element[]) => {
   const tabs: TabType[] = [];
   React.Children.forEach(children, (children) => {
-    const props: TabType = children.props as TabType;
+    if (children) {
+      const props: TabType = children.props as TabType;
 
-    tabs.push({
-      name: props.name,
-      children: props.children,
-    });
+      tabs.push({
+        name: props.name,
+        children: props.children,
+      });
+    }
   });
 
   return tabs;
@@ -67,7 +69,8 @@ export default function TabsLayout(props: TabsLayoutPropsType) {
   const [selectedTabName, setSelectedTabName] = useState<string | undefined>(
     defaultTab?.name,
   );
-  const selectedTab = tabs.find((tab) => tab.name === selectedTabName);
+  const selectedTab =
+    tabs.find((tab) => tab.name === selectedTabName) || tabs[0];
 
   return (
     <TabsLayoutContainer>

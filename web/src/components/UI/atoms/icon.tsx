@@ -7,7 +7,7 @@ import {
   FaFilter,
 } from "react-icons/fa";
 import { FcAndroidOs } from "react-icons/fc";
-import { FaApple, FaTrash, FaPlay } from "react-icons/fa";
+import { FaApple, FaTrash, FaPlay, FaChrome } from "react-icons/fa";
 import { SiSafari } from "react-icons/si";
 import { IoPhonePortraitOutline } from "react-icons/io5";
 import { AiFillCloseCircle } from "react-icons/ai";
@@ -76,6 +76,9 @@ export default function Icon(props: IconProps) {
       break;
     case "safari":
       icon = <SiSafari />;
+      break;
+    case "chrome":
+      icon = <FaChrome />;
       break;
     case "arrow-up":
       icon = <FaAngleUp />;

@@ -51,11 +51,13 @@ var createSessionTable = function (queryInterface, Sequelize) {
     browser_name: { type: Sequelize.TEXT, allowNull: true },
     udid: { type: Sequelize.TEXT, allowNull: false },
     capabilities: { type: Sequelize.TEXT, allowNull: false },
+    device_info: { type: Sequelize.TEXT, allowNull: true },
     is_completed: { type: Sequelize.BOOLEAN, defaultValue: false },
     start_time: { type: Sequelize.DATE, allowNull: false },
     end_time: { type: Sequelize.DATE, defaultValue: null },
     is_test_passed: { type: Sequelize.BOOLEAN, allowNull: true },
     is_paused: { type: Sequelize.BOOLEAN, allowNull: true, default: false },
+    is_profiling_available: { type: Sequelize.BOOLEAN, allowNull: true, default: false },
     session_status: {
       type: Sequelize.ENUM,
       values: ["PASSED", "FAILED", "TIMEOUT", "RUNNING"],
@@ -99,17 +101,40 @@ var createCommandLogsTable = function (queryInterface, Sequelize) {
   });
 };
 
+var createAppProfileTable = function (queryInterface, Sequelize) {
+  return queryInterface.createTable("profiling", {
+    session_id: { type: Sequelize.TEXT, references: { model: "session", key: "session_id" }, onDelete: "CASCADE" },
+    id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
+    timestamp: Sequelize.DATE,
+    cpu: { type: Sequelize.TEXT, allowNull: false, defaultValue: "0" },
+    memory: { type: Sequelize.TEXT, allowNull: false, defaultValue: "0" },
+    total_cpu_used: { type: Sequelize.TEXT, allowNull: false, defaultValue: "0" },
+    total_memory_used: { type: Sequelize.TEXT, allowNull: false, defaultValue: "0" },
+    raw_cpu_log: { type: Sequelize.TEXT },
+    raw_memory_log: { type: Sequelize.TEXT },
+    created_at: Sequelize.DATE,
+    updated_at: Sequelize.DATE,
+  });
+};
+
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return promise.each(
-      [createProjetsTable, createBuildsTable, createSessionTable, createLogsTable, createCommandLogsTable],
+      [
+        createProjetsTable,
+        createBuildsTable,
+        createSessionTable,
+        createLogsTable,
+        createCommandLogsTable,
+        createAppProfileTable,
+      ],
       function (table) {
         return table(queryInterface, Sequelize);
       }
     );
   },
   down: (queryInterface, Sequelize) => {
-    return promise.each(["logs", "command_logs", "projects", "build", "session"], function (table) {
+    return promise.each(["profiling", "logs", "command_logs", "projects", "build", "session"], function (table) {
       return queryInterface.dropTable(table);
     });
   },

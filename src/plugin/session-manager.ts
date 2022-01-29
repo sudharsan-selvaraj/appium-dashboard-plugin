@@ -11,9 +11,10 @@ import {
   terminateSession,
 } from "./driver-command-executor";
 import { CommandParser } from "./command-parser";
-import { CommandLogs as commandLogsModel, Session, Logs as LogsTable } from "../models";
+import { CommandLogs as commandLogsModel, Session, Logs as LogsTable, Profiling } from "../models";
 import { Op } from "sequelize";
 import { logger } from "../loggers/logger";
+import { pluginLogger } from "../loggers/plugin-logger";
 import * as fs from "fs";
 import "reflect-metadata";
 import { Container } from "typedi";
@@ -23,7 +24,9 @@ import { PluginCliArgs } from "../interfaces/PluginCliArgs";
 import { SessionTimeoutTracker } from "./session-timeout-tracker";
 import { getOrCreateNewBuild, getOrCreateNewProject } from "../database-service";
 import sessionDebugMap from "./session-debug-map";
+import { DeviceProfiler } from "./device-profiler";
 import EventEmitter from "events";
+import { plugin } from "react-ga";
 
 const CREATE_SESSION = "createSession";
 
@@ -34,23 +37,43 @@ class SessionManager {
   private sessionTimeoutTracker: SessionTimeoutTracker;
   private debugEventNotifier: EventEmitter;
   private driver: any;
+  private sessionInfo: SessionInfo;
+  private commandParser: CommandParser;
+  private sessionResponse: any;
+  private cliArgs: PluginCliArgs;
+  private adb: any;
+  private deviceProfiler: DeviceProfiler | undefined;
 
-  constructor(
-    private sessionInfo: SessionInfo,
-    private commandParser: CommandParser,
-    private sessionResponse: any,
-    private cliArgs: PluginCliArgs
-  ) {
-    logger.info(`new command timeout ${sessionInfo.capabilities.newCommandTimeout}`);
+  constructor(opts: {
+    sessionInfo: SessionInfo;
+    commandParser: CommandParser;
+    sessionResponse: any;
+    cliArgs: PluginCliArgs;
+    adb?: any;
+  }) {
+    this.sessionInfo = opts.sessionInfo;
+    this.commandParser = opts.commandParser;
+    this.cliArgs = opts.cliArgs;
+    this.adb = opts.adb;
+
+    logger.info(`new command timeout ${this.sessionInfo.capabilities.newCommandTimeout}`);
     this.sessionInfo.is_completed = false;
-    this.dashboardCommands = new DashboardCommands(sessionInfo);
+    this.dashboardCommands = new DashboardCommands(this.sessionInfo);
     this.sessionTimeoutTracker = new SessionTimeoutTracker({
-      timeout: sessionInfo.capabilities.newCommandTimeout || 300, //defaults to 5 minutes
+      timeout: this.sessionInfo.capabilities.newCommandTimeout || 300, //defaults to 5 minutes
       pollingInterval: 1000, //1 seconds
       timeoutCallback: this.onSessionTimeOut.bind(this),
     });
     this.debugEventNotifier = Container.get("debugEventEmitter");
     this.resgisterEventListeners(this.debugEventNotifier);
+    if (this.sessionInfo.platform_name.toLowerCase() === "android" && this.adb) {
+      pluginLogger.info("Adb found. Creating device profiler");
+      this.deviceProfiler = new DeviceProfiler({
+        adb: this.adb.executable,
+        deviceUDID: this.sessionInfo.udid,
+        appPackage: this.sessionInfo.capabilities["appPackage"],
+      });
+    }
   }
 
   public resgisterEventListeners(notifier: EventEmitter) {
@@ -133,8 +156,8 @@ class SessionManager {
     let { desired } = this.sessionInfo.capabilities;
     let buildName = desired["appium:buildName"];
     let projectName = desired["appium:projectName"];
-
-    let build, project;
+    let is_profiling_available = false;
+    let build, project, device_info;
     if (projectName) {
       project = await getOrCreateNewProject({ projectName });
     }
@@ -142,11 +165,24 @@ class SessionManager {
       build = await getOrCreateNewBuild({ buildName, projectId: project?.id });
     }
 
+    try {
+      if (this.deviceProfiler) {
+        device_info = await this.deviceProfiler?.getDeviceInfo();
+        await this.deviceProfiler?.startCapture();
+        is_profiling_available = true;
+      }
+    } catch (err) {
+      pluginLogger.error("Error getting device information");
+      pluginLogger.error(err);
+    }
+
     await Session.create({
       ...this.sessionInfo,
       start_time: new Date(),
       build_id: build?.build_id,
       project_id: !build ? project?.id : null,
+      device_info,
+      is_profiling_available,
     } as any);
 
     await this.saveCommandLog(command, null);
@@ -155,6 +191,7 @@ class SessionManager {
   }
 
   public async sessionTerminated(options: { sessionTimedOut: boolean } = { sessionTimedOut: false }) {
+    await this.deviceProfiler?.stopCapture();
     let session = await Session.findOne({
       where: {
         session_id: this.sessionInfo.session_id,
@@ -199,6 +236,21 @@ class SessionManager {
       },
     });
     logger.info(`Session terminated ${this.sessionInfo.session_id}`);
+    if (this.deviceProfiler) {
+      pluginLogger.info(JSON.stringify(this.deviceProfiler.getLogs()));
+      await this.saveProfilingData();
+    }
+  }
+
+  private async saveProfilingData() {
+    let data = this.deviceProfiler?.getLogs() || [];
+    data = data.map((d) => {
+      return {
+        ...d,
+        session_id: this.sessionInfo.session_id,
+      };
+    });
+    await Profiling.bulkCreate(data);
   }
 
   private async saveServerLogs(command: AppiumCommand) {

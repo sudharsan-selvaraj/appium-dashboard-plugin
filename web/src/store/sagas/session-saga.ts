@@ -10,6 +10,7 @@ import {
   fetchSessionDebugLogsSuccess,
   deleteSessionFinish,
   sessionStateChangeFinish,
+  fetchSessionProfilingDataSuccess,
 } from "../actions/session-actions";
 import ReduxActionTypes from "../redux-action-types";
 import { omitBy } from "lodash";
@@ -85,6 +86,18 @@ function* resumeSession(action: ReduxActionType<string>) {
   yield put(sessionStateChangeFinish(response));
 }
 
+function* fetchSessionProfileData(action: ReduxActionType<string>) {
+  const response: ApiResponse<any> = yield SessionApi.getAppProfiling(
+    action.payload,
+  );
+  yield put(
+    fetchSessionProfilingDataSuccess({
+      count: response.result.length,
+      rows: response.result,
+    }),
+  );
+}
+
 export default function* () {
   yield all([
     takeEvery(ReduxActionTypes.FETCH_SESSIONS_INIT, fetchSessions),
@@ -95,6 +108,10 @@ export default function* () {
       fetchSessionDeviceLog,
     ),
     takeLatest(ReduxActionTypes.FETCH_SESSION_DEBUG_LOG, fetchSessionDebugLog),
+    takeLatest(
+      ReduxActionTypes.FETCH_SESSION_PROFILING_DATA,
+      fetchSessionProfileData,
+    ),
     takeLatest(ReduxActionTypes.DELETE_SESSION, deleteSession),
     takeLatest(ReduxActionTypes.SET_SESSION_FILTER, fetchSessions),
     takeLatest(ReduxActionTypes.PAUSE_SESSION, pauseSession),

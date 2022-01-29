@@ -3,7 +3,7 @@ type Color = string;
 type ColorScale = [string, string, string, string, string, string, string];
 
 export type ThemeConfig = {
-  colors: Record<string, Color | ColorScale | Record<string, Color>>;
+  colors: Record<string, Record<string, Color> | Color | ColorScale>;
   fonts: Record<string, any>;
   borderRadius: Record<string, any>;
 };
@@ -35,8 +35,16 @@ const LightTheme: ThemeConfig = {
       session_card_running_status: "#1271EE",
       session_card_active_bg: "#ABD2ED",
       session_card_default_bg: "#f0f4f7",
-
       log_entry_hover: "#fffdea",
+
+      profiling_chart_system_cpu_border: "rgb(194, 230, 153)",
+      profiling_chart_system_cpu_background: "rgba(194, 230, 153, 0.5)",
+      profiling_chart_app_cpu_border: "rgb(49, 163, 84)",
+      profiling_chart_app_cpu_background: "rgba(49, 163, 84, 0.5)",
+      profiling_chart_system_memory_border: "rgb(65, 182, 196)",
+      profiling_chart_system_memory_background: "rgba(65, 182, 196, 0.5)",
+      profiling_chart_app_memory_border: "rgb(34, 94, 168)",
+      profiling_chart_app_memory_background: "rgba(34, 94, 168, 0.5)",
     },
   },
   fonts: {

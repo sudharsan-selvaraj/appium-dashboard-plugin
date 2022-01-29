@@ -5,6 +5,7 @@ import TabsLayout, { Tab } from "../layouts/tab-layout";
 import SessionDebugLogs from "./session-debug-logs";
 import SessionDeviceLogs from "./session-device-logs";
 import SessionTextLogs from "./session-text-logs";
+import Profiling from "./app-profiling";
 
 type PropsType = {
   session: Session;
@@ -17,21 +18,33 @@ const Container = styled.div`
   margin: 20px;
 `;
 
+const TAB_HEADERS: Record<string, string> = {
+  TEXTLOGS: "Text Logs",
+  DEVICELOGS: "Device Logs",
+  DEBUGLOGS: "Debug Logs",
+  PROFILING: "App profiling",
+};
+
 export default function SessionLogs(props: PropsType) {
   const { session, parentHeight } = props;
 
   return (
     <Container>
-      <TabsLayout selected="Text Logs">
-        <Tab name="Text Logs">
+      <TabsLayout selected={TAB_HEADERS.TEXTLOGS}>
+        <Tab name={TAB_HEADERS.TEXTLOGS}>
           <SessionTextLogs session={session} parentHeight={parentHeight} />
         </Tab>
-        <Tab name="Device Logs">
+        <Tab name={TAB_HEADERS.DEVICELOGS}>
           <SessionDeviceLogs session={session} parentHeight={parentHeight} />
         </Tab>
-        <Tab name="Debug Logs">
+        <Tab name={TAB_HEADERS.DEBUGLOGS}>
           <SessionDebugLogs session={session} parentHeight={parentHeight} />
         </Tab>
+        {session.is_completed && session.is_profiling_available && (
+          <Tab name={TAB_HEADERS.PROFILING}>
+            <Profiling session={session} parentHeight={parentHeight} />
+          </Tab>
+        )}
       </TabsLayout>
     </Container>
   );

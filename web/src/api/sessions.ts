@@ -51,4 +51,8 @@ export default class SessionApi {
   public static resumeSession(sessionId: string) {
     return Api.post(`/debug/${sessionId}/play`, {});
   }
+
+  public static getAppProfiling(sessionId: string) {
+    return Api.get(`/sessions/${sessionId}/profiling_data`);
+  }
 }

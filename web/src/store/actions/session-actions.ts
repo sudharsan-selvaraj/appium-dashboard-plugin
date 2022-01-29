@@ -50,6 +50,16 @@ export const fetchSessionDebugLogsSuccess = (payload: any) => ({
   payload,
 });
 
+export const fetchSessionProfilingData = (payload: any) => ({
+  type: ReduxActionTypes.FETCH_SESSION_PROFILING_DATA,
+  payload,
+});
+
+export const fetchSessionProfilingDataSuccess = (payload: any) => ({
+  type: ReduxActionTypes.FETCH_SESSION_PROFILING_DATA_SUCCESS,
+  payload,
+});
+
 export const setSessionFilter = (payload: any) => ({
   type: ReduxActionTypes.SET_SESSION_FILTER,
   payload,

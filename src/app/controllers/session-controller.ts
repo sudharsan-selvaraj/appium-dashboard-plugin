@@ -3,7 +3,7 @@ import { Session } from "../../models/session";
 import { Op, Sequelize } from "sequelize";
 import { BaseController } from "../commons/base-controller";
 import fs from "fs";
-import { CommandLogs, Logs } from "../../models";
+import { CommandLogs, Logs, Profiling } from "../../models";
 import * as path from "path";
 
 export class SessionController extends BaseController {
@@ -16,6 +16,7 @@ export class SessionController extends BaseController {
     router.get("/:sessionId/logs/text", this.getTextLogs.bind(this));
     router.get("/:sessionId/logs/device", this.getDeviceLogs.bind(this));
     router.get("/:sessionId/logs/debug", this.getDebugLogs.bind(this));
+    router.get("/:sessionId/profiling_data", this.getProfilingData.bind(this));
   }
 
   public async getSessions(request: Request, response: Response, next: NextFunction) {
@@ -159,5 +160,25 @@ export class SessionController extends BaseController {
       return response.status(200).sendFile(log.screen_shot);
     }
     this.sendFailureResponse(response, "Screen shot not available");
+  }
+
+  public async getProfilingData(request: Request, response: Response, next: NextFunction) {
+    let sessionId: string = request.params.sessionId;
+    let logs = await Profiling.findAll({
+      attributes: [
+        "timestamp",
+        "cpu",
+        "memory",
+        "total_cpu_used",
+        "total_memory_used",
+        "raw_cpu_log",
+        "raw_memory_log",
+      ],
+      where: {
+        session_id: sessionId,
+      },
+      order: [["timestamp", "ASC"]],
+    });
+    this.sendSuccessResponse(response, logs);
   }
 }
