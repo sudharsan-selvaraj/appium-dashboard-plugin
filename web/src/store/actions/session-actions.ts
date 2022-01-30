@@ -3,6 +3,10 @@ import { ReduxActionType } from "../../interfaces/redux";
 import Session from "../../interfaces/session";
 import ReduxActionTypes from "../redux-action-types";
 
+export const fetchSessionInit = () => ({
+  type: ReduxActionTypes.FETCH_SESSIONS_INIT,
+});
+
 export const fetchSessionsSuccess = (payload: PaginatedResponse<Session>) => ({
   type: ReduxActionTypes.FETCH_SESSIONS_SUCCESS,
   payload,

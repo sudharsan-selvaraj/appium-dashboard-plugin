@@ -4,7 +4,6 @@ import CommonUtils from "../../../utils/common-utils";
 import VideoPlayer from "../atoms/video-player";
 import styled from "styled-components";
 import EmptyMessage from "../molecules/empty-message";
-import Centered from "../molecules/centered";
 
 const Container = styled.div``;
 

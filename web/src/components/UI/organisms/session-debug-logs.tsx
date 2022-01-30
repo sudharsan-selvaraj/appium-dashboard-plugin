@@ -2,10 +2,6 @@ import React, { useCallback, useEffect } from "react";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
-import {
-  APP_HEADER_HEIGHT,
-  SUB_APP_HEADER_HEIGHT,
-} from "../../../constants/ui";
 import Session from "../../../interfaces/session";
 import {
   addPollingTask,
@@ -26,7 +22,6 @@ import { TAB_HEADER_HEIGHT } from "../layouts/tab-layout";
 import Centered from "../molecules/centered";
 import EmptyMessage from "../molecules/empty-message";
 import SessionDebugLogEntry from "./session-debug-log-entry";
-import { SUMMARY_HEIGHT } from "./session-details";
 
 function useLogs(filterText: string) {
   const logs = useSelector(getDebugLogs);
@@ -58,22 +53,21 @@ export default function SessionDebugLogs(props: PropsType) {
   const logs = useLogs(filterText);
   const isLoading = useSelector(getisDebugLogsLoading);
   const dispatch = useDispatch();
-  const [enablePolling, setEnablePolling] = useState(true);
+  const [enablePolling, setEnablePolling] = useState(!session.is_completed);
 
   useEffect(() => {
     dispatch(fetchSessionDebugLogs(session.session_id));
-    if (enablePolling) {
-      togglePolling(true);
-    }
 
     if (session.is_completed) {
-      dispatch(removePollingTask(fetchSessionDebugLogs(session.session_id)));
+      togglePolling(false);
+    } else if (enablePolling) {
+      togglePolling(true);
     }
 
     return () => {
       togglePolling(false);
     };
-  }, [session.session_id]);
+  }, [session.session_id, session.is_completed]);
 
   const togglePolling = useCallback((on: boolean) => {
     if (on) {

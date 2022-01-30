@@ -47,6 +47,7 @@ function* TaskExecutor(executionChannel: Channel<any>): Generator<any> {
   while (true) {
     const action = yield take(executionChannel);
     yield put(action as ReduxActionType<any>);
+    debug("executed tasks");
   }
 }
 

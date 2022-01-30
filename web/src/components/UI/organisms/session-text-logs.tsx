@@ -4,10 +4,6 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
-import {
-  APP_HEADER_HEIGHT,
-  SUB_APP_HEADER_HEIGHT,
-} from "../../../constants/ui";
 import Session from "../../../interfaces/session";
 import {
   addPollingTask,
@@ -26,7 +22,6 @@ import SerialLayout, { Row } from "../layouts/serial-layout";
 import { TAB_HEADER_HEIGHT } from "../layouts/tab-layout";
 import Centered from "../molecules/centered";
 import EmptyMessage from "../molecules/empty-message";
-import { SUMMARY_HEIGHT } from "./session-details";
 import LogEntry from "./session-text-logs-entry";
 
 function useLogs(showScreenShots: boolean, showExceptions: boolean) {
@@ -59,25 +54,24 @@ export default function SessionTextLogs(props: PropsType) {
   const { session, parentHeight } = props;
   const [showScreenShots, setShowScreenShots] = useState(true);
   const [showExceptions, setShowExceptions] = useState(false);
-  const [enablePolling, setEnablePolling] = useState(true);
+  const [enablePolling, setEnablePolling] = useState(!session.is_completed);
   const logs = useLogs(showScreenShots, showExceptions);
   const isLoading = useSelector(getisTextLogsLoading);
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(fetchSessionTextLogs(session.session_id));
-    if (enablePolling) {
-      togglePolling(true);
-    }
 
     if (session.is_completed) {
-      dispatch(removePollingTask(fetchSessionTextLogs(session.session_id)));
+      togglePolling(false);
+    } else if (enablePolling) {
+      togglePolling(true);
     }
 
     return () => {
       togglePolling(false);
     };
-  }, [session.session_id]);
+  }, [session.session_id, session.is_completed]);
 
   const togglePolling = useCallback(
     (on: boolean) => {
@@ -118,7 +112,7 @@ export default function SessionTextLogs(props: PropsType) {
                     onChange={(checked: boolean) => setShowExceptions(checked)}
                   />
                 </Column>
-                <Column grid={2}>
+                <Column grid={3}>
                   <CheckBox
                     label="Enable Polling"
                     checked={enablePolling}

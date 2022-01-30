@@ -26,10 +26,7 @@ const initialState: LoadersState = {
 };
 
 export default createReducer(initialState, {
-  [ReduxActionTypes.DELETE_SESSION]: (
-    state: AppState,
-    action: ReduxActionType<string>,
-  ) => ({
+  [ReduxActionTypes.DELETE_SESSION]: (state: AppState) => ({
     ...state,
     delete: {
       isPending: true,
@@ -45,19 +42,13 @@ export default createReducer(initialState, {
       response: action.payload,
     },
   }),
-  [ReduxActionTypes.PAUSE_SESSION]: (
-    state: AppState,
-    action: ReduxActionType<string>,
-  ) => ({
+  [ReduxActionTypes.PAUSE_SESSION]: (state: AppState) => ({
     ...state,
     state: {
       isPending: true,
     },
   }),
-  [ReduxActionTypes.RESUME_SESSION]: (
-    state: AppState,
-    action: ReduxActionType<string>,
-  ) => ({
+  [ReduxActionTypes.RESUME_SESSION]: (state: AppState) => ({
     ...state,
     state: {
       isPending: true,

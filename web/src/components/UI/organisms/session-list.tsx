@@ -4,15 +4,18 @@ import EmptyMessage from "../molecules/empty-message";
 import SerialLayout, { Row } from "../layouts/serial-layout";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  getIsSessionsLoading,
   getSelectedSession,
   getSessions,
 } from "../../../store/selectors/entities/sessions-selector";
 import { useCallback } from "react";
-import { setSessionFilter } from "../../../store/actions/session-actions";
+import {
+  fetchSessionInit,
+  setSessionFilter,
+} from "../../../store/actions/session-actions";
 import Session from "../../../interfaces/session";
 import SessionCard from "./session-card";
 import { useEffect } from "react";
-import ReduxActionTypes from "../../../store/redux-action-types";
 import {
   APP_HEADER_HEIGHT,
   SUB_APP_HEADER_HEIGHT,
@@ -25,6 +28,12 @@ import { useState } from "react";
 import { Badge } from "@material-ui/core";
 import { getSessionFilterCount } from "../../../store/selectors/ui/filter-selector";
 import Utils from "../../../utils/common-utils";
+import {
+  addPollingTask,
+  removePollingTask,
+} from "../../../store/actions/polling-actions";
+import ParallelLayout, { Column } from "../layouts/parallel-layout";
+import Spinner from "../atoms/spinner";
 
 const Container = styled.div`
   border-right: 1px solid #ced8e1;
@@ -86,6 +95,7 @@ function getFiltersFromQueryParams(searchQuery: string) {
 export default function SessionList() {
   const dispatch = useDispatch();
   const sessions = useSelector(getSessions);
+  const isLoading = useSelector(getIsSessionsLoading);
   const SelectedSession = useSelector(getSelectedSession);
   const urlFilters = getFiltersFromQueryParams(window.location.search);
 
@@ -93,19 +103,23 @@ export default function SessionList() {
     if (Object.keys(urlFilters).length) {
       setFilter(urlFilters);
     } else {
-      dispatch({
-        type: ReduxActionTypes.FETCH_SESSIONS_INIT,
-      });
+      dispatch(fetchSessionInit());
     }
   }, []);
 
   useEffect(() => {
     if (SelectedSession == null) {
-      dispatch({
-        type: ReduxActionTypes.FETCH_SESSIONS_INIT,
-      });
+      dispatch(fetchSessionInit());
     }
   }, [SelectedSession]);
+
+  useEffect(() => {
+    dispatch(addPollingTask(fetchSessionInit()));
+
+    return () => {
+      dispatch(removePollingTask(fetchSessionInit()));
+    };
+  }, []);
 
   const setFilter = useCallback((payload) => {
     dispatch(setSessionFilter(payload));
@@ -118,26 +132,35 @@ export default function SessionList() {
       <SerialLayout>
         <Row height={`${SUB_APP_HEADER_HEIGHT}px`}>
           <Header>
-            <Dropdown
-              controlled
-              onOpen={() => setIsFilterOpen(true)}
-              onClose={() => setIsFilterOpen(false)}
-              open={isFilterOpen}
-            >
-              <FilterTrigger>
-                <Icon name="filter" size={Sizes.S} />
-                <FilterTriggerLabel>FILTERS</FilterTriggerLabel>
-                <StyledBadge badgeContent={filterCount} color="secondary" />
-              </FilterTrigger>
-              <FilterDropdown>
-                <SessionListFilter
-                  onApply={(payload) => {
-                    setFilter(payload);
-                    setIsFilterOpen(false);
-                  }}
-                />
-              </FilterDropdown>
-            </Dropdown>
+            <ParallelLayout>
+              <Column grid={10}>
+                <Dropdown
+                  controlled
+                  onOpen={() => setIsFilterOpen(true)}
+                  onClose={() => setIsFilterOpen(false)}
+                  open={isFilterOpen}
+                >
+                  <FilterTrigger>
+                    <Icon name="filter" size={Sizes.S} />
+                    <FilterTriggerLabel>FILTERS</FilterTriggerLabel>
+                    <StyledBadge badgeContent={filterCount} color="secondary" />
+                  </FilterTrigger>
+                  <FilterDropdown>
+                    <SessionListFilter
+                      onApply={(payload) => {
+                        setFilter(payload);
+                        setIsFilterOpen(false);
+                      }}
+                    />
+                  </FilterDropdown>
+                </Dropdown>
+              </Column>
+              {isLoading ? (
+                <Column grid={2}>
+                  <Spinner />
+                </Column>
+              ) : null}
+            </ParallelLayout>
           </Header>
         </Row>
         <Row
