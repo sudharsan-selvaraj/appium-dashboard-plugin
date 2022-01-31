@@ -90,7 +90,7 @@ export default createReducer(initialState, {
   }),
   [ReduxActionTypes.FETCH_SESSION_PROFILING_DATA]: (state: LogsState) => ({
     ...state,
-    debug: {
+    profiling: {
       ...state.text,
       isLoading: true,
     },

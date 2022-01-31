@@ -18,12 +18,12 @@ const Container = styled.div`
   margin: 20px;
 `;
 
-const TAB_HEADERS: Record<string, string> = {
-  TEXTLOGS: "Text Logs",
-  DEVICELOGS: "Device Logs",
-  DEBUGLOGS: "Debug Logs",
-  PROFILING: "App profiling",
-};
+enum TAB_HEADERS {
+  TEXTLOGS = "Text Logs",
+  DEVICELOGS = "Device Logs",
+  DEBUGLOGS = "Debug Logs",
+  PROFILING = "App profiling",
+}
 
 export default function SessionLogs(props: PropsType) {
   const { session, parentHeight } = props;
