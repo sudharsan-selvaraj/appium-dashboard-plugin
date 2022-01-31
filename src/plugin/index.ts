@@ -97,6 +97,7 @@ class AppiumDashboardPlugin extends BasePlugin {
 
     let newCapabilities: Record<string, any> = {
       "appium:clearDeviceLogsOnStart": true,
+      "appium:nativeWebScreenshot": true, //to make screenshot endpoint work in android webview tests
     };
 
     Object.keys(newCapabilities).forEach((k) => {
