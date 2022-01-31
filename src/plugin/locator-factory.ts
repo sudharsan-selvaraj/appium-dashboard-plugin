@@ -1,13 +1,20 @@
+import { response } from "express";
 import loki from "lokijs";
 
 const locatorCollection = new loki("locator.db").addCollection("locators");
+
+function getElementId(responseObj: any) {
+  return (
+    responseObj["ELEMENT"] || responseObj[Object.keys(responseObj).find((k: string) => k.startsWith("element")) || 0]
+  );
+}
 
 async function saveLocator(strategy: any, elementResponse: any[]) {
   elementResponse.forEach((e, i, arr) => {
     let obj = {
       using: strategy.using,
       value: strategy.value,
-      id: e["ELEMENT"],
+      id: getElementId(e),
       index: null,
     } as any;
 
