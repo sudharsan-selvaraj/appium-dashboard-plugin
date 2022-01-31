@@ -11,7 +11,6 @@ import Centered from "../molecules/centered";
 import { useHistory } from "react-router-dom";
 import { getSessionDetailsUrl } from "../../../constants/routes";
 import chroma from "chroma-js";
-import { retry } from "redux-saga/effects";
 
 const getStatusIcon = (is_completed: boolean, session_status: string) => {
   if (!is_completed) {
@@ -111,25 +110,18 @@ type PropsType = {
   selected: boolean;
 };
 
-function getPlatformIcon(session: Session) {
-  if (session.platform_name.toLowerCase() == "android") {
-    return <Icon name="android" size={Sizes.XL} />;
-  } else {
-    return <Icon name="ios" size={Sizes.XL} />;
-  }
-}
+// function getPlatformIcon(session: Session) {
+//   if (session.platform_name.toLowerCase() == "android") {
+//     return <Icon name="android" size={Sizes.XL} />;
+//   } else {
+//     return <Icon name="ios" size={Sizes.XL} />;
+//   }
+// }
 
 export default function SessionCard(props: PropsType) {
   const { session } = props;
-  const {
-    name,
-    session_id,
-    platform_version,
-    device_name,
-    start_time,
-    session_status,
-    is_completed,
-  } = session;
+  const { session_id, device_name, start_time, session_status, is_completed } =
+    session;
   const formattedStartTime = useMemo(() => {
     return CommonUtils.convertTimeToReadableFormat(
       new Date(start_time),

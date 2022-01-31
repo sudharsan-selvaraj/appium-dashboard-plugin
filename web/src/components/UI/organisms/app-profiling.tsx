@@ -70,7 +70,7 @@ function parseProfilingData(session: Session, profilingData: any[]) {
 }
 
 /* Cpu Usage data */
-function getCpuChartOptions(session: Session, profilingData: any[]) {
+function getCpuChartOptions(session: Session) {
   return {
     responsive: true,
     aspectRatio: 3,
@@ -147,7 +147,7 @@ function getCpuChartData(
 }
 
 /* Memory usage data */
-function getMemoryUsageChartOptions(session: Session, profilingData: any[]) {
+function getMemoryUsageChartOptions(session: Session) {
   return {
     responsive: true,
     plugins: {
@@ -251,13 +251,13 @@ export default function AppProfiling(props: PropsType) {
           <Container>
             <ChartRow>
               <Line
-                options={getCpuChartOptions(session, profilingData)}
+                options={getCpuChartOptions(session)}
                 data={getCpuChartData(session, profilingData, theme)}
               ></Line>
             </ChartRow>
             <ChartRow>
               <Line
-                options={getMemoryUsageChartOptions(session, profilingData)}
+                options={getMemoryUsageChartOptions(session)}
                 data={getMemoryChartData(session, profilingData, theme)}
               ></Line>
             </ChartRow>

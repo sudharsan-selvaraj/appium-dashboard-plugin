@@ -2,10 +2,6 @@ import React, { useCallback, useEffect } from "react";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
-import {
-  APP_HEADER_HEIGHT,
-  SUB_APP_HEADER_HEIGHT,
-} from "../../../constants/ui";
 import Session from "../../../interfaces/session";
 import {
   addPollingTask,
@@ -26,7 +22,6 @@ import { TAB_HEADER_HEIGHT } from "../layouts/tab-layout";
 import Centered from "../molecules/centered";
 import EmptyMessage from "../molecules/empty-message";
 import SessionDebugLogEntry from "./session-debug-log-entry";
-import { SUMMARY_HEIGHT } from "./session-details";
 
 function useLogs(filterText: string) {
   const logs = useSelector(getDebugLogs);
@@ -47,6 +42,23 @@ const Header = styled.div`
 
 const Content = styled.div``;
 
+//TODO: Refactor this. temporary changes
+const StyledInput = styled(Input)`
+  background: transparent;
+  border-bottom: 1px solid #fff;
+
+  &&& input {
+    background: transparent;
+    color: #fff;
+    border: none;
+  }
+
+  &&& path {
+    background: #fff;
+    stroke: #fff;
+  }
+`;
+
 type PropsType = {
   session: Session;
   parentHeight: number;
@@ -58,22 +70,21 @@ export default function SessionDebugLogs(props: PropsType) {
   const logs = useLogs(filterText);
   const isLoading = useSelector(getisDebugLogsLoading);
   const dispatch = useDispatch();
-  const [enablePolling, setEnablePolling] = useState(true);
+  const [enablePolling, setEnablePolling] = useState(!session.is_completed);
 
   useEffect(() => {
     dispatch(fetchSessionDebugLogs(session.session_id));
-    if (enablePolling) {
-      togglePolling(true);
-    }
 
     if (session.is_completed) {
-      dispatch(removePollingTask(fetchSessionDebugLogs(session.session_id)));
+      togglePolling(false);
+    } else if (enablePolling) {
+      togglePolling(true);
     }
 
     return () => {
       togglePolling(false);
     };
-  }, [session.session_id]);
+  }, [session.session_id, session.is_completed]);
 
   const togglePolling = useCallback((on: boolean) => {
     if (on) {
@@ -98,7 +109,7 @@ export default function SessionDebugLogs(props: PropsType) {
             <Header>
               <ParallelLayout>
                 <Column grid={4}>
-                  <Input
+                  <StyledInput
                     name="search"
                     type="text"
                     leftIcon="search"
@@ -107,13 +118,15 @@ export default function SessionDebugLogs(props: PropsType) {
                     onChange={(e) => setFilterText(e.target.value)}
                   />
                 </Column>
-                <Column grid={4} padding="0px 10px">
-                  <CheckboxComponent
-                    label="Enable Polling"
-                    checked={enablePolling}
-                    onChange={(checked: boolean) => togglePolling(checked)}
-                  />
-                </Column>
+                {!session.is_completed ? (
+                  <Column grid={4} padding="0px 10px">
+                    <CheckboxComponent
+                      label="Enable Polling"
+                      checked={enablePolling}
+                      onChange={(checked: boolean) => togglePolling(checked)}
+                    />
+                  </Column>
+                ) : null}
               </ParallelLayout>
             </Header>
           </Row>

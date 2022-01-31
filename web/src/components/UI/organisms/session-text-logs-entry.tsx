@@ -59,13 +59,6 @@ const ErrorNameLabel = styled(JsonEntryKey)`
   text-transform: capitalize;
 `;
 
-const JsonEntryValue = styled(StringValue)``;
-
-const ParamsJsonRow = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
 function getLogBody(logTitle: string, logBody: any) {
   const code =
     typeof logBody.value !== "string"

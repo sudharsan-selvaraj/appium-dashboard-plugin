@@ -30,13 +30,6 @@ const Name = styled.div`
   font-size: ${(props) => props.theme.fonts.size.XXL};
 `;
 
-const Delete = styled.div`
-  position: relative;
-  top: 2px;
-  text-align: right;
-  cursor: pointer;
-`;
-
 const ErrorContainer = styled.div`
   border: 1px solid ${(props) => chroma(props.theme.colors.error).hex()};
   border-left: 5px solid ${(props) => chroma(props.theme.colors.error).hex()};

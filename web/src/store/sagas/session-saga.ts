@@ -30,72 +30,88 @@ function* fetchSessions(action?: ReduxActionType<Record<string, string>>) {
 }
 
 function* fetchSession(action: ReduxActionType<string>) {
-  const sessions: ApiResponse<Session> = yield SessionApi.getSessionById(
-    action.payload,
-  );
-  if (sessions.success) {
-    yield put(fetchSessionSuccess(sessions.result));
+  if (action.payload) {
+    const sessions: ApiResponse<Session> = yield SessionApi.getSessionById(
+      action.payload,
+    );
+    if (sessions.success) {
+      yield put(fetchSessionSuccess(sessions.result));
+    }
   }
 }
 
 function* fetchSessionTextLog(action: ReduxActionType<string>) {
-  const logs: ApiResponse<any> = yield SessionApi.getTextLogsForSession(
-    action.payload,
-  );
-  if (logs.success) {
-    yield put(fetchSessionTextLogsSuccess(logs.result));
+  if (action.payload) {
+    const logs: ApiResponse<any> = yield SessionApi.getTextLogsForSession(
+      action.payload,
+    );
+    if (logs.success) {
+      yield put(fetchSessionTextLogsSuccess(logs.result));
+    }
   }
 }
 
 function* fetchSessionDeviceLog(action: ReduxActionType<string>) {
-  const logs: ApiResponse<any> = yield SessionApi.getDeviceLogsForSession(
-    action.payload,
-  );
-  if (logs.success) {
-    yield put(fetchSessionDeviceLogsSuccess(logs.result));
+  if (action.payload) {
+    const logs: ApiResponse<any> = yield SessionApi.getDeviceLogsForSession(
+      action.payload,
+    );
+    if (logs.success) {
+      yield put(fetchSessionDeviceLogsSuccess(logs.result));
+    }
   }
 }
 
 function* fetchSessionDebugLog(action: ReduxActionType<string>) {
-  const logs: ApiResponse<any> = yield SessionApi.getDebugLogsForSession(
-    action.payload,
-  );
-  if (logs.success) {
-    yield put(fetchSessionDebugLogsSuccess(logs.result));
+  if (action.payload) {
+    const logs: ApiResponse<any> = yield SessionApi.getDebugLogsForSession(
+      action.payload,
+    );
+    if (logs.success) {
+      yield put(fetchSessionDebugLogsSuccess(logs.result));
+    }
   }
 }
 
 function* deleteSession(action: ReduxActionType<string>) {
-  const response: ApiResponse<any> = yield SessionApi.deleteSessionById(
-    action.payload,
-  );
-  yield put(deleteSessionFinish(response));
+  if (action.payload) {
+    const response: ApiResponse<any> = yield SessionApi.deleteSessionById(
+      action.payload,
+    );
+    yield put(deleteSessionFinish(response));
+  }
 }
 
 function* pauseSession(action: ReduxActionType<string>) {
-  const response: ApiResponse<any> = yield SessionApi.pauseSession(
-    action.payload,
-  );
-  yield put(sessionStateChangeFinish(response));
+  if (action.payload) {
+    const response: ApiResponse<any> = yield SessionApi.pauseSession(
+      action.payload,
+    );
+    yield put(sessionStateChangeFinish(response));
+  }
 }
 
 function* resumeSession(action: ReduxActionType<string>) {
-  const response: ApiResponse<any> = yield SessionApi.resumeSession(
-    action.payload,
-  );
-  yield put(sessionStateChangeFinish(response));
+  if (action.payload) {
+    const response: ApiResponse<any> = yield SessionApi.resumeSession(
+      action.payload,
+    );
+    yield put(sessionStateChangeFinish(response));
+  }
 }
 
 function* fetchSessionProfileData(action: ReduxActionType<string>) {
-  const response: ApiResponse<any> = yield SessionApi.getAppProfiling(
-    action.payload,
-  );
-  yield put(
-    fetchSessionProfilingDataSuccess({
-      count: response.result.length,
-      rows: response.result,
-    }),
-  );
+  if (action.payload) {
+    const response: ApiResponse<any> = yield SessionApi.getAppProfiling(
+      action.payload,
+    );
+    yield put(
+      fetchSessionProfilingDataSuccess({
+        count: response.result.length,
+        rows: response.result,
+      }),
+    );
+  }
 }
 
 export default function* () {

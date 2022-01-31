@@ -48,10 +48,12 @@ type PropsType = {
   onChange?: (e: any) => void;
   height?: string;
   width?: string;
+  className?: string;
 };
 
 export default function Input(props: PropsType) {
   const {
+    className,
     name,
     value,
     type = "text",
@@ -65,6 +67,7 @@ export default function Input(props: PropsType) {
 
   return (
     <Container
+      className={className}
       height={height || DEFAULT_HEIGHT}
       width={width || DEFAULT_WIDTH}
       hasIcon={!!leftIcon}
