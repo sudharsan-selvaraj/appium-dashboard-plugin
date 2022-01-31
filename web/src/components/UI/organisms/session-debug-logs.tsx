@@ -42,6 +42,23 @@ const Header = styled.div`
 
 const Content = styled.div``;
 
+//TODO: Refactor this. temporary changes
+const StyledInput = styled(Input)`
+  background: transparent;
+  border-bottom: 1px solid #fff;
+
+  &&& input {
+    background: transparent;
+    color: #fff;
+    border: none;
+  }
+
+  &&& path {
+    background: #fff;
+    stroke: #fff;
+  }
+`;
+
 type PropsType = {
   session: Session;
   parentHeight: number;
@@ -92,7 +109,7 @@ export default function SessionDebugLogs(props: PropsType) {
             <Header>
               <ParallelLayout>
                 <Column grid={4}>
-                  <Input
+                  <StyledInput
                     name="search"
                     type="text"
                     leftIcon="search"
@@ -101,13 +118,15 @@ export default function SessionDebugLogs(props: PropsType) {
                     onChange={(e) => setFilterText(e.target.value)}
                   />
                 </Column>
-                <Column grid={4} padding="0px 10px">
-                  <CheckboxComponent
-                    label="Enable Polling"
-                    checked={enablePolling}
-                    onChange={(checked: boolean) => togglePolling(checked)}
-                  />
-                </Column>
+                {!session.is_completed ? (
+                  <Column grid={4} padding="0px 10px">
+                    <CheckboxComponent
+                      label="Enable Polling"
+                      checked={enablePolling}
+                      onChange={(checked: boolean) => togglePolling(checked)}
+                    />
+                  </Column>
+                ) : null}
               </ParallelLayout>
             </Header>
           </Row>

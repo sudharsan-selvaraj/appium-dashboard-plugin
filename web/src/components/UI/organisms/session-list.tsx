@@ -123,7 +123,12 @@ export default function SessionList() {
 
   const setFilter = useCallback((payload) => {
     dispatch(setSessionFilter(payload));
+
+    /* Reset session polling with newly applied filters */
+    dispatch(removePollingTask(fetchSessionInit()));
+    dispatch(addPollingTask(fetchSessionInit(payload)));
   }, []);
+
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const filterCount = useSelector(getSessionFilterCount);
 

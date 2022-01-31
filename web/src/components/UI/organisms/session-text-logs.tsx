@@ -15,6 +15,7 @@ import {
   getTextLogs,
 } from "../../../store/selectors/entities/logs-selector";
 import { getHeaderStyle } from "../../../utils/ui";
+import CheckboxComponent from "../atoms/checkbox";
 import CheckBox from "../atoms/checkbox";
 import Spinner from "../atoms/spinner";
 import ParallelLayout, { Column } from "../layouts/parallel-layout";
@@ -112,13 +113,15 @@ export default function SessionTextLogs(props: PropsType) {
                     onChange={(checked: boolean) => setShowExceptions(checked)}
                   />
                 </Column>
-                <Column grid={3}>
-                  <CheckBox
-                    label="Enable Polling"
-                    checked={enablePolling}
-                    onChange={(checked: boolean) => togglePolling(checked)}
-                  />
-                </Column>
+                {!session.is_completed ? (
+                  <Column grid={3} padding="0px 10px">
+                    <CheckboxComponent
+                      label="Enable Polling"
+                      checked={enablePolling}
+                      onChange={(checked: boolean) => togglePolling(checked)}
+                    />
+                  </Column>
+                ) : null}
               </ParallelLayout>
             </Header>
           </Row>

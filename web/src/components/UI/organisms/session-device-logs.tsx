@@ -141,13 +141,15 @@ export default function SessionDeviceLogs(props: PropsType) {
                     onChange={(e) => setFilterText(e.target.value)}
                   />
                 </Column>
-                <Column grid={4} padding="0px 10px">
-                  <CheckboxComponent
-                    label="Enable Polling"
-                    checked={enablePolling}
-                    onChange={(checked: boolean) => togglePolling(checked)}
-                  />
-                </Column>
+                {!session.is_completed ? (
+                  <Column grid={4} padding="0px 10px">
+                    <CheckboxComponent
+                      label="Enable Polling"
+                      checked={enablePolling}
+                      onChange={(checked: boolean) => togglePolling(checked)}
+                    />
+                  </Column>
+                ) : null}
               </ParallelLayout>
             </Header>
           </Row>
