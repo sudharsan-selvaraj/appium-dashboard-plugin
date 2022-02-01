@@ -154,8 +154,10 @@ class SessionManager {
   private async sessionStarted(command: AppiumCommand) {
     sessionDebugMap.createNewSession(this.sessionInfo.session_id);
     let { desired } = this.sessionInfo.capabilities;
-    let buildName = desired["appium:buildName"];
-    let projectName = desired["appium:projectName"];
+    let buildName = desired["dashboard:build"];
+    let projectName = desired["dashboard:project"];
+    let name = desired["dashboard:name"];
+
     let is_profiling_available = false;
     let build, project, device_info;
     if (projectName) {
@@ -180,9 +182,10 @@ class SessionManager {
       ...this.sessionInfo,
       start_time: new Date(),
       build_id: build?.build_id,
-      project_id: !build ? project?.id : null,
+      project_id: project?.id || null,
       device_info,
       is_profiling_available,
+      name: name || null,
     } as any);
 
     await this.saveCommandLog(command, null);

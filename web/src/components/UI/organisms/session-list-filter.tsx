@@ -54,8 +54,8 @@ export default function SessionListFilter(props: Propstype) {
   const reset = useCallback(() => {
     onApply({
       name: "",
-      os: "",
-      status: "",
+      os: [],
+      status: [],
       device_udid: "",
     });
   }, [name, os, status, device_udid]);
@@ -87,6 +87,7 @@ export default function SessionListFilter(props: Propstype) {
             <Column grid={6}>
               <Control>
                 <Select
+                  multiple={true}
                   options={PLATFORM}
                   onChange={(value) => setOs(value)}
                   selected={os}
@@ -103,6 +104,7 @@ export default function SessionListFilter(props: Propstype) {
             <Column grid={6}>
               <Control>
                 <Select
+                  multiple={true}
                   options={STATUS}
                   onChange={(value) => setStatus(value)}
                   selected={status}

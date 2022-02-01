@@ -5,6 +5,7 @@ import { BaseController } from "../commons/base-controller";
 import fs from "fs";
 import { CommandLogs, Logs, Profiling } from "../../models";
 import * as path from "path";
+import { parseSessionFilterParams } from "../utils/common-utils";
 
 export class SessionController extends BaseController {
   public initializeRoutes(router: Router, config: any) {
@@ -20,41 +21,7 @@ export class SessionController extends BaseController {
   }
 
   public async getSessions(request: Request, response: Response, next: NextFunction) {
-    let { start_time, name, os, status, device_udid } = request.query as any;
-    let filters: any = [];
-    if (start_time) {
-      filters.push({ start_time: { [Op.gte]: new Date(start_time) } });
-    }
-    if (name) {
-      filters.push({
-        [Op.or]: [
-          {
-            session_id: {
-              [Op.like]: `%${name.trim()}%`,
-            },
-          },
-          {
-            name: {
-              [Op.like]: `%${name.trim()}%`,
-            },
-          },
-        ],
-      });
-    }
-
-    if (status) {
-      filters.push({
-        session_status: status.toUpperCase(),
-      });
-    }
-
-    if (device_udid) {
-      filters.push(Sequelize.where(Sequelize.fn("LOWER", Sequelize.col("udid")), device_udid.toLowerCase()));
-    }
-
-    if (os) {
-      filters.push(Sequelize.where(Sequelize.fn("LOWER", Sequelize.col("platform_name")), os.toLowerCase()));
-    }
+    const filters = parseSessionFilterParams(request.query as any);
 
     this.sendSuccessResponse(
       response,
