@@ -1,4 +1,4 @@
-import { makeGETCall, makePostCall, makeDELETECall } from "./utils";
+import { makeGETCall, makePostCall, makeDELETECall } from "./utils/plugin-utils";
 
 async function startScreenRecording(driver: any, sessionId: string) {
   return await makePostCall(driver, sessionId, "/appium/start_recording_screen", {

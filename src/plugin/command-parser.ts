@@ -1,6 +1,6 @@
 import { SessionInfo } from "../interfaces/session-info";
 import { saveLocator, getLocatorStrategy } from "./locator-factory";
-import { millisToMinutesAndSeconds } from "./utils";
+import { millisToMinutesAndSeconds } from "./utils/plugin-utils";
 
 export class CommandParser {
   constructor(private sessionInfo: SessionInfo) {}

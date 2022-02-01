@@ -151,6 +151,13 @@ class Session extends Model<Session> {
 
   @AllowNull(false)
   @Column({
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+  })
+  is_http_logs_available?: boolean;
+
+  @AllowNull(false)
+  @Column({
     type: DataTypes.ENUM,
     values: ["PASSED", "FAILED", "TIMEOUT", "RUNNING"],
     defaultValue: "RUNNING",

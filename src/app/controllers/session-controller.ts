@@ -3,7 +3,7 @@ import { Session } from "../../models/session";
 import { Op, Sequelize } from "sequelize";
 import { BaseController } from "../commons/base-controller";
 import fs from "fs";
-import { CommandLogs, Logs, Profiling } from "../../models";
+import { CommandLogs, HttpLogs, Logs, Profiling } from "../../models";
 import * as path from "path";
 import { parseSessionFilterParams } from "../utils/common-utils";
 
@@ -18,6 +18,7 @@ export class SessionController extends BaseController {
     router.get("/:sessionId/logs/device", this.getDeviceLogs.bind(this));
     router.get("/:sessionId/logs/debug", this.getDebugLogs.bind(this));
     router.get("/:sessionId/profiling_data", this.getProfilingData.bind(this));
+    router.get("/:sessionId/http_logs", this.getHttpLogs.bind(this));
   }
 
   public async getSessions(request: Request, response: Response, next: NextFunction) {
@@ -145,6 +146,17 @@ export class SessionController extends BaseController {
         session_id: sessionId,
       },
       order: [["timestamp", "ASC"]],
+    });
+    this.sendSuccessResponse(response, logs);
+  }
+
+  public async getHttpLogs(request: Request, response: Response, next: NextFunction) {
+    let sessionId: string = request.params.sessionId;
+    let logs = await HttpLogs.findAndCountAll({
+      where: {
+        session_id: sessionId,
+      },
+      order: [["start_time", "ASC"]],
     });
     this.sendSuccessResponse(response, logs);
   }
