@@ -58,6 +58,7 @@ var createSessionTable = function (queryInterface, Sequelize) {
     is_test_passed: { type: Sequelize.BOOLEAN, allowNull: true },
     is_paused: { type: Sequelize.BOOLEAN, allowNull: true, default: false },
     is_profiling_available: { type: Sequelize.BOOLEAN, allowNull: true, default: false },
+    is_http_logs_available: { type: Sequelize.BOOLEAN, allowNull: true, default: false },
     session_status: {
       type: Sequelize.ENUM,
       values: ["PASSED", "FAILED", "TIMEOUT", "RUNNING"],
@@ -117,6 +118,30 @@ var createAppProfileTable = function (queryInterface, Sequelize) {
   });
 };
 
+var createhttpLogsTable = function (queryInterface, Sequelize) {
+  return queryInterface.createTable("http_logs", {
+    session_id: { type: Sequelize.TEXT, references: { model: "session", key: "session_id" }, onDelete: "CASCADE" },
+    id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
+    url: { type: Sequelize.TEXT, allowNull: false },
+    method: { type: Sequelize.TEXT, allowNull: false },
+    request_headers: { type: Sequelize.TEXT, allowNull: false },
+    request_post_data: { type: Sequelize.TEXT, allowNull: true },
+    request_content_type: { type: Sequelize.TEXT },
+    request_type: { type: Sequelize.TEXT },
+    context: { type: Sequelize.TEXT, allowNull: false },
+    response_status: { type: Sequelize.INTEGER, allowNull: false },
+    response_status_text: { type: Sequelize.TEXT, allowNull: false },
+    response_headers: { type: Sequelize.TEXT, allowNull: false },
+    response_content_type: { type: Sequelize.TEXT },
+    remote_ip_address: { type: Sequelize.TEXT, allowNull: true },
+    response_body: { type: Sequelize.TEXT },
+    start_time: { type: Sequelize.DATE, allowNull: false },
+    end_time: { type: Sequelize.DATE, allowNull: false },
+    created_at: Sequelize.DATE,
+    updated_at: Sequelize.DATE,
+  });
+};
+
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return promise.each(
@@ -127,6 +152,7 @@ module.exports = {
         createLogsTable,
         createCommandLogsTable,
         createAppProfileTable,
+        createhttpLogsTable,
       ],
       function (table) {
         return table(queryInterface, Sequelize);
@@ -134,8 +160,11 @@ module.exports = {
     );
   },
   down: (queryInterface, Sequelize) => {
-    return promise.each(["profiling", "logs", "command_logs", "projects", "build", "session"], function (table) {
-      return queryInterface.dropTable(table);
-    });
+    return promise.each(
+      ["http_logs", "profiling", "logs", "command_logs", "projects", "build", "session"],
+      function (table) {
+        return queryInterface.dropTable(table);
+      }
+    );
   },
 };

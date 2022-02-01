@@ -1,7 +1,15 @@
-import { SessionInfo } from "../interfaces/session-info";
+import { SessionInfo } from "../../interfaces/session-info";
 import fetch from "node-fetch";
 import { routeToCommandName as _routeToCommandName } from "appium-base-driver";
-import { DashboardCommands } from "./dashboard-commands";
+import { DashboardCommands } from "../dashboard-commands";
+import { IHttpLogger } from "../interfaces/http-logger";
+import { AndroidNetworkProfiler } from "../http-logger/android-http-logger";
+import { IosNetworkProfiler } from "../http-logger/ios-http-logger";
+
+enum PLATFORM {
+  ANDROID = "android",
+  IOS = "ios",
+}
 
 function getSessionDetails(rawCapabilities: any, sessionResponse: any): any {
   let [session_id, caps] = sessionResponse.value;
@@ -110,6 +118,49 @@ function isDashboardCommand(dashboardCommand: DashboardCommands, commandName: st
   return parts[0] == "dashboard" && typeof dashboardCommand[parts[1] as keyof DashboardCommands] == "function";
 }
 
+function isAndroidSession(sessionInfo: SessionInfo) {
+  return sessionInfo.platform_name.toLowerCase() == PLATFORM.ANDROID;
+}
+
+function isIOSSession(sessionInfo: SessionInfo) {
+  return sessionInfo.platform_name.toLowerCase() == PLATFORM.IOS;
+}
+
+function isAppProfilingSupported(sessionInfo: SessionInfo) {
+  return isAndroidSession(sessionInfo);
+}
+
+function isBrowser(sessionInfo: SessionInfo) {
+  return !!sessionInfo.browser_name;
+}
+
+function isHttpLogsSuppoted(sessionInfo: SessionInfo) {
+  return isAndroidSession(sessionInfo) && isBrowser(sessionInfo);
+}
+
+function getHttpLogger(opts: {
+  sessionInfo: SessionInfo;
+  adb: any;
+  driver: any;
+  isWebView?: boolean;
+  webviewName?: string;
+}): IHttpLogger {
+  let { sessionInfo, adb, driver, isWebView = false, webviewName = "" } = opts;
+  if (isAndroidSession(sessionInfo)) {
+    return new AndroidNetworkProfiler({
+      udid: sessionInfo.udid,
+      adb,
+      isWebView,
+      webviewName,
+    });
+  } else {
+    return new IosNetworkProfiler({
+      udid: sessionInfo.udid,
+      platformVersion: sessionInfo.platform_version,
+    });
+  }
+}
+
 export {
   makeGETCall,
   makePostCall,
@@ -119,4 +170,9 @@ export {
   routeToCommand,
   millisToMinutesAndSeconds,
   isDashboardCommand,
+  isAndroidSession,
+  isIOSSession,
+  isAppProfilingSupported,
+  isHttpLogsSuppoted,
+  getHttpLogger,
 };

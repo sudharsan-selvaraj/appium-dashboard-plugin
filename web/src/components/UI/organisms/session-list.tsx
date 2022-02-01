@@ -108,12 +108,6 @@ export default function SessionList() {
   }, []);
 
   useEffect(() => {
-    if (SelectedSession == null) {
-      dispatch(fetchSessionInit());
-    }
-  }, [SelectedSession]);
-
-  useEffect(() => {
     dispatch(addPollingTask(fetchSessionInit()));
 
     return () => {

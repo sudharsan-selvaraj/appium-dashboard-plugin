@@ -2,7 +2,15 @@ import * as path from "path";
 import _ from "lodash";
 import { SessionInfo } from "../interfaces/session-info";
 import { AppiumCommand } from "../interfaces/appium-command";
-import { interceptProxyResponse, routeToCommand, isDashboardCommand } from "./utils";
+import {
+  interceptProxyResponse,
+  routeToCommand,
+  isDashboardCommand,
+  getHttpLogger,
+  isAppProfilingSupported,
+  isHttpLogsSuppoted,
+  isAndroidSession,
+} from "./utils/plugin-utils";
 import {
   getLogs,
   startScreenRecording,
@@ -24,9 +32,10 @@ import { PluginCliArgs } from "../interfaces/PluginCliArgs";
 import { SessionTimeoutTracker } from "./session-timeout-tracker";
 import { getOrCreateNewBuild, getOrCreateNewProject } from "../database-service";
 import sessionDebugMap from "./session-debug-map";
-import { DeviceProfiler } from "./device-profiler";
+import { AndroidAppProfiler } from "./app-profiler/android-app-profiler";
 import EventEmitter from "events";
-import { plugin } from "react-ga";
+import { IHttpLogger } from "./interfaces/http-logger";
+import { HttpLogs } from "../models/http-logs";
 
 const CREATE_SESSION = "createSession";
 
@@ -42,7 +51,9 @@ class SessionManager {
   private sessionResponse: any;
   private cliArgs: PluginCliArgs;
   private adb: any;
-  private deviceProfiler: DeviceProfiler | undefined;
+  private appProfiler!: AndroidAppProfiler;
+  private httpLogger!: IHttpLogger;
+  private httpLogsAvailable: boolean = false;
 
   constructor(opts: {
     sessionInfo: SessionInfo;
@@ -66,9 +77,11 @@ class SessionManager {
     });
     this.debugEventNotifier = Container.get("debugEventEmitter");
     this.resgisterEventListeners(this.debugEventNotifier);
-    if (this.sessionInfo.platform_name.toLowerCase() === "android" && this.adb) {
+
+    /* Check if the current session supports app profiling */
+    if (isAppProfilingSupported(this.sessionInfo) && this.adb) {
       pluginLogger.info("Adb found. Creating device profiler");
-      this.deviceProfiler = new DeviceProfiler({
+      this.appProfiler = new AndroidAppProfiler({
         adb: this.adb.executable,
         deviceUDID: this.sessionInfo.udid,
         appPackage: this.sessionInfo.capabilities["appPackage"],
@@ -132,7 +145,9 @@ class SessionManager {
       let res = await command.next();
       logger.info(`Recieved response for command ${command.commandName} for session ${this.sessionInfo.session_id}`);
       command.endTime = new Date();
-      await this.saveCommandLog(command, res);
+
+      await this.postCommandExecuted(command, res);
+
       return res;
     } catch (err: any) {
       command.endTime = new Date();
@@ -151,31 +166,58 @@ class SessionManager {
     }
   }
 
+  private async postCommandExecuted(command: AppiumCommand, response: any) {
+    /* If the context is changed the webview, start http logging */
+    if (
+      !response?.error &&
+      isAndroidSession(this.sessionInfo) &&
+      command.commandName == "setContext" &&
+      command.args[0].includes("WEBVIEW")
+    ) {
+      try {
+        await this.httpLogger?.stop();
+        this.httpLogger = getHttpLogger({
+          sessionInfo: this.sessionInfo,
+          adb: this.adb,
+          driver: this.driver,
+          isWebView: true,
+          webviewName: command.args[0],
+        });
+        await this.httpLogger.start();
+        this.httpLogsAvailable = true;
+      } catch (err) {
+        this.httpLogsAvailable = false;
+      }
+    }
+    await this.saveCommandLog(command, response);
+  }
+
   private async sessionStarted(command: AppiumCommand) {
     sessionDebugMap.createNewSession(this.sessionInfo.session_id);
+
+    /* Check if the current session supports network profiling */
+    if (isHttpLogsSuppoted(this.sessionInfo)) {
+      pluginLogger.info("Creating network profiler");
+      this.httpLogger = getHttpLogger({
+        sessionInfo: this.sessionInfo,
+        adb: this.adb,
+        driver: command.driver,
+      });
+    }
     let { desired } = this.sessionInfo.capabilities;
     let buildName = desired["dashboard:build"];
     let projectName = desired["dashboard:project"];
     let name = desired["dashboard:name"];
+    let build, project;
 
-    let is_profiling_available = false;
-    let build, project, device_info;
+    let { is_profiling_available, device_info } = await this.startAppProfiling();
+    await this.startHttpLogsCapture();
+
     if (projectName) {
       project = await getOrCreateNewProject({ projectName });
     }
     if (buildName) {
       build = await getOrCreateNewBuild({ buildName, projectId: project?.id });
-    }
-
-    try {
-      if (this.deviceProfiler) {
-        device_info = await this.deviceProfiler?.getDeviceInfo();
-        await this.deviceProfiler?.startCapture();
-        is_profiling_available = true;
-      }
-    } catch (err) {
-      pluginLogger.error("Error getting device information");
-      pluginLogger.error(err);
     }
 
     await Session.create({
@@ -194,7 +236,9 @@ class SessionManager {
   }
 
   public async sessionTerminated(options: { sessionTimedOut: boolean } = { sessionTimedOut: false }) {
-    await this.deviceProfiler?.stopCapture();
+    await this.saveAppProfilingData();
+    await this.saveHttpLogs();
+
     let session = await Session.findOne({
       where: {
         session_id: this.sessionInfo.session_id,
@@ -223,6 +267,7 @@ class SessionManager {
       is_paused: false,
       end_time: new Date(),
       video_path: videoPath || null,
+      is_http_logs_available: this.httpLogsAvailable,
     };
 
     if (session?.session_status?.toLowerCase() == "running") {
@@ -239,21 +284,6 @@ class SessionManager {
       },
     });
     logger.info(`Session terminated ${this.sessionInfo.session_id}`);
-    if (this.deviceProfiler) {
-      pluginLogger.info(JSON.stringify(this.deviceProfiler.getLogs()));
-      await this.saveProfilingData();
-    }
-  }
-
-  private async saveProfilingData() {
-    let data = this.deviceProfiler?.getLogs() || [];
-    data = data.map((d) => {
-      return {
-        ...d,
-        session_id: this.sessionInfo.session_id,
-      };
-    });
-    await Profiling.bulkCreate(data);
   }
 
   private async saveServerLogs(command: AppiumCommand) {
@@ -370,6 +400,79 @@ class SessionManager {
     );
     await this.sessionTerminated({ sessionTimedOut: true });
     await terminateSession(this.driver, this.sessionInfo.session_id);
+  }
+
+  private async startAppProfiling() {
+    if (this.appProfiler) {
+      try {
+        let device_info = await this.appProfiler?.getDeviceInfo();
+        await this.appProfiler?.startCapture();
+        return {
+          device_info,
+          is_profiling_available: true,
+        };
+      } catch (err) {
+        pluginLogger.error("Error initializing app profiler");
+        pluginLogger.error(err);
+        return {
+          is_profiling_available: false,
+        };
+      }
+    } else {
+      return {
+        is_profiling_available: false,
+      };
+    }
+  }
+
+  private async saveAppProfilingData() {
+    if (this.appProfiler) {
+      await this.appProfiler?.stopCapture();
+      let data = this.appProfiler?.getLogs() || [];
+      data = data.map((d) => {
+        return {
+          ...d,
+          session_id: this.sessionInfo.session_id,
+        };
+      });
+      await Profiling.bulkCreate(data);
+    }
+  }
+
+  private async startHttpLogsCapture() {
+    if (this.httpLogger) {
+      try {
+        await this.httpLogger.start();
+        this.httpLogsAvailable = true;
+      } catch (err) {
+        pluginLogger.error("Error initializing network profiler");
+        pluginLogger.error(err);
+        this.httpLogsAvailable = false;
+      }
+    } else {
+      this.httpLogsAvailable = false;
+    }
+  }
+
+  private async saveHttpLogs() {
+    if (this.httpLogger) {
+      try {
+        await this.httpLogger.stop();
+        let logs = this.httpLogger?.getLogs() || [];
+        let data = logs.map((l) => {
+          return {
+            ...l,
+            session_id: this.sessionInfo.session_id,
+          };
+        });
+        await HttpLogs.bulkCreate(data, {
+          validate: false,
+        });
+      } catch (err) {
+        pluginLogger.error("Unable to save http logs in database");
+        pluginLogger.error(err);
+      }
+    }
   }
 }
 

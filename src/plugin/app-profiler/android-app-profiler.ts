@@ -2,9 +2,9 @@ import EventEmitter from "events";
 import B from "bluebird";
 import _ from "lodash";
 import { SubProcess, exec } from "teen_process";
-import { pluginLogger } from "../loggers/plugin-logger";
+import { pluginLogger } from "../../loggers/plugin-logger";
 
-class DeviceProfiler extends EventEmitter {
+class AndroidAppProfiler extends EventEmitter {
   private adb: any;
   private logs: Array<any>;
   private deviceUDID: string;
@@ -176,4 +176,4 @@ class DeviceProfiler extends EventEmitter {
   }
 }
 
-export { DeviceProfiler };
+export { AndroidAppProfiler };

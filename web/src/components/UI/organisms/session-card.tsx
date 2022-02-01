@@ -10,6 +10,7 @@ import Centered from "../molecules/centered";
 import { useHistory } from "react-router-dom";
 import { getSessionDetailsUrl } from "../../../constants/routes";
 import chroma from "chroma-js";
+import { Tooltip } from "@mui/material";
 
 const getStatusIcon = (is_completed: boolean, session_status: string) => {
   if (!is_completed) {
@@ -92,7 +93,6 @@ const TextWithIcon = styled.div`
   align-items: center;
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis !important;
 
   & > span {
     padding-right: 5px;
@@ -102,6 +102,11 @@ const TextWithIcon = styled.div`
 const DeviceName = styled(TextWithIcon)`
   color: ${(props) => props.theme.colors.greyscale[2]};
   font-weight: 500;
+  max-width: 120px;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;
 
 type PropsType = {
@@ -153,10 +158,12 @@ export default function SessionCard(props: PropsType) {
                   </StatusLabel>
                 </Column>
                 <Column grid={5}>
-                  <DeviceName>
-                    <Icon name="mobile" />
-                    {device_name}
-                  </DeviceName>
+                  <Tooltip title={device_name} arrow={true}>
+                    <DeviceName>
+                      <Icon name="mobile" />
+                      {device_name}
+                    </DeviceName>
+                  </Tooltip>
                 </Column>
                 <Column grid={4}>
                   <ExecutionTime>{formattedStartTime} ago</ExecutionTime>
