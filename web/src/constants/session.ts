@@ -1,9 +1,5 @@
 export const PLATFORM = [
   {
-    label: "ALL",
-    value: "",
-  },
-  {
     label: "IOS",
     value: "ios",
   },
@@ -14,10 +10,6 @@ export const PLATFORM = [
 ];
 
 export const STATUS = [
-  {
-    label: "ALL",
-    value: "",
-  },
   {
     label: "RUNNING",
     value: "running",

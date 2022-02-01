@@ -27,8 +27,9 @@ type Option = {
 
 type PropsType = {
   options: Array<Option | string>;
-  selected?: Option | string;
+  selected?: Option | string | Array<string>;
   onChange?: (e: any) => void;
+  multiple?: boolean;
 };
 
 const getOption = (option: Option | string) => {
@@ -42,9 +43,16 @@ const getOption = (option: Option | string) => {
   }
 };
 
-export default function Select(props: PropsType) {
-  const { options, selected, onChange } = props;
+function getValue(isMultiple: boolean, value: any) {
+  if (!value) {
+    return [];
+  }
+  return isMultiple && typeof value === "string" ? value.split(",") : value;
+}
 
+export default function Select(props: PropsType) {
+  const { options, selected, onChange, multiple } = props;
+  const isMultiple = multiple || false;
   const massagedOption = useMemo(
     () => options.map(getOption),
     [CommonUtils.hash(options)],
@@ -56,7 +64,11 @@ export default function Select(props: PropsType) {
 
   return (
     <Container>
-      <StyledSelect onChange={onSelectChange} value={selected}>
+      <StyledSelect
+        onChange={onSelectChange}
+        value={getValue(isMultiple, selected)}
+        multiple={isMultiple}
+      >
         {massagedOption.map((option: Option) => (
           <MenuItem key={option.value} value={option.value}>
             {option.label}

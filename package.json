@@ -38,6 +38,7 @@
     "async-wait-until": "^2.0.12",
     "bluebird": "^3.7.2",
     "body-parser": "^1.19.0",
+    "chrome-remote-interface": "^0.31.1",
     "circular-json": "^0.5.9",
     "cors": "^2.8.5",
     "debug": "^4.3.2",

@@ -11,15 +11,7 @@ export default class CommonUtils {
       endDate,
     );
 
-    if (readableDuration.includes("y")) {
-      return readableDuration.replace(/[0-9]{1,}(d|h|m|s)/g, "");
-    } else if (readableDuration.includes("d")) {
-      return readableDuration.replace(/[0-9]{1,}(h|m|s)/g, "");
-    } else if (readableDuration.includes("h")) {
-      return readableDuration.replace(/[0-9]{1,}(s)/g, "");
-    } else {
-      return readableDuration;
-    }
+    return readableDuration.trim();
   }
 
   public static getReadableDuration(startDate: Date, endDate: Date) {

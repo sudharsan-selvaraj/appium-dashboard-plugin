@@ -2,7 +2,6 @@ import React from "react";
 import styled from "styled-components";
 import SerialLayout, { Row } from "../layouts/serial-layout";
 import ParallelLayout, { Column } from "../layouts/parallel-layout";
-import { useMemo } from "react";
 import Session from "../../../interfaces/session";
 import Icon, { Sizes } from "../atoms/icon";
 import Spinner from "../atoms/spinner";
@@ -118,16 +117,19 @@ type PropsType = {
 //   }
 // }
 
+function getDuration(startDate: Date) {
+  return CommonUtils.convertTimeToReadableFormat(
+    new Date(startDate),
+    new Date(),
+  ).split(" ")[0];
+}
+
 export default function SessionCard(props: PropsType) {
   const { session } = props;
   const { session_id, device_name, start_time, session_status, is_completed } =
     session;
-  const formattedStartTime = useMemo(() => {
-    return CommonUtils.convertTimeToReadableFormat(
-      new Date(start_time),
-      new Date(),
-    );
-  }, [start_time]);
+
+  const formattedStartTime = getDuration(start_time);
   const history = useHistory();
 
   return (
