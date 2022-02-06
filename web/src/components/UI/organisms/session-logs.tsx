@@ -6,6 +6,7 @@ import SessionDebugLogs from "./session-debug-logs";
 import SessionDeviceLogs from "./session-device-logs";
 import SessionTextLogs from "./session-text-logs";
 import Profiling from "./app-profiling";
+import SessionHttpLogs from "./session-http-logs";
 
 type PropsType = {
   session: Session;
@@ -16,6 +17,7 @@ const Container = styled.div`
   border: 1px solid ${(props) => props.theme.colors.border};
   border-bottom: none;
   margin: 20px;
+  overflow: hidden;
 `;
 
 enum TAB_HEADERS {
@@ -23,6 +25,7 @@ enum TAB_HEADERS {
   DEVICELOGS = "Device Logs",
   DEBUGLOGS = "Debug Logs",
   PROFILING = "App profiling",
+  NETWORK = "Network Logs",
 }
 
 export default function SessionLogs(props: PropsType) {
@@ -43,6 +46,11 @@ export default function SessionLogs(props: PropsType) {
         {session.is_completed && session.is_profiling_available && (
           <Tab name={TAB_HEADERS.PROFILING}>
             <Profiling session={session} parentHeight={parentHeight} />
+          </Tab>
+        )}
+        {session.is_completed && session.is_http_logs_available && (
+          <Tab name={TAB_HEADERS.NETWORK}>
+            <SessionHttpLogs session={session} parentHeight={parentHeight} />
           </Tab>
         )}
       </TabsLayout>

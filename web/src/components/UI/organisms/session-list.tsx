@@ -38,8 +38,6 @@ import Spinner from "../atoms/spinner";
 const Container = styled.div`
   border-right: 1px solid #ced8e1;
   width: 100%;
-  font-family: source-code-pro, Menlo, Monaco, Consolas, " Courier New ",
-    monospace;
 `;
 
 const List = styled.div``;

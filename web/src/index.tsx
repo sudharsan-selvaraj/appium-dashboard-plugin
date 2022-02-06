@@ -4,13 +4,7 @@ import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 import { Provider } from "react-redux";
 import Store from "./store";
-import ReactGA from "react-ga";
 import AppRouter from "./App-router";
-ReactGA.initialize("G-0M0KXZV1WM", {
-  gaOptions: {
-    cookieDomain: "none",
-  },
-});
 
 ReactDOM.render(
   <React.StrictMode>

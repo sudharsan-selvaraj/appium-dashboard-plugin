@@ -134,6 +134,7 @@ export class SessionController extends BaseController {
     let sessionId: string = request.params.sessionId;
     let logs = await Profiling.findAll({
       attributes: [
+        "id",
         "timestamp",
         "cpu",
         "memory",

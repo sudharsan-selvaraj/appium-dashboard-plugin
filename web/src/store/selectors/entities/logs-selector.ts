@@ -17,6 +17,11 @@ export const getDebugLogs = (state: AppState) =>
 export const getisDebugLogsLoading = (state: AppState) =>
   state.entities.logs.debug.isLoading;
 
+export const getHttpLogs = (state: AppState) => state.entities.logs.http.items;
+
+export const getisHttpLogsLoading = (state: AppState) =>
+  state.entities.logs.http.isLoading;
+
 export const getProfilingdata = (state: AppState) =>
   state.entities.logs.profiling.items;
 

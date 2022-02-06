@@ -5,6 +5,8 @@ async function startScreenRecording(driver: any, sessionId: string) {
     options: {
       videoType: "libx264",
       videoFps: 10,
+      /* In android, adb can record only 3 mins of video. below timeLimit is used to take longer video */
+      timeLimit: 1800, //in seconds (30 min)
     },
   });
 }

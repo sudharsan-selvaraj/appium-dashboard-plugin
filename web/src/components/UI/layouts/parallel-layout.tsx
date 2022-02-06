@@ -42,17 +42,43 @@ export function Column(props: ColumnProps) {
   );
 }
 
-const Container = styled.div`
+const Container = styled.div<{
+  responsive?: boolean;
+  responsiveWidth?: number;
+}>`
   display: flex;
   align-items: center;
+
+  ${(props) =>
+    props.responsive &&
+    `{
+      @media (max-width: ${props.responsiveWidth}px) {
+        display: flex;
+        flex-direction: column;
+        overflow: scroll;
+        & > * {
+          height: auto;
+          width: 100%;
+        }
+    }`}
 `;
 
 type ParallelLayoutType = {
   className?: string;
   children: Array<JSX.Element | null> | JSX.Element | null;
+  responsive?: boolean;
+  responsiveWidth?: number;
 };
 
 export default function ParallelLayout(props: ParallelLayoutType) {
-  const { children, className } = props;
-  return <Container className={className}>{children}</Container>;
+  const { children, className, responsive, responsiveWidth } = props;
+  return (
+    <Container
+      className={className}
+      responsive={responsive}
+      responsiveWidth={responsiveWidth}
+    >
+      {children}
+    </Container>
+  );
 }

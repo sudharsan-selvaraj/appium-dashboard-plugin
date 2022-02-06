@@ -1,6 +1,4 @@
-import { PaginatedResponse } from "../../../interfaces/api";
 import { ReduxActionType } from "../../../interfaces/redux";
-import Session from "../../../interfaces/session";
 import createReducer from "../../../utils/createReducer";
 import ReduxActionTypes from "../../redux-action-types";
 

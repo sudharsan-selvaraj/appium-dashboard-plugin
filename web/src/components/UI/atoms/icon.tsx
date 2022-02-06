@@ -10,10 +10,20 @@ import { FcAndroidOs } from "react-icons/fc";
 import { FaApple, FaTrash, FaPlay, FaChrome } from "react-icons/fa";
 import { SiSafari } from "react-icons/si";
 import { IoPhonePortraitOutline } from "react-icons/io5";
-import { AiFillCloseCircle } from "react-icons/ai";
+import { IoClose } from "react-icons/io5";
+import { AiFillCloseCircle, AiOutlineApi } from "react-icons/ai";
 import { GiPauseButton } from "react-icons/gi";
 import { BiArrowFromRight } from "react-icons/bi";
-import { BsClockFill, BsFillExclamationTriangleFill } from "react-icons/bs";
+import { AiFillCaretRight, AiFillCaretDown } from "react-icons/ai";
+import { TiImage } from "react-icons/ti";
+import {
+  BsClockFill,
+  BsFillExclamationTriangleFill,
+  BsSquare,
+  BsFileCode,
+} from "react-icons/bs";
+import { SiCsswizardry } from "react-icons/si";
+import { TiDocumentText } from "react-icons/ti";
 import styled from "styled-components";
 import Tooltip from "@mui/material/Tooltip";
 
@@ -26,9 +36,10 @@ export enum Sizes {
   XXXL = "25",
 }
 
-const Container = styled.span<{ size?: string }>`
+const Container = styled.span<{ size?: string; color?: string }>`
   font-size: ${(props) => props.size || 14}px;
   vertical-align: middle;
+  ${(props) => props.color && `color: ${props.color};`}
 `;
 
 type IconProps = {
@@ -37,6 +48,7 @@ type IconProps = {
   size?: string;
   tooltip?: string;
   tooltipPosition?: "top" | "bottom" | "right" | "left";
+  color?: string;
 };
 
 function wrapIconWithTooltip(icon: any, props: IconProps) {
@@ -61,7 +73,7 @@ function wrapIconWithTooltip(icon: any, props: IconProps) {
 }
 
 export default function Icon(props: IconProps) {
-  const { name, onClick, size } = props;
+  const { name, onClick, size, color } = props;
   let icon;
 
   switch (name) {
@@ -116,11 +128,38 @@ export default function Icon(props: IconProps) {
     case "collapse":
       icon = <BiArrowFromRight />;
       break;
+    case "close":
+      icon = <IoClose />;
+      break;
+    case "expand-arrow":
+      icon = <AiFillCaretRight />;
+      break;
+    case "collapse-arrow":
+      icon = <AiFillCaretDown />;
+      break;
+    case "document":
+      icon = <TiDocumentText />;
+      break;
+    case "api":
+      icon = <AiOutlineApi />;
+      break;
+    case "square":
+      icon = <BsSquare />;
+      break;
+    case "image":
+      icon = <TiImage />;
+      break;
+    case "css":
+      icon = <SiCsswizardry />;
+      break;
+    case "code":
+      icon = <BsFileCode />;
+      break;
     default:
       icon = null;
   }
   const container = (
-    <Container onClick={onClick} size={size} className="icon">
+    <Container onClick={onClick} size={size} className="icon" color={color}>
       {icon}
     </Container>
   );

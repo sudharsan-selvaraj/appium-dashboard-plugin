@@ -43,14 +43,49 @@ export function Row(props: RowPropsType) {
   );
 }
 
-const Container = styled.div``;
+const Container = styled.div<{
+  responsive?: boolean;
+  responsiveWidth?: number;
+  heightOnResize?: string;
+}>`
+  ${(props) =>
+    props.responsive &&
+    `{
+      @media (max-width: ${props.responsiveWidth}px) {
+        display: flex;
+        flex-direction: columns;
+        ${props.heightOnResize && "height:" + props.heightOnResize};
+      }
+      & > * {
+        width: 100%;
+      }
+  }`}
+`;
 
 type SerialLayouttype = {
   className?: string;
   children: Array<JSX.Element | null> | JSX.Element;
+  responsive?: boolean;
+  responsiveWidth?: number;
+  heightOnResize?: string;
 };
 
 export default function SerialLayout(props: SerialLayouttype) {
-  const { children, className } = props;
-  return <Container className={className}>{children}</Container>;
+  const {
+    children,
+    className,
+    responsive = false,
+    responsiveWidth,
+    heightOnResize,
+  } = props;
+  return (
+    <Container
+      className={className}
+      responsive={responsive}
+      responsiveWidth={responsiveWidth}
+      heightOnResize={heightOnResize}
+    >
+      {children}
+    </Container>
+  );
 }

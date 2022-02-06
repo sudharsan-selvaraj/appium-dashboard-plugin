@@ -1,11 +1,23 @@
 import React from "react";
 import styled from "styled-components";
-import TabsLayout, { Tab } from "../layouts/tab-layout";
+import TabsLayout, { Tab, TAB_HEADER_HEIGHT } from "../layouts/tab-layout";
 import Session from "../../../interfaces/session";
 
 const Container = styled.div`
   word-break: break-word;
   padding: 10px;
+`;
+
+const TabChildContainer = styled.div<{
+  height: string;
+  responsiveWidth: number;
+}>`
+  height: ${(props) => props.height};
+  overflow: auto;
+
+  @media (max-width: ${(props) => props.responsiveWidth}px) {
+    height: 100%;
+  } ;
 `;
 
 const Entry = styled.div`
@@ -53,18 +65,31 @@ const getCapabilityEntries = (tab: string, session: Session) => {
 
 type Propstype = {
   session: Session;
+  height: number;
+  responsiveWidth: number;
 };
 
 export default function SessionCapabilityDetails(props: Propstype) {
-  const { session } = props;
+  const { session, height, responsiveWidth } = props;
+  const childHeight = `calc(100vh - ${height + TAB_HEADER_HEIGHT}px)`;
   return (
     <Container>
       <TabsLayout selected="Capabilities">
         <Tab name="Capabilities">
-          <>{getCapabilityEntries("Capabilities", session)}</>
+          <TabChildContainer
+            height={childHeight}
+            responsiveWidth={responsiveWidth}
+          >
+            {getCapabilityEntries("Capabilities", session)}
+          </TabChildContainer>
         </Tab>
         <Tab name="Desired Capabilities">
-          <>{getCapabilityEntries("Desired Capabilities", session)}</>
+          <TabChildContainer
+            height={childHeight}
+            responsiveWidth={responsiveWidth}
+          >
+            {getCapabilityEntries("Desired Capabilities", session)}
+          </TabChildContainer>
         </Tab>
       </TabsLayout>
     </Container>

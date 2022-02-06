@@ -1,4 +1,5 @@
 import api from "../api";
+import _ from "lodash";
 
 export default class CommonUtils {
   public static getTimeDiffInSecs(startDate: Date, endDate: Date) {
@@ -102,6 +103,16 @@ export default class CommonUtils {
       }
     });
     return parsedObject;
+  }
+
+  public static parseJson(str: any) {
+    if (_.isString(str)) {
+      try {
+        return JSON.stringify(JSON.parse(str), null, 2);
+      } catch (err) {}
+    }
+    console.log(str);
+    return str;
   }
 
   static getVideoForSession(sessionId: string) {
