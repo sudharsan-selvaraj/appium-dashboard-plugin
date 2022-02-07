@@ -1,0 +1,33 @@
+name-template: "Release v$RESOLVED_VERSION 🔥"
+tag-template: "v$RESOLVED_VERSION"
+categories:
+  - title: "🚀 Features"
+    labels:
+      - "enhancement"
+  - title: "🐛 Bug Fixes"
+    labels:
+      - "bug"
+
+# Only include the following labels in the release notes. All other labels are ignored.
+exclude-labels:
+  - "skip-changelog"
+
+change-template: "- $TITLE (#$NUMBER) @$AUTHOR"
+
+change-title-escapes: '\<*_&' # You can add # and @ to disable mentions, and add ` to disable code blocks.
+
+version-resolver:
+  major:
+    labels:
+      - "Major"
+  minor:
+    labels:
+      - "Minor"
+  patch:
+    labels:
+      - "Patch"
+  default: patch
+
+template: |
+  ## What's new?
+  $CHANGES
