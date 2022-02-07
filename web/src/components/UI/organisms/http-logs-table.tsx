@@ -22,19 +22,31 @@ const Table = styled.table<{ height: string }>`
   flex-direction: column;
   height: ${(props) => props.height};
   border-right: 1px solid ${(props) => props.theme.colors.greyscale[3]};
-  border-top: 1px solid ${(props) => props.theme.colors.primary};
   background: ${(props) => props.theme.colors.components.http_logs_table_bg};
   color: ${(props) => props.theme.colors.components.http_logs_table_color};
 `;
 
-const TableHead = styled.thead``;
+const TableHead = styled.thead`
+  color: ${(props) =>
+    props.theme.colors.components.http_logs_table_header_color};
+  background: ${(props) =>
+    props.theme.colors.components.http_logs_table_header_bg};
+`;
+
 const TableBody = styled.tbody<{ height: string }>`
   height: ${(props) => props.height};
   overflow: auto;
 
-  & > tr:hover {
-    background: ${(props) =>
-      props.theme.colors.components.http_logs_table_row_hover};
+  & > {
+    tr {
+      border-bottom: 1px solid
+        ${(props) => props.theme.colors.components.http_logs_table_border};
+    }
+
+    tr:hover {
+      background: ${(props) =>
+        props.theme.colors.components.http_logs_table_row_hover};
+    }
   }
 `;
 
@@ -46,16 +58,12 @@ const TH = styled.th<{ width: number }>`
   justify-content: center;
   border-left: 1px solid
     ${(props) => props.theme.colors.components.http_logs_table_border};
-  background: ${(props) =>
-    props.theme.colors.components.http_logs_table_header_bg};
   font-weight: 600;
 `;
 
 const TR = styled.tr<{ failed: boolean; active?: boolean }>`
   display: flex;
   width: 100%;
-  border-bottom: 1px solid ${(props) =>
-    props.theme.colors.components.http_logs_table_border};
   align-items: center;
   height: 25px;
 

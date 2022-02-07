@@ -44,7 +44,8 @@ const Header = styled.div`
   border-top: none;
   background: ${(props) =>
     props.theme.colors.components.http_logs_table_header_bg};
-  color: ${(props) => props.theme.colors.components.http_logs_table_color};
+  color: ${(props) =>
+    props.theme.colors.components.http_logs_table_header_color};
   padding-top: 5px;
 
   .icon {
@@ -56,7 +57,7 @@ const HeaderTab = styled.div<{ active?: boolean }>`
   padding: 5px 5px 0 5px;
   background: ${(props) =>
     props.active
-      ? props.theme.colors.components.http_logs_details_header_active
+      ? chroma(props.theme.colors.primary).brighten(2).hex()
       : "transparent"};
   border-radius: 1px;
   cursor: pointer;
@@ -100,27 +101,23 @@ const HttpHeaderTabAccordionBody = styled.div`
 `;
 
 const JsonRow = styled.div`
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
-  padding-bottom: 5px;
-  align-items: start;
+  padding-bottom: 7px;
 `;
 
-const JsonKey = styled.div`
+const JsonKey = styled.span`
   color: ${(props) =>
     chroma(props.theme.colors.components.http_logs_table_color)
       .brighten(0.9)
       .hex()};
-  font-size: 13px;
-  flex-shrink: 0;
   font-weight: 600;
+  padding-right: 2px;
 `;
 
-const JsonValue = styled.div`
+const JsonValue = styled.span`
   font-size: 11px;
   white-space: break-space;
   word-break: break-all;
+  padding-left: 2px;
 `;
 
 const StyledEmptyMessage = styled(EmptyMessage)`
@@ -186,7 +183,6 @@ function getPayloadElement(type: string, data: any) {
       <CodeViewer
         code={CommonUtils.parseJson(data)}
         language={"json"}
-        theme="nightOwl"
         lineNumber
       ></CodeViewer>
     );
