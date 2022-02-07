@@ -1,0 +1,14 @@
+version: 1
+labels:
+  - label: "enhancement"
+    titles:
+      - "^feat:.*"
+  - label: "bug"
+    titles:
+      - "^fix:.*"
+  - label: "test"
+    titles:
+      - "^test:.*"
+  - label: "skip-changelog"
+    titles:
+      - "^test:.*"
