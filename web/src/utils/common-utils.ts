@@ -118,6 +118,10 @@ export default class CommonUtils {
     return `${api.base_url}/api/sessions/${sessionId}/video`;
   }
 
+  static getLiveVideoForSession(sessionId: string) {
+    return `${api.base_url}/api/sessions/${sessionId}/live_video`;
+  }
+
   static getScreenshotForLog(sessionId: string, logId: string) {
     return `${api.base_url}/api/sessions/${sessionId}/log/${logId}/screen-shot`;
   }

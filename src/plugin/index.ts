@@ -9,6 +9,7 @@ import { PluginCliArgs } from "../interfaces/PluginCliArgs";
 import * as express from "express";
 import { registerDebugMiddlware } from "./debugger";
 import _ from "lodash";
+import getPort from "get-port";
 
 const sessionMap: Map<string, SessionManager> = new Map();
 const IGNORED_COMMANDS = ["getScreenshot", "stopRecordingScreen", "startRecordingScreen"];
@@ -99,6 +100,10 @@ class AppiumDashboardPlugin extends BasePlugin {
       "appium:clearDeviceLogsOnStart": true,
       "appium:nativeWebScreenshot": true, //to make screenshot endpoint work in android webview tests,
     };
+
+    if (rawCapabilities?.["platformName"].toLowerCase() == "android" && !rawCapabilities?.["appium:mjpegServerPort"]) {
+      newCapabilities["appium:mjpegServerPort"] = await getPort();
+    }
 
     Object.keys(newCapabilities).forEach((k) => {
       args[2][k] = newCapabilities[k];

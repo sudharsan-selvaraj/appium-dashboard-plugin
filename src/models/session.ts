@@ -88,6 +88,12 @@ class Session extends Model<Session> {
   })
   browser_name!: string;
 
+  @AllowNull(true)
+  @Column({
+    type: DataTypes.INTEGER,
+  })
+  live_stream_port!: number;
+
   @AllowNull(false)
   @Column({
     type: DataTypes.STRING,

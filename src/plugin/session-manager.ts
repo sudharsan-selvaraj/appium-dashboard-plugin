@@ -10,6 +10,7 @@ import {
   isAppProfilingSupported,
   isHttpLogsSuppoted,
   isAndroidSession,
+  getMjpegServerPort,
 } from "./utils/plugin-utils";
 import {
   getLogs,
@@ -204,6 +205,7 @@ class SessionManager {
         driver: command.driver,
       });
     }
+
     let { desired } = this.sessionInfo.capabilities;
     let buildName = desired["dashboard:build"];
     let projectName = desired["dashboard:project"];
@@ -220,6 +222,8 @@ class SessionManager {
       build = await getOrCreateNewBuild({ buildName, projectId: project?.id });
     }
 
+    await this.initializeScreenShotFolder();
+    await this.startScreenRecording(command.driver);
     await Session.create({
       ...this.sessionInfo,
       start_time: new Date(),
@@ -228,11 +232,10 @@ class SessionManager {
       device_info,
       is_profiling_available,
       name: name || null,
+      live_stream_port: await getMjpegServerPort(command.driver, this.sessionInfo.session_id),
     } as any);
 
     await this.saveCommandLog(command, null);
-    await this.initializeScreenShotFolder();
-    return await this.startScreenRecording(command.driver);
   }
 
   public async sessionTerminated(options: { sessionTimedOut: boolean } = { sessionTimedOut: false }) {

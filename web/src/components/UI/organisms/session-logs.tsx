@@ -5,7 +5,7 @@ import TabsLayout, { Tab } from "../layouts/tab-layout";
 import SessionDebugLogs from "./session-debug-logs";
 import SessionDeviceLogs from "./session-device-logs";
 import SessionTextLogs from "./session-text-logs";
-import Profiling from "./app-profiling";
+import Profiling from "./session-app-profiling";
 import SessionHttpLogs from "./session-http-logs";
 
 type PropsType = {
