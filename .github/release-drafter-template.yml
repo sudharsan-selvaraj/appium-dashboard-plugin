@@ -2,10 +2,10 @@ name-template: "Release v$RESOLVED_VERSION 🔥"
 tag-template: "v$RESOLVED_VERSION"
 categories:
   - title: "🚀 Features"
-    labels:
+    label:
       - "enhancement"
   - title: "🐛 Bug Fixes"
-    labels:
+    label:
       - "bug"
 
 # Only include the following labels in the release notes. All other labels are ignored.

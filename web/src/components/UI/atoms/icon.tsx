@@ -39,7 +39,7 @@ export enum Sizes {
 const Container = styled.span<{ size?: string; color?: string }>`
   font-size: ${(props) => props.size || 14}px;
   vertical-align: middle;
-  ${(props) => props.color && `color: ${props.color};`}
+  color: ${(props) => props.color};
 `;
 
 type IconProps = {

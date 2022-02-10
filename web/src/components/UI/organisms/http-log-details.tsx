@@ -1,5 +1,5 @@
 import chroma from "chroma-js";
-import React, { useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import styled from "styled-components";
 import Icon, { Sizes } from "../atoms/icon";
 import CodeViewer from "../atoms/code-viewer";
@@ -134,23 +134,21 @@ function HttpHeadersTab(props: {
   const { header, expand, details, showCount = false } = props;
   const [expanded, setExpanded] = useState(expand);
 
-  function toggleAccordion() {
-    setExpanded(!expanded);
-  }
+  const toggleAccordion = () => setExpanded(!expanded);
 
-  function getRows(obj: any) {
-    const rows = Object.keys(obj)
-      .filter((k) => !!obj[k])
+  const rows = useMemo(() => {
+    const rows = Object.keys(details)
+      .filter((k) => !!details[k])
       .map((k, index) => {
         return (
           <JsonRow key={index}>
             <JsonKey>{k}:</JsonKey>
-            <JsonValue>{obj[k]}</JsonValue>
+            <JsonValue>{details[k]}</JsonValue>
           </JsonRow>
         );
       });
     return <HttpHeaderTabAccordionBody>{rows}</HttpHeaderTabAccordionBody>;
-  }
+  }, [details]);
 
   return (
     <HttpHeaderTabAccordionContainer expanded={expanded}>
@@ -166,7 +164,7 @@ function HttpHeadersTab(props: {
           showCount ? `(${Object.keys(details).length})` : ""
         }`}</HttpHeaderTabAccordionTitle>
       </HttpHeaderTabAccordionTitleContainer>
-      {!!expanded && getRows(details)}
+      {!!expanded && rows}
     </HttpHeaderTabAccordionContainer>
   );
 }
@@ -177,14 +175,16 @@ enum LogTabs {
   PAYLOAD = "Payload",
 }
 
+const FORM_URL_ENCODED_CONTENT_TYPE = new RegExp(/form-urlencoded/g);
+
 function getPayloadElement(type: string, data: any) {
-  if (!new RegExp(/form-urlencoded/g).test(type)) {
+  if (!FORM_URL_ENCODED_CONTENT_TYPE.test(type)) {
     return (
       <CodeViewer
         code={CommonUtils.parseJson(data)}
         language={"json"}
         lineNumber
-      ></CodeViewer>
+      />
     );
   } else {
     return data;
@@ -195,12 +195,16 @@ export default function HttpLogDetails(props: propsType) {
   {
     const { log, onClose, parentHeight } = props;
     const [activeTab, setActiveTab] = useState(LogTabs.HEADERS);
-
-    const onTabChange = (tabHeader: LogTabs) => {
+    const [headers] = useState([
+      LogTabs.HEADERS,
+      LogTabs.PAYLOAD,
+      LogTabs.RESPONSE,
+    ]);
+    const onTabChange = useCallback((tabHeader: LogTabs) => {
       setActiveTab(tabHeader);
-    };
+    }, []);
 
-    const getHeaders = (headers: Array<LogTabs>) => {
+    const header = useMemo(() => {
       const tabs = headers.map((header) => (
         <HeaderTab
           key={header}
@@ -216,7 +220,7 @@ export default function HttpLogDetails(props: propsType) {
           {tabs}
         </Header>
       );
-    };
+    }, [headers, activeTab]);
 
     const getBody = (header: LogTabs) => {
       let bodyContent;
@@ -288,7 +292,7 @@ export default function HttpLogDetails(props: propsType) {
 
     return (
       <Container height={`calc(100vh - ${parentHeight}px)`}>
-        {getHeaders([LogTabs.HEADERS, LogTabs.PAYLOAD, LogTabs.RESPONSE])}
+        {header}
         {getBody(activeTab)}
       </Container>
     );

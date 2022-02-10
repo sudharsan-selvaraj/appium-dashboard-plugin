@@ -1,5 +1,5 @@
 import chroma from "chroma-js";
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
@@ -174,13 +174,13 @@ export default function SessionHttpLogs(props: PropsType) {
   });
 
   /* Event callbacks */
-  function onRequestTypeFilterChange(index: number) {
+  const onRequestTypeFilterChange = useCallback((index: number) => {
     setSelectedRequestTypeFilter(index);
-  }
+  }, []);
 
-  function onTextFilterChange(text: string) {
+  const onTextFilterChange = useCallback((text: string) => {
     setTextFilter(text);
-  }
+  }, []);
 
   function getRequestTypeFilters() {
     return requestTypeFilters.map((filter) => (

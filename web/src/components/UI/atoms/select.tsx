@@ -4,6 +4,7 @@ import SelectComponent from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import { useMemo } from "react";
 import CommonUtils from "../../../utils/common-utils";
+import _ from "lodash";
 
 const Container = styled.div``;
 
@@ -47,12 +48,15 @@ function getValue(isMultiple: boolean, value: any) {
   if (!value) {
     return [];
   }
-  return isMultiple && typeof value === "string" ? value.split(",") : value;
+  if (isMultiple && _.isString(value)) {
+    return value.split(",");
+  } else {
+    return value;
+  }
 }
 
 export default function Select(props: PropsType) {
-  const { options, selected, onChange, multiple } = props;
-  const isMultiple = multiple || false;
+  const { options, selected, onChange, multiple = false } = props;
   const massagedOption = useMemo(
     () => options.map(getOption),
     [CommonUtils.hash(options)],
@@ -66,8 +70,8 @@ export default function Select(props: PropsType) {
     <Container>
       <StyledSelect
         onChange={onSelectChange}
-        value={getValue(isMultiple, selected)}
-        multiple={isMultiple}
+        value={getValue(multiple, selected)}
+        multiple={multiple}
       >
         {massagedOption.map((option: Option) => (
           <MenuItem key={option.value} value={option.value}>

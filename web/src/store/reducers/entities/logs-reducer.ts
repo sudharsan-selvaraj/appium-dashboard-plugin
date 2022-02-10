@@ -61,7 +61,7 @@ export default createReducer(initialState, {
   [ReduxActionTypes.FETCH_SESSION_DEVICE_LOG]: (state: LogsState) => ({
     ...state,
     device: {
-      ...state.text,
+      ...state.device,
       isLoading: true,
     },
   }),
@@ -79,7 +79,7 @@ export default createReducer(initialState, {
   [ReduxActionTypes.FETCH_SESSION_DEBUG_LOG]: (state: LogsState) => ({
     ...state,
     debug: {
-      ...state.text,
+      ...state.debug,
       isLoading: true,
     },
   }),
@@ -97,7 +97,7 @@ export default createReducer(initialState, {
   [ReduxActionTypes.FETCH_SESSION_HTTP_LOG]: (state: LogsState) => ({
     ...state,
     http: {
-      ...state.text,
+      ...state.http,
       isLoading: true,
     },
   }),
@@ -115,7 +115,7 @@ export default createReducer(initialState, {
   [ReduxActionTypes.FETCH_SESSION_PROFILING_DATA]: (state: LogsState) => ({
     ...state,
     profiling: {
-      ...state.text,
+      ...state.profiling,
       isLoading: true,
     },
   }),

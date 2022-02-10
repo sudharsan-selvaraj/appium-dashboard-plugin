@@ -111,7 +111,6 @@ export default class CommonUtils {
         return JSON.stringify(JSON.parse(str), null, 2);
       } catch (err) {}
     }
-    console.log(str);
     return str;
   }
 

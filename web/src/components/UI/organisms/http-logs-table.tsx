@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import _ from "lodash";
 import Icon, { Sizes } from "../atoms/icon";
 import ParallelLayout, { Column } from "../layouts/parallel-layout";
@@ -266,9 +266,9 @@ export default function HttpLogsTable(props: propsType) {
   const theme = useSelector(getSelectedTheme);
   const [selectedLog, setSelectedLog] = useState<HttpLogs | null>(null);
 
-  function onLogSelected(log: HttpLogs | null) {
+  const onLogSelected = useCallback((log: HttpLogs | null) => {
     setSelectedLog(log);
-  }
+  }, []);
 
   return (
     <ParallelLayout>

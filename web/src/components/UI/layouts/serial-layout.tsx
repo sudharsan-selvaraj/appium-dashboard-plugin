@@ -54,7 +54,7 @@ const Container = styled.div<{
       @media (max-width: ${props.responsiveWidth}px) {
         display: flex;
         flex-direction: columns;
-        ${props.heightOnResize && "height:" + props.heightOnResize};
+        height: ${props.heightOnResize};
       }
       & > * {
         width: 100%;
