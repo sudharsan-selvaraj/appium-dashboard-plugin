@@ -1,4 +1,5 @@
 import api from "../api";
+import _ from "lodash";
 
 export default class CommonUtils {
   public static getTimeDiffInSecs(startDate: Date, endDate: Date) {
@@ -11,15 +12,7 @@ export default class CommonUtils {
       endDate,
     );
 
-    if (readableDuration.includes("y")) {
-      return readableDuration.replace(/[0-9]{1,}(d|h|m|s)/g, "");
-    } else if (readableDuration.includes("d")) {
-      return readableDuration.replace(/[0-9]{1,}(h|m|s)/g, "");
-    } else if (readableDuration.includes("h")) {
-      return readableDuration.replace(/[0-9]{1,}(s)/g, "");
-    } else {
-      return readableDuration;
-    }
+    return readableDuration.trim();
   }
 
   public static getReadableDuration(startDate: Date, endDate: Date) {
@@ -110,6 +103,15 @@ export default class CommonUtils {
       }
     });
     return parsedObject;
+  }
+
+  public static parseJson(str: any) {
+    if (_.isString(str)) {
+      try {
+        return JSON.stringify(JSON.parse(str), null, 2);
+      } catch (err) {}
+    }
+    return str;
   }
 
   static getVideoForSession(sessionId: string) {

@@ -8,6 +8,7 @@ export type LogsState = {
   device: ListEntityType<any>;
   debug: ListEntityType<any>;
   profiling: ListEntityType<any>;
+  http: ListEntityType<any>;
 };
 
 const initialState: LogsState = {
@@ -27,6 +28,11 @@ const initialState: LogsState = {
     isLoading: false,
   },
   profiling: {
+    count: 0,
+    items: [],
+    isLoading: false,
+  },
+  http: {
     count: 0,
     items: [],
     isLoading: false,
@@ -55,7 +61,7 @@ export default createReducer(initialState, {
   [ReduxActionTypes.FETCH_SESSION_DEVICE_LOG]: (state: LogsState) => ({
     ...state,
     device: {
-      ...state.text,
+      ...state.device,
       isLoading: true,
     },
   }),
@@ -73,7 +79,7 @@ export default createReducer(initialState, {
   [ReduxActionTypes.FETCH_SESSION_DEBUG_LOG]: (state: LogsState) => ({
     ...state,
     debug: {
-      ...state.text,
+      ...state.debug,
       isLoading: true,
     },
   }),
@@ -88,10 +94,28 @@ export default createReducer(initialState, {
       isLoading: false,
     },
   }),
+  [ReduxActionTypes.FETCH_SESSION_HTTP_LOG]: (state: LogsState) => ({
+    ...state,
+    http: {
+      ...state.http,
+      isLoading: true,
+    },
+  }),
+  [ReduxActionTypes.FETCH_SESSION_HTTP_LOG_SUCCESS]: (
+    state: LogsState,
+    action: ReduxActionType<any>,
+  ) => ({
+    ...state,
+    http: {
+      count: action.payload.count,
+      items: action.payload.rows,
+      isLoading: false,
+    },
+  }),
   [ReduxActionTypes.FETCH_SESSION_PROFILING_DATA]: (state: LogsState) => ({
     ...state,
     profiling: {
-      ...state.text,
+      ...state.profiling,
       isLoading: true,
     },
   }),

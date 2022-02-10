@@ -52,7 +52,11 @@ export default class SessionApi {
     return Api.post(`/debug/${sessionId}/play`, {});
   }
 
-  public static getAppProfiling(sessionId: string) {
+  public static getAppProfilingForSession(sessionId: string) {
     return Api.get(`/sessions/${sessionId}/profiling_data`);
+  }
+
+  public static getHttpLogsForSession(sessionId: string) {
+    return Api.get(`/sessions/${sessionId}/http_logs`);
   }
 }

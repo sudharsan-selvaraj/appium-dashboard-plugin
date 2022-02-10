@@ -55,6 +55,16 @@ export const fetchSessionDebugLogsSuccess = (payload: any) => ({
   payload,
 });
 
+export const fetchSessionHttpLogs = (payload: any) => ({
+  type: ReduxActionTypes.FETCH_SESSION_HTTP_LOG,
+  payload,
+});
+
+export const fetchSessionHttpLogsSuccess = (payload: any) => ({
+  type: ReduxActionTypes.FETCH_SESSION_HTTP_LOG_SUCCESS,
+  payload,
+});
+
 export const fetchSessionProfilingData = (payload: any) => ({
   type: ReduxActionTypes.FETCH_SESSION_PROFILING_DATA,
   payload,

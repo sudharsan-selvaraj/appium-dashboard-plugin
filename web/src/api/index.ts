@@ -1,8 +1,13 @@
 import axios, { AxiosRequestConfig } from "axios";
+import qs from "qs";
 
 const defaultConfig = {
   baseURL: `${process.env.REACT_APP_API_BASE_URL}/api`,
 };
+
+function paramsSerializer(params: any) {
+  return qs.stringify(params, { arrayFormat: "comma" });
+}
 
 export default class Api {
   static base_url = process.env.REACT_APP_API_BASE_URL;
@@ -17,6 +22,7 @@ export default class Api {
         ...defaultConfig,
         ...config,
         params,
+        paramsSerializer,
       })
       .then((response) => response.data);
   }
@@ -32,6 +38,7 @@ export default class Api {
         ...defaultConfig,
         ...config,
         params,
+        paramsSerializer,
       })
       .then((response) => response.data);
   }
@@ -46,6 +53,7 @@ export default class Api {
         ...defaultConfig,
         ...config,
         params,
+        paramsSerializer,
       })
       .then((response) => response.data);
   }

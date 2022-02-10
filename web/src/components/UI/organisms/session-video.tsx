@@ -7,12 +7,17 @@ import EmptyMessage from "../molecules/empty-message";
 
 const Container = styled.div``;
 
-const EmptyVideoContainer = styled.div`
-  height: 400px;
+const EmptyVideoContainer = styled.div<{ height: number }>`
+  height: ${(props) => props.height}px;
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
+
+  /* box shadow*/
+  -webkit-box-shadow: 0px 10px 10px -10px #000000;
+  -moz-box-shadow: 0px 10px 10px -10px #000000;
+  box-shadow: 0px 10px 10px -10px #000000;
 
   & p {
     text-align: center;
@@ -21,6 +26,7 @@ const EmptyVideoContainer = styled.div`
 
 type PropsType = {
   session: Session;
+  height: number;
 };
 
 const getVideoNotFoundMessage = (session: Session) => {
@@ -32,13 +38,16 @@ const getVideoNotFoundMessage = (session: Session) => {
 };
 
 export default function SessionVideo(props: PropsType) {
-  const { session } = props;
+  const { session, height } = props;
   return (
     <Container>
       {session.video_path ? (
-        <VideoPlayer url={CommonUtils.getVideoForSession(session.session_id)} />
+        <VideoPlayer
+          url={CommonUtils.getVideoForSession(session.session_id)}
+          height={height}
+        />
       ) : (
-        <EmptyVideoContainer>
+        <EmptyVideoContainer height={height}>
           <EmptyMessage>{getVideoNotFoundMessage(session)}</EmptyMessage>
         </EmptyVideoContainer>
       )}

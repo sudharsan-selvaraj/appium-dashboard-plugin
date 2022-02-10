@@ -16,7 +16,10 @@ export function Tab(props: TabPropsType) {
 
 export const TAB_HEADER_HEIGHT = 40;
 
-const TabsLayoutContainer = styled.div``;
+const TabsLayoutContainer = styled.div`
+  overflow: auto;
+  height: 100%;
+`;
 
 const Header = styled.div`
   height: ${TAB_HEADER_HEIGHT}px;

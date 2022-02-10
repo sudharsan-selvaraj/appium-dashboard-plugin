@@ -68,7 +68,10 @@ const PausedProgressIndicator = styled(ProgressIndicator)`
 
 export const SUMMARY_HEIGHT = 120;
 export const FAIL_MESSAGE_CONTAINER_HEIGHT = 80;
-export const PADDING = 25;
+export const PADDING = 20;
+export const VIDEO_PLAYER_HEIGHT = 400;
+/* App will go into responsive mode below the given width */
+export const RESPONSIVE_WIDTH = 1400;
 
 function hasSessionFailureMessage(session: Session) {
   return session.session_status === "FAILED" && session.session_status_message;
@@ -140,14 +143,25 @@ export default function SessionDetails() {
           </Row>
         )}
         <Row height={`calc(100vh - ${MAIN_CONTENT_CONTAINER_HEIGHT}px)`}>
-          <ParallelLayout>
-            <Column grid={4} scrollable>
-              <SerialLayout>
+          <ParallelLayout responsiveWidth={RESPONSIVE_WIDTH} responsive>
+            <Column grid={4}>
+              <SerialLayout
+                responsive
+                responsiveWidth={RESPONSIVE_WIDTH}
+                heightOnResize={`${VIDEO_PLAYER_HEIGHT}px`}
+              >
                 <Row>
-                  <SessionVideo session={session} />
+                  <SessionVideo
+                    session={session}
+                    height={VIDEO_PLAYER_HEIGHT}
+                  />
                 </Row>
                 <Row>
-                  <SessionCapabilityDetails session={session} />
+                  <SessionCapabilityDetails
+                    responsiveWidth={RESPONSIVE_WIDTH}
+                    session={session}
+                    height={MAIN_CONTENT_CONTAINER_HEIGHT + VIDEO_PLAYER_HEIGHT}
+                  />
                 </Row>
               </SerialLayout>
             </Column>

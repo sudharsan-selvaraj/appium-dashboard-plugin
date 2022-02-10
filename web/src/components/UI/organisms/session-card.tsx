@@ -2,7 +2,6 @@ import React from "react";
 import styled from "styled-components";
 import SerialLayout, { Row } from "../layouts/serial-layout";
 import ParallelLayout, { Column } from "../layouts/parallel-layout";
-import { useMemo } from "react";
 import Session from "../../../interfaces/session";
 import Icon, { Sizes } from "../atoms/icon";
 import Spinner from "../atoms/spinner";
@@ -11,6 +10,7 @@ import Centered from "../molecules/centered";
 import { useHistory } from "react-router-dom";
 import { getSessionDetailsUrl } from "../../../constants/routes";
 import chroma from "chroma-js";
+import { Tooltip } from "@mui/material";
 
 const getStatusIcon = (is_completed: boolean, session_status: string) => {
   if (!is_completed) {
@@ -93,7 +93,6 @@ const TextWithIcon = styled.div`
   align-items: center;
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis !important;
 
   & > span {
     padding-right: 5px;
@@ -103,6 +102,11 @@ const TextWithIcon = styled.div`
 const DeviceName = styled(TextWithIcon)`
   color: ${(props) => props.theme.colors.greyscale[2]};
   font-weight: 500;
+  max-width: 120px;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;
 
 type PropsType = {
@@ -118,16 +122,19 @@ type PropsType = {
 //   }
 // }
 
+function getDuration(startDate: Date) {
+  return CommonUtils.convertTimeToReadableFormat(
+    new Date(startDate),
+    new Date(),
+  ).split(" ")[0];
+}
+
 export default function SessionCard(props: PropsType) {
   const { session } = props;
   const { session_id, device_name, start_time, session_status, is_completed } =
     session;
-  const formattedStartTime = useMemo(() => {
-    return CommonUtils.convertTimeToReadableFormat(
-      new Date(start_time),
-      new Date(),
-    );
-  }, [start_time]);
+
+  const formattedStartTime = getDuration(start_time);
   const history = useHistory();
 
   return (
@@ -151,10 +158,12 @@ export default function SessionCard(props: PropsType) {
                   </StatusLabel>
                 </Column>
                 <Column grid={5}>
-                  <DeviceName>
-                    <Icon name="mobile" />
-                    {device_name}
-                  </DeviceName>
+                  <Tooltip title={device_name} arrow={true}>
+                    <DeviceName>
+                      <Icon name="mobile" />
+                      {device_name}
+                    </DeviceName>
+                  </Tooltip>
                 </Column>
                 <Column grid={4}>
                   <ExecutionTime>{formattedStartTime} ago</ExecutionTime>

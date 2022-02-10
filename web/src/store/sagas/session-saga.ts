@@ -11,6 +11,7 @@ import {
   deleteSessionFinish,
   sessionStateChangeFinish,
   fetchSessionProfilingDataSuccess,
+  fetchSessionHttpLogsSuccess,
 } from "../actions/session-actions";
 import ReduxActionTypes from "../redux-action-types";
 import { omitBy } from "lodash";
@@ -73,6 +74,17 @@ function* fetchSessionDebugLog(action: ReduxActionType<string>) {
   }
 }
 
+function* fetchSessionHttpLog(action: ReduxActionType<string>) {
+  if (action.payload) {
+    const logs: ApiResponse<any> = yield SessionApi.getHttpLogsForSession(
+      action.payload,
+    );
+    if (logs.success) {
+      yield put(fetchSessionHttpLogsSuccess(logs.result));
+    }
+  }
+}
+
 function* deleteSession(action: ReduxActionType<string>) {
   if (action.payload) {
     const response: ApiResponse<any> = yield SessionApi.deleteSessionById(
@@ -102,9 +114,8 @@ function* resumeSession(action: ReduxActionType<string>) {
 
 function* fetchSessionProfileData(action: ReduxActionType<string>) {
   if (action.payload) {
-    const response: ApiResponse<any> = yield SessionApi.getAppProfiling(
-      action.payload,
-    );
+    const response: ApiResponse<any> =
+      yield SessionApi.getAppProfilingForSession(action.payload);
     yield put(
       fetchSessionProfilingDataSuccess({
         count: response.result.length,
@@ -124,6 +135,7 @@ export default function* () {
       fetchSessionDeviceLog,
     ),
     takeLatest(ReduxActionTypes.FETCH_SESSION_DEBUG_LOG, fetchSessionDebugLog),
+    takeLatest(ReduxActionTypes.FETCH_SESSION_HTTP_LOG, fetchSessionHttpLog),
     takeLatest(
       ReduxActionTypes.FETCH_SESSION_PROFILING_DATA,
       fetchSessionProfileData,

@@ -1,4 +1,4 @@
-import { Model, Table, AllowNull, Column, HasMany, ForeignKey } from "sequelize-typescript";
+import { Model, Table, AllowNull, Column, HasMany, ForeignKey, BelongsTo } from "sequelize-typescript";
 import { DataTypes } from "sequelize";
 import { Project, Session } from ".";
 
@@ -39,6 +39,9 @@ class Build extends Model<Build> {
 
   @HasMany(() => Session, { sourceKey: "build_id" })
   sessions!: Session[];
+
+  @BelongsTo(() => Project)
+  project!: Project;
 }
 
 export { Build };

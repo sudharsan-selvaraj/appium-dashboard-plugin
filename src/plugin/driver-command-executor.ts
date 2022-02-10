@@ -1,10 +1,12 @@
-import { makeGETCall, makePostCall, makeDELETECall } from "./utils";
+import { makeGETCall, makePostCall, makeDELETECall } from "./utils/plugin-utils";
 
 async function startScreenRecording(driver: any, sessionId: string) {
   return await makePostCall(driver, sessionId, "/appium/start_recording_screen", {
     options: {
       videoType: "libx264",
       videoFps: 10,
+      /* In android, adb can record only 3 mins of video. below timeLimit is used to take longer video */
+      timeLimit: 1800, //in seconds (30 min)
     },
   });
 }
