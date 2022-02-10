@@ -168,7 +168,6 @@ function getMjpegServerPort(driver: any, sessionId: string) {
     xcuitest: "wda.mjpegServerPort",
   };
   const defaultPorts: any = {
-    uiautomator2: 1111,
     xcuitest: 9100,
   };
 
