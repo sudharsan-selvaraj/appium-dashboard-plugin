@@ -1,6 +1,6 @@
 {
   "name": "appium-dashboard",
-  "version": "v1.0.0-beta.10",
+  "version": "v1.0.0-beta.11",
   "description": "Appium plugin to view session execution details via detailed dashboard",
   "main": "lib/index.js",
   "scripts": {
@@ -10,7 +10,7 @@
     "clean:cache": "node ./scripts/cleanup-cache-dir.js",
     "postinstall": "(node ./scripts/is-prod.js || tsc) && npm run clean:cache && npm run sequelize:migrate",
     "i": "tsc && (appium plugin uninstall appium-dashboard || exit 0) && appium plugin install --source=local $(pwd)",
-    "server": "appium --use-plugins=appium-dashboard --relaxed-security"
+    "start-appium": "appium --use-plugins=appium-dashboard --relaxed-security"
   },
   "repository": {
     "type": "git",
