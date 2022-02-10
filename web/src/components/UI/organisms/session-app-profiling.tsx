@@ -24,6 +24,7 @@ import {
 import { Line } from "react-chartjs-2";
 import CommonUtils from "../../../utils/common-utils";
 import { getSelectedTheme } from "../../../store/selectors/ui/theme-selector";
+import _ from "lodash";
 
 ChartJS.register(
   CategoryScale,
@@ -54,19 +55,6 @@ const ChartRow = styled.div`
 
 function toMegaByte(value: any) {
   return Math.ceil(Number(value) / 1024);
-}
-
-function parseProfilingData(session: Session, profilingData: any[]) {
-  return profilingData.map((data: any) => {
-    return {
-      ...data,
-      timestamp:
-        CommonUtils.getTimeDiffInSecs(
-          new Date(session.created_at),
-          new Date(data.timestamp),
-        ) + "s",
-    };
-  });
 }
 
 /* Cpu Usage data */
@@ -113,12 +101,11 @@ function getCpuChartData(
   profilingData: any[],
   theme: Record<string, any>,
 ) {
-  const parsedProfilingData = parseProfilingData(session, profilingData);
   return {
     datasets: [
       {
         label: "Total CPU Usage %",
-        data: parsedProfilingData.map((v: any) => {
+        data: profilingData.map((v: any) => {
           return {
             timestamp: v.timestamp,
             cpu: v.total_cpu_used,
@@ -131,7 +118,7 @@ function getCpuChartData(
       },
       {
         label: `${session.capabilities.appPackage} %`,
-        data: parsedProfilingData.map((v: any) => {
+        data: profilingData.map((v: any) => {
           return {
             timestamp: v.timestamp,
             cpu: v.cpu,
@@ -193,12 +180,11 @@ function getMemoryChartData(
   profilingData: any[],
   theme: Record<string, any>,
 ) {
-  const parsedProfilingData = parseProfilingData(session, profilingData);
   return {
     datasets: [
       {
         label: "Total Memory Usage (MB)",
-        data: parsedProfilingData.map((data) => {
+        data: profilingData.map((data) => {
           return {
             timestamp: data.timestamp,
             memory: Math.ceil(Number(data.total_memory_used) / 1024),
@@ -212,7 +198,7 @@ function getMemoryChartData(
       },
       {
         label: `${session.capabilities.appPackage} (MB)`,
-        data: parsedProfilingData.map((data) => {
+        data: profilingData.map((data) => {
           return {
             timestamp: data.timestamp,
             memory: toMegaByte(data.memory),
@@ -227,12 +213,27 @@ function getMemoryChartData(
   };
 }
 
+function useProfiling(session: Session) {
+  const profilingData = useSelector(getProfilingdata);
+  const processedData = profilingData.map((data: any) => {
+    return {
+      ...data,
+      timestamp:
+        CommonUtils.getTimeDiffInSecs(
+          new Date(session.created_at),
+          new Date(data.timestamp),
+        ) + "s",
+    };
+  });
+  return _.uniqBy(processedData, "timestamp");
+}
+
 export default function AppProfiling(props: PropsType) {
   const { session, parentHeight } = props;
   const dispatch = useDispatch();
   const theme = useSelector(getSelectedTheme);
   const isLoading = useSelector(getisProfilingLoading);
-  const profilingData = useSelector(getProfilingdata);
+  const profilingData = useProfiling(session);
 
   useEffect(() => {
     dispatch(fetchSessionProfilingData(session.session_id));

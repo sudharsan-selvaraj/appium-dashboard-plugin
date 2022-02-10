@@ -6,8 +6,11 @@ import fs from "fs";
 import { CommandLogs, HttpLogs, Logs, Profiling } from "../../models";
 import * as path from "path";
 import { parseSessionFilterParams } from "../utils/common-utils";
+import { MjpegProxy } from "mjpeg-proxy";
 
 export class SessionController extends BaseController {
+  private static mjpegProxyCache: Map<number, any> = new Map();
+
   public initializeRoutes(router: Router, config: any) {
     router.get("/", this.getSessions.bind(this));
     router.get("/:sessionId", this.getSessionBySessionId.bind(this));
@@ -19,6 +22,7 @@ export class SessionController extends BaseController {
     router.get("/:sessionId/logs/debug", this.getDebugLogs.bind(this));
     router.get("/:sessionId/profiling_data", this.getProfilingData.bind(this));
     router.get("/:sessionId/http_logs", this.getHttpLogs.bind(this));
+    router.get("/:sessionId/live_video", this.getVideo.bind(this));
   }
 
   public async getSessions(request: Request, response: Response, next: NextFunction) {
@@ -160,5 +164,24 @@ export class SessionController extends BaseController {
       order: [["start_time", "ASC"]],
     });
     this.sendSuccessResponse(response, logs);
+  }
+
+  public async getVideo(request: Request, response: Response, next: NextFunction) {
+    let sessionId: string = request.params.sessionId;
+    let session = await Session.findOne({
+      where: {
+        session_id: sessionId,
+      },
+    });
+    const proxyPort = session?.live_stream_port;
+    if (!proxyPort) {
+      return this.sendFailureResponse(response, { message: "Live stream not available" });
+    }
+
+    if (!SessionController.mjpegProxyCache.has(proxyPort)) {
+      const url = `${request.protocol}://${request.hostname}:${proxyPort}`;
+      SessionController.mjpegProxyCache.set(proxyPort, new MjpegProxy(url));
+    }
+    SessionController.mjpegProxyCache.get(proxyPort)?.proxyRequest(request, response);
   }
 }

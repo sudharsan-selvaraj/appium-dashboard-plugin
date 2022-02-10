@@ -5,6 +5,7 @@ import { retryInterval } from "asyncbox";
 import _ from "lodash";
 import { pluginLogger } from "../../loggers/plugin-logger";
 import { logger } from "../../loggers/logger";
+
 export type IosNetworkProfilerOptions = {
   udid: string;
   platformVersion: string;
@@ -72,26 +73,26 @@ class IosNetworkProfiler implements IHttpLogger {
   }
 
   getLogs(): Array<any> {
-    return Object.keys(this.logs);
+    return [];
   }
 
   private async initializeListeners() {
-    this.remoteDebugger.addClientEventListener("Network.requestWillBeSent", (err: any, event: any) => {
+    this.remoteDebugger.addClientEventListener("NetworkEvent", (err: any, event: any) => {
       pluginLogger.info(event);
       this.logs[event.requestId] = event;
     });
     this.remoteDebugger.addClientEventListener("Network.responseReceived", async (err: any, event: any) => {
+      pluginLogger.info(event);
       this.logs[event.requestId] = Object.assign({}, this.logs[event.requestId], {
         response: event,
       });
     });
     const page = _.find(await this.remoteDebugger.selectApp("http://0.0.0.0:4723/welcome"), (page) => {
-      logger.info(page);
       return page.url == "http://0.0.0.0:4723/welcome";
     });
     const [appIdKey, pageIdKey] = page.id.split(".").map((id: string) => parseInt(id, 10));
     pluginLogger.info(`AppId: ${appIdKey}  and pageIdKey: ${pageIdKey}`);
-    await this.remoteDebugger.selectPage(appIdKey, pageIdKey);
+    //await this.remoteDebugger.selectPage(appIdKey, pageIdKey);
   }
 
   private static async waitForRemoteDebugger(remoteDebugger: RemoteDebugger) {

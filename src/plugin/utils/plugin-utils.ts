@@ -161,6 +161,24 @@ function getHttpLogger(opts: {
   }
 }
 
+function getMjpegServerPort(driver: any, sessionId: string) {
+  const session = driver.sessions ? driver.sessions[sessionId] : driver;
+  const portFinderPath: any = {
+    uiautomator2: "opts.mjpegServerPort",
+    xcuitest: "wda.mjpegServerPort",
+  };
+  const defaultPorts: any = {
+    xcuitest: 9100,
+  };
+
+  const automationName = session.caps.automationName.toLowerCase();
+  let mjpegServerPort = portFinderPath[automationName]?.split(".").reduce((acc: any, k: any) => {
+    return acc[k] || {};
+  }, session);
+
+  return typeof mjpegServerPort == "object" ? defaultPorts[automationName] : mjpegServerPort;
+}
+
 export {
   makeGETCall,
   makePostCall,
@@ -175,4 +193,5 @@ export {
   isAppProfilingSupported,
   isHttpLogsSuppoted,
   getHttpLogger,
+  getMjpegServerPort,
 };

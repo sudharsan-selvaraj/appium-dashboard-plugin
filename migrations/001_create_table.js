@@ -47,6 +47,7 @@ var createSessionTable = function (queryInterface, Sequelize) {
     automation_name: { type: Sequelize.TEXT, allowNull: false },
     device_name: { type: Sequelize.TEXT, allowNull: false },
     platform_version: { type: Sequelize.TEXT, allowNull: false },
+    live_stream_port: { type: Sequelize.INTEGER, allowNull: true },
     app: { type: Sequelize.TEXT, allowNull: true },
     browser_name: { type: Sequelize.TEXT, allowNull: true },
     udid: { type: Sequelize.TEXT, allowNull: false },

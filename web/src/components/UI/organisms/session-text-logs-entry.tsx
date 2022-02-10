@@ -7,6 +7,7 @@ import Icon from "../atoms/icon";
 import CommonUtils from "../../../utils/common-utils";
 import CodeViewer from "../atoms/code-viewer";
 import chroma from "chroma-js";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 
 const ParamsContainer = styled.div`
   border: 1px solid ${(props) => props.theme.colors.border};
@@ -147,7 +148,7 @@ const ScreenshotLink = styled.a`
   cursor: pointer;
 `;
 
-const Screenshot = styled.img`
+const Screenshot = styled(LazyLoadImage)`
   max-width: 300px;
   max-height: 600px;
   height: auto;
@@ -217,6 +218,7 @@ export default function LogEntry(props: PropsType) {
                   entry.session_id,
                   entry.log_id,
                 )}
+                effect="opacity"
               />
             </ScreenshotLink>
           </Row>
