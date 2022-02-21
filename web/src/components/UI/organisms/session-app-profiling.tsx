@@ -135,6 +135,7 @@ function getCpuChartData(
 
 /* Memory usage data */
 function getMemoryUsageChartOptions(session: Session) {
+  const totalMemoryInMB = toMegaByte(session.device_info.total_memory);
   return {
     responsive: true,
     plugins: {
@@ -146,7 +147,7 @@ function getMemoryUsageChartOptions(session: Session) {
       },
       title: {
         display: true,
-        text: "MEMORY",
+        text: `MEMORY [${totalMemoryInMB} MB]`,
       },
       tooltip: {
         callbacks: {
@@ -164,9 +165,7 @@ function getMemoryUsageChartOptions(session: Session) {
     scales: {
       y: {
         min: 0,
-        max:
-          Math.round(toMegaByte(session.device_info.total_memory) / 1000) *
-          1000,
+        max: Math.ceil(totalMemoryInMB / 500) * 500, //round to nearest five hundred
         ticks: {
           stepSize: 500,
         },

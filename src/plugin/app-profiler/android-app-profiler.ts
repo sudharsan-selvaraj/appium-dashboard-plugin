@@ -45,11 +45,15 @@ class AndroidAppProfiler extends EventEmitter {
         "%CPU,RSS,ARGS",
         "-s",
         "1",
-        "-m",
-        "20",
         "-d",
         "1",
       ];
+
+      /* -m argument is only suppoted after api level 28 */
+      if (_.isNumber(this.deviceInfo.api_level) && this.deviceInfo.api_level >= 28) {
+        cmd.push("-m", "20");
+      }
+
       this.proc = new SubProcess(this.adb.path, cmd);
       this.proc.on("exit", (code, signal) => {
         this.proc = null;
@@ -124,7 +128,15 @@ class AndroidAppProfiler extends EventEmitter {
     return {
       total_cpu: await this.getTotalCpus(),
       total_memory: await this.getTotalMemory(),
+      api_level: await this.getAndroidApiLevel(),
     };
+  }
+
+  private async getAndroidApiLevel() {
+    //"-m","20",
+    const args = [...this.adb.defaultArgs, "-s", this.deviceUDID, "shell", "getprop", "ro.build.version.sdk"];
+    let out = await exec(this.adb.path, args);
+    return Number(out.stdout.trim());
   }
 
   private async getTotalCpus() {

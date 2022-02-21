@@ -24,13 +24,14 @@ Container.set("config", config);
 
 (async () => {
   //Create ADB instance
+  let adb = null;
   try {
-    Container.set("adb", await ADB.createADB({}));
-  } catch (ignore) {
-    pluginLogger.error("Unable to create adb instance");
-    pluginLogger.error(ignore);
+    adb = await ADB.createADB({});
+  } catch (err) {
+    pluginLogger.error("Unable to create adb instance.");
   }
 
+  Container.set("adb", adb);
   //Add FFMPEG to path
   process.env.PATH = process.env.PATH + ":" + ffmpeg.replace(/ffmpeg$/g, "");
 
