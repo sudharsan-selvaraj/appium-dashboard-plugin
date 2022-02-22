@@ -2,6 +2,25 @@ import { Sequelize } from "sequelize-typescript";
 import * as models from "./models/index";
 import fs from "fs";
 import * as path from "path";
+
+async function sanitizeSessionsTable() {
+  await models.Session.update(
+    {
+      session_status: "TIMEOUT",
+      is_completed: true,
+      end_time: new Date(),
+      is_paused: false,
+      is_profiling_available: false,
+      is_http_logs_available: false,
+    },
+    {
+      where: {
+        is_completed: false,
+      },
+    }
+  );
+}
+
 /**
  * Intialize Sequelize object and load the database models.
  */
@@ -18,5 +37,6 @@ export let sequelizeLoader = async ({ dbPath }: { dbPath: string }): Promise<Seq
 
   /* check whether the database connection is instantiated */
   await sequelize.authenticate();
+  await sanitizeSessionsTable();
   return sequelize;
 };

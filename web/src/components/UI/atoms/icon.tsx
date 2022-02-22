@@ -7,7 +7,13 @@ import {
   FaFilter,
 } from "react-icons/fa";
 import { FcAndroidOs } from "react-icons/fc";
-import { FaApple, FaTrash, FaPlay, FaChrome } from "react-icons/fa";
+import {
+  FaApple,
+  FaTrash,
+  FaPlay,
+  FaChrome,
+  FaRegStopCircle,
+} from "react-icons/fa";
 import { SiSafari } from "react-icons/si";
 import { IoPhonePortraitOutline } from "react-icons/io5";
 import { IoClose } from "react-icons/io5";
@@ -22,7 +28,9 @@ import {
   BsSquare,
   BsFileCode,
 } from "react-icons/bs";
-import { SiCsswizardry } from "react-icons/si";
+import { VscDebugAlt } from "react-icons/vsc";
+import { GoTerminal } from "react-icons/go";
+import { SiCsswizardry, SiPrettier } from "react-icons/si";
 import { TiDocumentText } from "react-icons/ti";
 import styled from "styled-components";
 import Tooltip from "@mui/material/Tooltip";
@@ -154,6 +162,18 @@ export default function Icon(props: IconProps) {
       break;
     case "code":
       icon = <BsFileCode />;
+      break;
+    case "terminal":
+      icon = <GoTerminal />;
+      break;
+    case "debug":
+      icon = <VscDebugAlt />;
+      break;
+    case "stop":
+      icon = <FaRegStopCircle />;
+      break;
+    case "code-format":
+      icon = <SiPrettier />;
       break;
     default:
       icon = null;

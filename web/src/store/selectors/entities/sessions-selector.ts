@@ -19,3 +19,9 @@ export const isStateChangePending = (state: AppState) =>
 
 export const getSessionStateChangeResponse = (state: AppState) =>
   state.ui.loaders.state.response;
+
+export const isDriverScriptExecutionPending = (state: AppState) =>
+  state.ui.loaders.script.isPending;
+
+export const getDriverScriptResult = (state: AppState) =>
+  state.ui.loaders.script.response;

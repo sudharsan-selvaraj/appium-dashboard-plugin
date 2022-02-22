@@ -37,6 +37,7 @@ import { AndroidAppProfiler } from "./app-profiler/android-app-profiler";
 import EventEmitter from "events";
 import { IHttpLogger } from "./interfaces/http-logger";
 import { HttpLogs } from "../models/http-logs";
+import { DriverScriptExecutor } from "./script-executor/executor";
 
 const CREATE_SESSION = "createSession";
 
@@ -55,6 +56,7 @@ class SessionManager {
   private appProfiler!: AndroidAppProfiler;
   private httpLogger!: IHttpLogger;
   private httpLogsAvailable: boolean = false;
+  private driverScriptExecutor!: DriverScriptExecutor;
 
   constructor(opts: {
     sessionInfo: SessionInfo;
@@ -91,26 +93,40 @@ class SessionManager {
   }
 
   public resgisterEventListeners(notifier: EventEmitter) {
+    let output = "";
     notifier.on(`${this.sessionInfo.session_id}`, async (data) => {
-      if (data.event == "change_state") {
-        sessionDebugMap.set(this.sessionInfo.session_id, {
-          is_paused: data.state == "pause",
-        });
-        await Session.update(
-          {
-            is_paused: data.state == "pause",
-          },
-          {
-            where: {
-              session_id: this.sessionInfo.session_id,
-            },
-          }
-        );
-        return;
+      try {
+        switch (data.event) {
+          case "change_state":
+            sessionDebugMap.set(this.sessionInfo.session_id, {
+              is_paused: data.state == "pause",
+            });
+            await Session.update(
+              {
+                is_paused: data.state == "pause",
+              },
+              {
+                where: {
+                  session_id: this.sessionInfo.session_id,
+                },
+              }
+            );
+            break;
+          case "execute_driver_script":
+            if (this.driverScriptExecutor) {
+              output = await this.driverScriptExecutor.execute({
+                script: data.script,
+                timeoutMs: data.timeout,
+              });
+            }
+            break;
+        }
+      } catch (err: any) {
+        output = err;
       }
-
+      this.sessionTimeoutTracker.tick();
       if (data.callback && _.isFunction(data.callback)) {
-        data.callback();
+        data.callback(output);
       }
     });
   }
@@ -119,7 +135,7 @@ class SessionManager {
     if (command.commandName == CREATE_SESSION) {
       this.driver = command.driver;
       this.sessionTimeoutTracker.start();
-      this.sessionTimeoutTracker.tick(command);
+      this.sessionTimeoutTracker.tick();
       return await this.sessionStarted(command);
     } else if (command.commandName == "deleteSession") {
       this.sessionTimeoutTracker.stop();
@@ -137,7 +153,7 @@ class SessionManager {
       logger.info(`Recieved proxyReqRes command for ${command.commandName}`);
     }
 
-    this.sessionTimeoutTracker.tick(command);
+    this.sessionTimeoutTracker.tick();
 
     logger.info(`New command recieved ${command.commandName} for session ${this.sessionInfo.session_id}`);
     await this.saveServerLogs(command);
@@ -195,6 +211,8 @@ class SessionManager {
 
   private async sessionStarted(command: AppiumCommand) {
     sessionDebugMap.createNewSession(this.sessionInfo.session_id);
+
+    this.driverScriptExecutor = new DriverScriptExecutor(this.sessionInfo, command.driver);
 
     /* Check if the current session supports network profiling */
     if (isHttpLogsSuppoted(this.sessionInfo)) {

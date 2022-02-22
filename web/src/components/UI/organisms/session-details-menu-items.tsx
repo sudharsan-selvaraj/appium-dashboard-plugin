@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect } from "react";
 import styled from "styled-components";
 import Session from "../../../interfaces/session";
 import Icon, { Sizes } from "../atoms/icon";
@@ -16,6 +16,8 @@ import {
   getSessionStateChangeResponse,
   isStateChangePending,
 } from "../../../store/selectors/entities/sessions-selector";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Container = styled.div`
   padding: 0 30px 0px 0;
@@ -32,6 +34,7 @@ const IconGroup = styled.div`
   display: flex;
   align-items: center;
   height: 25px !important;
+  gap: 12px;
 `;
 
 const IconContainer = styled.div`
@@ -40,28 +43,39 @@ const IconContainer = styled.div`
 
 type PropsType = {
   session: Session;
+  paused: boolean;
+  debugging: boolean;
+  onStateChanged: (state: boolean) => any;
+  onDebuggingToggled: (state: boolean) => any;
 };
 
 export default function sessionMenuItems(props: PropsType) {
-  const { session } = props;
-  const [paused, setPaused] = useState(session.is_paused);
+  const { session, paused, debugging, onStateChanged, onDebuggingToggled } =
+    props;
   const dispatch = useDispatch();
   const deletePending = useSelector(isSessionDeleting);
   const stateChangePending = useSelector(isStateChangePending);
   const deleteResponse = useSelector(getSessionDeleteResponse);
   const stateChangeResponse = useSelector(getSessionStateChangeResponse);
 
+  const debugToggleChange = (state: boolean) => {
+    if (!!state) {
+      !paused && onPause(session.session_id);
+    } else {
+      onResume(session.session_id);
+    }
+    onDebuggingToggled(state);
+  };
+
   const onDelete = useCallback((id: string) => {
     dispatch(deleteSession(id));
   }, []);
 
   const onPause = useCallback((id: string) => {
-    setPaused(true);
     dispatch(pauseSession(id));
   }, []);
 
   const onResume = useCallback((id: string) => {
-    setPaused(false);
     dispatch(resumeSession(id));
   }, []);
 
@@ -72,12 +86,32 @@ export default function sessionMenuItems(props: PropsType) {
   }, [deleteResponse]);
 
   useEffect(() => {
-    if (stateChangeResponse && !stateChangeResponse.success) {
-      setPaused(!paused);
+    if (!stateChangeResponse) {
+      return;
+    }
+
+    if (stateChangeResponse.success) {
+      onStateChanged(!paused);
+    } else {
+      toast.error(stateChangeResponse.message, {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+      });
+      if (debugging) {
+        onDebuggingToggled(!debugging);
+      }
     }
   }, [stateChangeResponse]);
 
   function getPlayPauseIcon() {
+    if (debugging) {
+      return <></>;
+    }
     if (paused) {
       return (
         <Icon
@@ -99,8 +133,31 @@ export default function sessionMenuItems(props: PropsType) {
     }
   }
 
+  function getDebuggerIcon() {
+    if (!debugging) {
+      return (
+        <Icon
+          name="debug"
+          tooltip="Debug with script"
+          size={Sizes.XL}
+          onClick={() => debugToggleChange(true)}
+        ></Icon>
+      );
+    } else {
+      return (
+        <Icon
+          name="stop"
+          tooltip="Stop debugging"
+          size={Sizes.XL}
+          onClick={() => debugToggleChange(false)}
+        ></Icon>
+      );
+    }
+  }
+
   return (
     <Container>
+      <ToastContainer />
       <IconGroup>
         {/* Show pause/play icon only if the session is still running */}
         {!session.is_completed &&
@@ -110,6 +167,7 @@ export default function sessionMenuItems(props: PropsType) {
             getPlayPauseIcon()
           ))}
 
+        {!session.is_completed && getDebuggerIcon()}
         {/* Show delete icon only if the session execution is completed */}
         {session.is_completed &&
           (deletePending ? (

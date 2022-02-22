@@ -28,7 +28,7 @@
     "mainClass": "AppiumDashboardPlugin"
   },
   "dependencies": {
-    "@appium/base-plugin": "^1.8.0",
+    "@appium/base-plugin": "^1.8.1",
     "@appium/support": "^2.55.4",
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "appium-adb": "^9.0.0",
@@ -58,6 +58,8 @@
     "sqlite3": "^5.0.2",
     "typedi": "^0.10.0",
     "uuid": "^8.3.2",
+    "vm2": "^3.9.8",
+    "webdriverio": "^7.16.15",
     "winston": "^3.3.3"
   },
   "devDependencies": {

@@ -32,7 +32,10 @@ function isSessionPaused(sessionId: string) {
 }
 
 async function handler(req: any, res: any, next: any) {
-  if (!!req.query.internal || new RegExp(/dashboard\//).test(req.url)) {
+  if (new RegExp(/wd-internal\//).test(req.url)) {
+    req.url = req.originalUrl = req.url.replace("wd-internal/", "");
+    return next();
+  } else if (!!req.query.internal || new RegExp(/dashboard\//).test(req.url)) {
     return next();
   }
 

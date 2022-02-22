@@ -22,7 +22,7 @@ export class SessionController extends BaseController {
     router.get("/:sessionId/logs/debug", this.getDebugLogs.bind(this));
     router.get("/:sessionId/profiling_data", this.getProfilingData.bind(this));
     router.get("/:sessionId/http_logs", this.getHttpLogs.bind(this));
-    router.get("/:sessionId/live_video", this.getVideo.bind(this));
+    router.get("/:sessionId/live_video", this.getLiveVideo.bind(this));
   }
 
   public async getSessions(request: Request, response: Response, next: NextFunction) {
@@ -166,7 +166,7 @@ export class SessionController extends BaseController {
     this.sendSuccessResponse(response, logs);
   }
 
-  public async getVideo(request: Request, response: Response, next: NextFunction) {
+  public async getLiveVideo(request: Request, response: Response, next: NextFunction) {
     let sessionId: string = request.params.sessionId;
     let session = await Session.findOne({
       where: {
@@ -182,6 +182,10 @@ export class SessionController extends BaseController {
       const url = `${request.protocol}://${request.hostname}:${proxyPort}`;
       SessionController.mjpegProxyCache.set(proxyPort, new MjpegProxy(url));
     }
-    SessionController.mjpegProxyCache.get(proxyPort)?.proxyRequest(request, response);
+    try {
+      SessionController.mjpegProxyCache.get(proxyPort)?.proxyRequest(request, response);
+    } catch (e) {
+      return this.sendFailureResponse(response, "Live video not available");
+    }
   }
 }

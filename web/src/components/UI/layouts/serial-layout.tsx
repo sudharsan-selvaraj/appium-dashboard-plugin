@@ -47,7 +47,9 @@ const Container = styled.div<{
   responsive?: boolean;
   responsiveWidth?: number;
   heightOnResize?: string;
+  height?: string;
 }>`
+  height: ${(props) => props.height};
   ${(props) =>
     props.responsive &&
     `{
@@ -59,7 +61,7 @@ const Container = styled.div<{
       & > * {
         width: 100%;
       }
-  }`}
+  }`};
 `;
 
 type SerialLayouttype = {
@@ -68,6 +70,7 @@ type SerialLayouttype = {
   responsive?: boolean;
   responsiveWidth?: number;
   heightOnResize?: string;
+  height?: string;
 };
 
 export default function SerialLayout(props: SerialLayouttype) {
@@ -77,6 +80,7 @@ export default function SerialLayout(props: SerialLayouttype) {
     responsive = false,
     responsiveWidth,
     heightOnResize,
+    height,
   } = props;
   return (
     <Container
@@ -84,6 +88,7 @@ export default function SerialLayout(props: SerialLayouttype) {
       responsive={responsive}
       responsiveWidth={responsiveWidth}
       heightOnResize={heightOnResize}
+      height={height}
     >
       {children}
     </Container>

@@ -106,8 +106,8 @@ class AppiumDashboardPlugin extends BasePlugin {
     }
 
     Object.keys(newCapabilities).forEach((k) => {
-      args[2][k] = newCapabilities[k];
-      args[2].firstMatch[0][k] = newCapabilities[k];
+      args[2].alwaysMatch[k] = newCapabilities[k];
+      //args[2].firstMatch[0][k] = newCapabilities[k];
     });
   }
 }

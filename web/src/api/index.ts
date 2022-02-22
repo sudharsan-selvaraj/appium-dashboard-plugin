@@ -24,7 +24,8 @@ export default class Api {
         params,
         paramsSerializer,
       })
-      .then((response) => response.data);
+      .then((response) => response.data)
+      .catch((err) => err.response.data);
   }
 
   static post(
@@ -40,7 +41,8 @@ export default class Api {
         params,
         paramsSerializer,
       })
-      .then((response) => response.data);
+      .then((response) => response.data)
+      .catch((err) => err.response.data);
   }
 
   static delete(
@@ -55,6 +57,7 @@ export default class Api {
         params,
         paramsSerializer,
       })
-      .then((response) => response.data);
+      .then((response) => response.data)
+      .catch((err) => err.response.data);
   }
 }
