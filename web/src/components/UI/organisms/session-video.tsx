@@ -5,6 +5,8 @@ import VideoPlayer from "../atoms/video-player";
 import styled from "styled-components";
 import EmptyMessage from "../molecules/empty-message";
 import Spinner from "../atoms/spinner";
+import { VncScreen } from "react-vnc";
+import VncDisplay from "react-vnc-display";
 
 const Container = styled.div``;
 
@@ -23,6 +25,10 @@ const EmptyVideoContainer = styled.div<{ height: number }>`
   & p {
     text-align: center;
   }
+`;
+
+const VncContainer = styled.div<{ height: number }>`
+  height: ${(props) => props.height}px;
 `;
 
 type PropsType = {
@@ -153,14 +159,26 @@ export default function SessionVideo(props: PropsType) {
 
   return (
     <Container>
-      {session.video_path ? (
+      {/* {session.video_path ? (
         <VideoPlayer
           url={CommonUtils.getVideoForSession(session.session_id)}
           height={height}
         />
       ) : (
         getStreamingVideo()
-      )}
+      )} */}
+      <VncContainer height={height}>
+        <VncScreen
+          url="ws://localhost:4723/dashboard/proxy"
+          scaleViewport
+          background="#000000"
+          style={{
+            height: "100%",
+            width: "100%",
+          }}
+          focusOnClick
+        />
+      </VncContainer>
     </Container>
   );
 }

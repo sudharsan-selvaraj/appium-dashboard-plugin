@@ -10,6 +10,7 @@ import * as express from "express";
 import { registerDebugMiddlware } from "./debugger";
 import _ from "lodash";
 import getPort from "get-port";
+import { createProxyMiddleware } from "http-proxy-middleware";
 
 const sessionMap: Map<string, SessionManager> = new Map();
 const IGNORED_COMMANDS = ["getScreenshot", "stopRecordingScreen", "startRecordingScreen"];
@@ -28,8 +29,15 @@ class AppiumDashboardPlugin extends BasePlugin {
     };
   }
 
-  public static async updateServer(expressApp: express.Application) {
+  public static async updateServer(expressApp: express.Application, httpServer: any) {
     registerDebugMiddlware(expressApp);
+    const wsProxy = createProxyMiddleware({
+      target: "ws://localhost:6110",
+      pathRewrite: {
+        "^/dashboard/proxy": "/", // rewrite path
+      },
+    });
+    expressApp.use("/dashboard/proxy", wsProxy);
     expressApp.use("/dashboard", Container.get("expressRouter") as any);
     pluginLogger.info("Dashboard plugin is enabled and will be served at http://localhost:4723/dashboard");
     pluginLogger.info(
