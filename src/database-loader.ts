@@ -1,6 +1,5 @@
 import { Sequelize } from "sequelize-typescript";
 import * as models from "./models/index";
-import fs from "fs";
 import * as path from "path";
 
 async function sanitizeSessionsTable() {

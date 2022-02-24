@@ -138,7 +138,7 @@ export default function sessionMenuItems(props: PropsType) {
       return (
         <Icon
           name="debug"
-          tooltip="Debug with script"
+          tooltip="Pause & Debug"
           size={Sizes.XL}
           onClick={() => debugToggleChange(true)}
         ></Icon>

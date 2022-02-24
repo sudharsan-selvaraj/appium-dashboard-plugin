@@ -5,11 +5,18 @@ import VideoPlayer from "../atoms/video-player";
 import styled from "styled-components";
 import EmptyMessage from "../molecules/empty-message";
 import Spinner from "../atoms/spinner";
+import Icon, { Sizes } from "../atoms/icon";
 
-const Container = styled.div``;
+const Container = styled.div<{ height: string }>`
+  height: ${(props) => props.height};
+  transition: height 1s 0.1s ease-in-out, opacity 2s ease-in-out;
+  overflow: hidden;
+  position: relative;
+  padding: 10px 0 10px 0;
+`;
 
-const EmptyVideoContainer = styled.div<{ height: number }>`
-  height: ${(props) => props.height}px;
+const EmptyVideoContainer = styled.div`
+  height: 100%;
   width: 100%;
   display: flex;
   align-items: center;
@@ -27,19 +34,21 @@ const EmptyVideoContainer = styled.div<{ height: number }>`
 
 type PropsType = {
   session: Session;
-  height: number;
+  height: string;
+  onVideoSizeChanged: (state: boolean) => any;
+  isFullScreen: boolean;
 };
 
-const LiveVideoContainer = styled.div<{ height: number }>`
-  height: ${(props) => props.height}px;
+const LiveVideoContainer = styled.div`
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
 `;
 
-const VideoImg = styled.img<{ height: number; hide: boolean }>`
-  height: ${(props) => props.height - 18}px;
+const VideoImg = styled.img<{ hide: boolean }>`
+  height: 100%;
   widht: 100%;
   object-fit: scale-down;
   top: 10px;
@@ -92,6 +101,13 @@ const LiveBadge = styled.span`
   }
 `;
 
+const VideoResizeIcon = styled.div`
+  position: absolute;
+  bottom: 10px;
+  right: 5px;
+  cursor: pointer;
+`;
+
 const getVideoNotFoundMessage = (session: Session) => {
   if (session.is_completed) {
     return "Error occured while saving the video";
@@ -101,7 +117,7 @@ const getVideoNotFoundMessage = (session: Session) => {
 };
 
 export default function SessionVideo(props: PropsType) {
-  const { session, height } = props;
+  const { session, height, onVideoSizeChanged, isFullScreen } = props;
   const [liveStreamLoading, setLiveStreamLoading] = useState(true);
   const [liveStreamError, setLiveStreamError] = useState(false);
 
@@ -111,14 +127,16 @@ export default function SessionVideo(props: PropsType) {
   }, []);
 
   useEffect(() => {
-    setLiveStreamLoading(true);
-    setLiveStreamError(false);
+    if (!session.is_completed) {
+      setLiveStreamLoading(true);
+      setLiveStreamError(false);
+    }
   }, [session.session_id, session.session_status]);
 
-  const getStreamingVideo = () => {
+  const getVideoPlayer = () => {
     if (!session.is_completed && !!session.live_stream_port) {
       return (
-        <LiveVideoContainer height={height}>
+        <LiveVideoContainer>
           {liveStreamLoading && (
             <LoadingContainer>
               <Spinner />
@@ -126,41 +144,52 @@ export default function SessionVideo(props: PropsType) {
             </LoadingContainer>
           )}
           {liveStreamError && (
-            <EmptyVideoContainer height={height}>
+            <EmptyVideoContainer>
               <EmptyMessage>Unable to render live video</EmptyMessage>
             </EmptyVideoContainer>
           )}
           <VideoImg
             src={CommonUtils.getLiveVideoForSession(session.session_id)}
-            height={height}
             onLoad={() => imageLoaded(false)}
             onError={() => imageLoaded(true)}
             hide={liveStreamLoading || liveStreamError}
           />
           {!liveStreamLoading && !liveStreamError && (
-            <LiveBadge>LIVE</LiveBadge>
+            <>
+              <LiveBadge>LIVE</LiveBadge>
+              <VideoResizeIcon>
+                {isFullScreen ? (
+                  <Icon
+                    name="minimize"
+                    size={Sizes.M}
+                    tooltip="Minimize"
+                    onClick={() => onVideoSizeChanged(false)}
+                  />
+                ) : (
+                  <Icon
+                    name="maximize"
+                    tooltip="Expand"
+                    size={Sizes.M}
+                    onClick={() => onVideoSizeChanged(true)}
+                  />
+                )}
+              </VideoResizeIcon>
+            </>
           )}
         </LiveVideoContainer>
       );
+    } else if (session.is_completed && session.video_path) {
+      return (
+        <VideoPlayer url={CommonUtils.getVideoForSession(session.session_id)} />
+      );
     } else {
       return (
-        <EmptyVideoContainer height={height}>
+        <EmptyVideoContainer>
           <EmptyMessage>{getVideoNotFoundMessage(session)}</EmptyMessage>
         </EmptyVideoContainer>
       );
     }
   };
 
-  return (
-    <Container>
-      {session.video_path ? (
-        <VideoPlayer
-          url={CommonUtils.getVideoForSession(session.session_id)}
-          height={height}
-        />
-      ) : (
-        getStreamingVideo()
-      )}
-    </Container>
-  );
+  return <Container height={height}>{getVideoPlayer()}</Container>;
 }

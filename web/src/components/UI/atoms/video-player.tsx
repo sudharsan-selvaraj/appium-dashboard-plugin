@@ -6,7 +6,11 @@ const Container = styled.div`
 `;
 
 const StyledVideo = styled.video`
-  background: #c9c7c7;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 `;
 
 type PropsType = {
@@ -16,14 +20,13 @@ type PropsType = {
 };
 
 export default function VideoPlayer(props: PropsType) {
-  const { height, url, width } = props;
+  const { url, width } = props;
   return (
     <Container>
       <StyledVideo
         className="react-player"
         src={url}
         width={width || "100%"}
-        height={height || "600px"}
         controls={true}
       />
     </Container>

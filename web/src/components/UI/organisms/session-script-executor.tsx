@@ -134,7 +134,11 @@ type PropsType = {
 };
 
 const DEFAULT_SCRIPT =
-  '/* Run webdriver.io scripts using driver object \n* example return await driver.$("~Login").click()\n*/';
+  "/* Run webdriver.io script using driver object " +
+  "\n* Avaliable objects are driver, console and Promise " +
+  '\n* Example: \n* await driver.$("~Login").click();' +
+  '\n* console.log(await driver.$("~Title").getText());' +
+  "\n*/\n";
 
 export default function SessionScriptExecutor(props: PropsType) {
   const { session, parentHeight } = props;

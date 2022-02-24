@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
 import {
@@ -74,11 +74,15 @@ export const VIDEO_PLAYER_HEIGHT = 400;
 /* App will go into responsive mode below the given width */
 export const RESPONSIVE_WIDTH = 1400;
 
-function hasSessionFailureMessage(session: Session) {
-  return session.session_status === "FAILED" && session.session_status_message;
+function hasSessionFailureMessage(session: Session | null) {
+  return (
+    session &&
+    session.session_status === "FAILED" &&
+    session.session_status_message
+  );
 }
 
-function getSessiobDetailsMainContainerHeight(session: Session) {
+function getSessiobDetailsMainContainerHeight(session: Session | null) {
   return (
     SUMMARY_HEIGHT +
     APP_HEADER_HEIGHT +
@@ -110,10 +114,25 @@ export default function SessionDetails() {
   const session = useSelector(getSelectedSession);
   const [paused, setPaused] = useState(session?.is_paused);
   const [isDebugging, setIsDebugging] = useState(false);
+  const [isVideoFullscreen, setIsVideFullScreen] = useState(false);
+
+  const MAIN_CONTENT_CONTAINER_HEIGHT =
+    getSessiobDetailsMainContainerHeight(session);
+
+  const videoHeight = useMemo(() => {
+    return isVideoFullscreen && !session?.is_completed
+      ? `calc(100vh - ${MAIN_CONTENT_CONTAINER_HEIGHT}px)`
+      : `${VIDEO_PLAYER_HEIGHT}px`;
+  }, [isVideoFullscreen, session?.session_id]);
+
+  const onVideoSizeChanged = useCallback((isFullScreen: boolean) => {
+    setIsVideFullScreen(isFullScreen);
+  }, []);
 
   useEffect(() => {
     setPaused(!session?.is_completed && session?.is_paused);
     setIsDebugging(false);
+    setIsVideFullScreen(isVideoFullscreen && !session?.is_completed);
   }, [session?.session_id, session?.is_completed]);
 
   const onSessionStateChange = (state: boolean) => {
@@ -127,9 +146,6 @@ export default function SessionDetails() {
   if (!session) {
     return <EmptyMessage>Select a Session</EmptyMessage>;
   }
-
-  const MAIN_CONTENT_CONTAINER_HEIGHT =
-    getSessiobDetailsMainContainerHeight(session);
 
   return (
     <Container>
@@ -170,21 +186,27 @@ export default function SessionDetails() {
               <SerialLayout
                 responsive
                 responsiveWidth={RESPONSIVE_WIDTH}
-                heightOnResize={`${VIDEO_PLAYER_HEIGHT}px`}
+                heightOnResize={videoHeight}
               >
                 <Row>
                   <SessionVideo
                     session={session}
-                    height={VIDEO_PLAYER_HEIGHT}
+                    onVideoSizeChanged={onVideoSizeChanged}
+                    isFullScreen={isVideoFullscreen}
+                    height={videoHeight}
                   />
                 </Row>
-                <Row>
-                  <SessionCapabilityDetails
-                    responsiveWidth={RESPONSIVE_WIDTH}
-                    session={session}
-                    height={MAIN_CONTENT_CONTAINER_HEIGHT + VIDEO_PLAYER_HEIGHT}
-                  />
-                </Row>
+                {!isVideoFullscreen ? (
+                  <Row>
+                    <SessionCapabilityDetails
+                      responsiveWidth={RESPONSIVE_WIDTH}
+                      session={session}
+                      height={
+                        MAIN_CONTENT_CONTAINER_HEIGHT + VIDEO_PLAYER_HEIGHT
+                      }
+                    />
+                  </Row>
+                ) : null}
               </SerialLayout>
             </Column>
             <Column grid={8}>

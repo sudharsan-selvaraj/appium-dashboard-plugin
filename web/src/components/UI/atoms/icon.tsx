@@ -28,13 +28,14 @@ import {
   BsSquare,
   BsFileCode,
 } from "react-icons/bs";
+import { FiMinimize } from "react-icons/fi";
 import { VscDebugAlt } from "react-icons/vsc";
 import { GoTerminal } from "react-icons/go";
 import { SiCsswizardry, SiPrettier } from "react-icons/si";
 import { TiDocumentText } from "react-icons/ti";
+import { IoMdExpand } from "react-icons/io";
 import styled from "styled-components";
 import Tooltip from "@mui/material/Tooltip";
-
 export enum Sizes {
   S = "12",
   M = "14",
@@ -174,6 +175,12 @@ export default function Icon(props: IconProps) {
       break;
     case "code-format":
       icon = <SiPrettier />;
+      break;
+    case "maximize":
+      icon = <IoMdExpand />;
+      break;
+    case "minimize":
+      icon = <FiMinimize />;
       break;
     default:
       icon = null;
