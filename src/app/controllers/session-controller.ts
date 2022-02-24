@@ -208,7 +208,7 @@ export class SessionController extends BaseController {
     createProxyMiddleware({
       target: url,
       pathRewrite: () => {
-        return url;
+        return "/";
       },
     })(request, response, next);
   }

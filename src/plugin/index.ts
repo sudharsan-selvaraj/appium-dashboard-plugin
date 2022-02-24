@@ -10,7 +10,6 @@ import * as express from "express";
 import { registerDebugMiddlware } from "./debugger";
 import _ from "lodash";
 import getPort from "get-port";
-import { createProxyMiddleware } from "http-proxy-middleware";
 
 const sessionMap: Map<string, SessionManager> = new Map();
 const IGNORED_COMMANDS = ["getScreenshot", "stopRecordingScreen", "startRecordingScreen"];
@@ -100,6 +99,7 @@ class AppiumDashboardPlugin extends BasePlugin {
     let newCapabilities: Record<string, any> = {
       "appium:clearDeviceLogsOnStart": true,
       "appium:nativeWebScreenshot": true, //to make screenshot endpoint work in android webview tests,
+      "appium:disableSuppressAccessibilityService": true,
     };
 
     if (rawCapabilities?.["platformName"].toLowerCase() == "android" && !rawCapabilities?.["appium:mjpegServerPort"]) {
