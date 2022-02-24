@@ -38,6 +38,8 @@ import EventEmitter from "events";
 import { IHttpLogger } from "./interfaces/http-logger";
 import { HttpLogs } from "../models/http-logs";
 import { DriverScriptExecutor } from "./script-executor/executor";
+import { DroidVncService } from "node-droid-vnc-service";
+import getPort from "get-port";
 
 const CREATE_SESSION = "createSession";
 
@@ -57,6 +59,7 @@ class SessionManager {
   private httpLogger!: IHttpLogger;
   private httpLogsAvailable: boolean = false;
   private driverScriptExecutor!: DriverScriptExecutor;
+  private droidVncServer!: DroidVncService;
 
   constructor(opts: {
     sessionInfo: SessionInfo;
@@ -224,6 +227,16 @@ class SessionManager {
       });
     }
 
+    let vncServerPort = null;
+    if (isAndroidSession(this.sessionInfo)) {
+      vncServerPort = await getPort();
+      this.droidVncServer = new DroidVncService({
+        deviceUdid: this.sessionInfo.udid,
+        port: vncServerPort,
+      });
+      await this.droidVncServer.start();
+    }
+
     let { desired } = this.sessionInfo.capabilities;
     let buildName = desired["dashboard:build"];
     let projectName = desired["dashboard:project"];
@@ -251,6 +264,7 @@ class SessionManager {
       is_profiling_available,
       name: name || null,
       live_stream_port: await getMjpegServerPort(command.driver, this.sessionInfo.session_id),
+      vnc_server_port: vncServerPort,
     } as any);
 
     await this.saveCommandLog(command, null);
@@ -259,6 +273,10 @@ class SessionManager {
   public async sessionTerminated(options: { sessionTimedOut: boolean } = { sessionTimedOut: false }) {
     await this.saveAppProfilingData();
     await this.saveHttpLogs();
+
+    if (this.droidVncServer) {
+      await this.droidVncServer.stop();
+    }
 
     let session = await Session.findOne({
       where: {
@@ -289,6 +307,7 @@ class SessionManager {
       end_time: new Date(),
       video_path: videoPath || null,
       is_http_logs_available: this.httpLogsAvailable,
+      vnc_server_port: null,
     };
 
     if (session?.session_status?.toLowerCase() == "running") {

@@ -37,6 +37,6 @@ export let sequelizeLoader = async ({ dbPath }: { dbPath: string }): Promise<Seq
 
   /* check whether the database connection is instantiated */
   await sequelize.authenticate();
-  await sanitizeSessionsTable();
+  //await sanitizeSessionsTable();
   return sequelize;
 };

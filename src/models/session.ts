@@ -94,6 +94,13 @@ class Session extends Model<Session> {
   })
   live_stream_port!: number;
 
+  @AllowNull(true)
+  @Column({
+    type: DataTypes.INTEGER,
+    defaultValue: false,
+  })
+  vnc_server_port!: number | null;
+
   @AllowNull(false)
   @Column({
     type: DataTypes.STRING,

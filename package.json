@@ -52,6 +52,7 @@
     "lodash": "^4.17.21",
     "lokijs": "^1.5.12",
     "mjpeg-proxy": "^0.3.0",
+    "node-droid-vnc-service": "file:../node-droid-vnc-service",
     "reflect-metadata": "^0.1.13",
     "sequelize": "^6.6.5",
     "sequelize-cli": "^6.2.0",

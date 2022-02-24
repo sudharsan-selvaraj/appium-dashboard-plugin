@@ -7,9 +7,11 @@ import { CommandLogs, HttpLogs, Logs, Profiling } from "../../models";
 import * as path from "path";
 import { parseSessionFilterParams } from "../utils/common-utils";
 import { MjpegProxy } from "mjpeg-proxy";
+import { createProxyMiddleware } from "http-proxy-middleware";
 
 export class SessionController extends BaseController {
   private static mjpegProxyCache: Map<number, any> = new Map();
+  private static vncServerProxyCache: Map<number, any> = new Map();
 
   public initializeRoutes(router: Router, config: any) {
     router.get("/", this.getSessions.bind(this));
@@ -23,6 +25,7 @@ export class SessionController extends BaseController {
     router.get("/:sessionId/profiling_data", this.getProfilingData.bind(this));
     router.get("/:sessionId/http_logs", this.getHttpLogs.bind(this));
     router.get("/:sessionId/live_video", this.getLiveVideo.bind(this));
+    router.get("/:sessionId/remote_device_control", this.remoteDeviceControl.bind(this));
   }
 
   public async getSessions(request: Request, response: Response, next: NextFunction) {
@@ -187,5 +190,26 @@ export class SessionController extends BaseController {
     } catch (e) {
       return this.sendFailureResponse(response, "Live video not available");
     }
+  }
+
+  public async remoteDeviceControl(request: Request, response: Response, next: NextFunction) {
+    let sessionId: string = request.params.sessionId;
+    let session = await Session.findOne({
+      where: {
+        session_id: sessionId,
+      },
+    });
+    const proxyPort = session?.vnc_server_port;
+    if (!proxyPort) {
+      return this.sendFailureResponse(response, { message: "Remote Device access not availiable" });
+    }
+
+    const url = `ws://${request.hostname}:${proxyPort}`;
+    createProxyMiddleware({
+      target: url,
+      pathRewrite: () => {
+        return url;
+      },
+    })(request, response, next);
   }
 }

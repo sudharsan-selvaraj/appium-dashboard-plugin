@@ -126,6 +126,13 @@ export default class CommonUtils {
     return `${api.base_url}/api/sessions/${sessionId}/log/${logId}/screen-shot`;
   }
 
+  static getRemoteDeviceAccessUrl(sessionId: string) {
+    return `${api.base_url}/api/sessions/${sessionId}/remote_device_control`.replace(
+      /https|http/,
+      "ws",
+    );
+  }
+
   static hash(object: any) {
     return JSON.stringify(object);
   }

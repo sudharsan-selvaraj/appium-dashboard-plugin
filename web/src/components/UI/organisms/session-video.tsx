@@ -121,6 +121,64 @@ export default function SessionVideo(props: PropsType) {
     setLiveStreamError(false);
   }, [session.session_id, session.session_status]);
 
+  const getVideoPlayer = () => {
+    if (session.video_path) {
+      return (
+        <VideoPlayer
+          url={CommonUtils.getVideoForSession(session.session_id)}
+          height={height}
+        />
+      );
+    } else if (!session.is_completed && !!session.vnc_server_port) {
+      return (
+        <VncContainer height={height}>
+          <VncScreen
+            url={CommonUtils.getRemoteDeviceAccessUrl(session.session_id)}
+            scaleViewport
+            background="#000000"
+            style={{
+              height: "100%",
+              width: "100%",
+            }}
+            focusOnClick
+          />
+        </VncContainer>
+      );
+    } else if (!session.is_completed && !!session.live_stream_port) {
+      return (
+        <LiveVideoContainer height={height}>
+          {liveStreamLoading && (
+            <LoadingContainer>
+              <Spinner />
+              <EmptyMessage>Loading live video..</EmptyMessage>
+            </LoadingContainer>
+          )}
+          {liveStreamError && (
+            <EmptyVideoContainer height={height}>
+              <EmptyMessage>Unable to render live video</EmptyMessage>
+            </EmptyVideoContainer>
+          )}
+          <VideoImg
+            src={CommonUtils.getLiveVideoForSession(session.session_id)}
+            height={height}
+            onLoad={() => imageLoaded(false)}
+            onError={() => imageLoaded(true)}
+            hide={liveStreamLoading || liveStreamError}
+          />
+          {!liveStreamLoading && !liveStreamError && (
+            <LiveBadge>LIVE</LiveBadge>
+          )}
+        </LiveVideoContainer>
+      );
+    } else {
+      return (
+        <EmptyVideoContainer height={height}>
+          <EmptyMessage>{getVideoNotFoundMessage(session)}</EmptyMessage>
+        </EmptyVideoContainer>
+      );
+    }
+  };
+
   const getStreamingVideo = () => {
     if (!session.is_completed && !!session.live_stream_port) {
       return (
@@ -157,28 +215,5 @@ export default function SessionVideo(props: PropsType) {
     }
   };
 
-  return (
-    <Container>
-      {/* {session.video_path ? (
-        <VideoPlayer
-          url={CommonUtils.getVideoForSession(session.session_id)}
-          height={height}
-        />
-      ) : (
-        getStreamingVideo()
-      )} */}
-      <VncContainer height={height}>
-        <VncScreen
-          url="ws://localhost:4723/dashboard/proxy"
-          scaleViewport
-          background="#000000"
-          style={{
-            height: "100%",
-            width: "100%",
-          }}
-          focusOnClick
-        />
-      </VncContainer>
-    </Container>
-  );
+  return <Container>{getVideoPlayer()}</Container>;
 }

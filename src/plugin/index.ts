@@ -31,13 +31,6 @@ class AppiumDashboardPlugin extends BasePlugin {
 
   public static async updateServer(expressApp: express.Application, httpServer: any) {
     registerDebugMiddlware(expressApp);
-    const wsProxy = createProxyMiddleware({
-      target: "ws://localhost:6110",
-      pathRewrite: {
-        "^/dashboard/proxy": "/", // rewrite path
-      },
-    });
-    expressApp.use("/dashboard/proxy", wsProxy);
     expressApp.use("/dashboard", Container.get("expressRouter") as any);
     pluginLogger.info("Dashboard plugin is enabled and will be served at http://localhost:4723/dashboard");
     pluginLogger.info(
