@@ -5,6 +5,8 @@ import {
   FaAngleUp,
   FaCheckCircle,
   FaFilter,
+  FaChevronDown,
+  FaChevronUp,
 } from "react-icons/fa";
 import { FcAndroidOs } from "react-icons/fc";
 import {
@@ -181,6 +183,12 @@ export default function Icon(props: IconProps) {
       break;
     case "minimize":
       icon = <FiMinimize />;
+      break;
+    case "chevron-up":
+      icon = <FaChevronUp />;
+      break;
+    case "chevron-down":
+      icon = <FaChevronDown />;
       break;
     default:
       icon = null;
