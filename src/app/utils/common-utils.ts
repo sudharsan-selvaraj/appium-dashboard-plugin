@@ -1,7 +1,19 @@
 import { filter } from "lodash";
 import { Op, Sequelize } from "sequelize";
 
-export function parseSessionFilterParams(params: Record<string, string>) {
+function defer() {
+  var resolve, reject;
+  var promise = new Promise(function () {
+    resolve = arguments[0];
+    reject = arguments[1];
+  });
+  return {
+    resolve: resolve,
+    reject: reject,
+    promise: promise,
+  };
+}
+function parseSessionFilterParams(params: Record<string, string>) {
   let { start_time, name, os, status, device_udid } = params;
   let filters: any = [];
   if (start_time) {
@@ -45,3 +57,5 @@ export function parseSessionFilterParams(params: Record<string, string>) {
   }
   return filters;
 }
+
+export { defer, parseSessionFilterParams };

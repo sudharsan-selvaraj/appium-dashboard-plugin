@@ -22,7 +22,7 @@ export class SessionController extends BaseController {
     router.get("/:sessionId/logs/debug", this.getDebugLogs.bind(this));
     router.get("/:sessionId/profiling_data", this.getProfilingData.bind(this));
     router.get("/:sessionId/http_logs", this.getHttpLogs.bind(this));
-    router.get("/:sessionId/live_video", this.getVideo.bind(this));
+    router.get("/:sessionId/live_video", this.getLiveVideo.bind(this));
   }
 
   public async getSessions(request: Request, response: Response, next: NextFunction) {
@@ -75,16 +75,42 @@ export class SessionController extends BaseController {
 
   public async getVideoForSession(request: Request, response: Response, next: NextFunction) {
     let sessionId: string = request.params.sessionId;
+    const range = request.headers.range;
     let session = await Session.findOne({
       where: {
         session_id: sessionId,
       },
     });
-    if (session && session.video_path) {
-      return response.status(200).sendFile(session.video_path);
-    }
+    const videoPath = session?.video_path;
 
-    this.sendFailureResponse(response, "Video not available");
+    if (session && videoPath && range) {
+      const videoSize = fs.statSync(videoPath).size;
+      // Parse Range
+      // Example: "bytes=32324-"
+      const CHUNK_SIZE = 10 ** 6; // 1MB
+      const start = Number(range.replace(/\D/g, ""));
+      const end = Math.min(start + CHUNK_SIZE, videoSize - 1);
+
+      // Create headers
+      const contentLength = end - start + 1;
+      const headers = {
+        "Content-Range": `bytes ${start}-${end}/${videoSize}`,
+        "Accept-Ranges": "bytes",
+        "Content-Length": contentLength,
+        "Content-Type": "video/mp4",
+      };
+
+      // HTTP Status 206 for Partial Content
+      response.writeHead(206, headers);
+
+      // create video read stream for this particular chunk
+      const videoStream = fs.createReadStream(videoPath, { start, end });
+
+      // Stream the video chunk to the client
+      videoStream.pipe(response);
+    } else {
+      this.sendFailureResponse(response, "Video not available");
+    }
   }
 
   public async getTextLogs(request: Request, response: Response, next: NextFunction) {
@@ -166,7 +192,7 @@ export class SessionController extends BaseController {
     this.sendSuccessResponse(response, logs);
   }
 
-  public async getVideo(request: Request, response: Response, next: NextFunction) {
+  public async getLiveVideo(request: Request, response: Response, next: NextFunction) {
     let sessionId: string = request.params.sessionId;
     let session = await Session.findOne({
       where: {
@@ -182,6 +208,10 @@ export class SessionController extends BaseController {
       const url = `${request.protocol}://${request.hostname}:${proxyPort}`;
       SessionController.mjpegProxyCache.set(proxyPort, new MjpegProxy(url));
     }
-    SessionController.mjpegProxyCache.get(proxyPort)?.proxyRequest(request, response);
+    try {
+      SessionController.mjpegProxyCache.get(proxyPort)?.proxyRequest(request, response);
+    } catch (e) {
+      return this.sendFailureResponse(response, "Live video not available");
+    }
   }
 }

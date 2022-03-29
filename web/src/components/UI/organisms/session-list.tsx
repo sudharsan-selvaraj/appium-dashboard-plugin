@@ -121,6 +121,12 @@ export default function SessionList() {
     dispatch(addPollingTask(fetchSessionInit(payload)));
   }, []);
 
+  useEffect(() => {
+    if (!SelectedSession) {
+      dispatch(fetchSessionInit());
+    }
+  }, [SelectedSession]);
+
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const filterCount = useSelector(getSessionFilterCount);
 

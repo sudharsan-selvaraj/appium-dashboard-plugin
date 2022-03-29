@@ -12,6 +12,10 @@ export type LoadersState = {
     isPending: boolean;
     response: Record<string, string> | null;
   };
+  script: {
+    isPending: boolean;
+    response: Record<string, any> | null;
+  };
 };
 
 const initialState: LoadersState = {
@@ -20,6 +24,10 @@ const initialState: LoadersState = {
     response: null,
   },
   state: {
+    isPending: false,
+    response: null,
+  },
+  script: {
     isPending: false,
     response: null,
   },
@@ -54,9 +62,32 @@ export default createReducer(initialState, {
       isPending: true,
     },
   }),
+  [ReduxActionTypes.RESET_SCRIPT_RESPONSE_FOR_SESSION]: (state: AppState) => ({
+    ...state,
+    script: {
+      isPending: false,
+      response: null,
+    },
+  }),
+  [ReduxActionTypes.RUN_SCRIPT_FOR_SESSION]: (state: AppState) => ({
+    ...state,
+    script: {
+      isPending: true,
+    },
+  }),
+  [ReduxActionTypes.RUN_SCRIPT_FOR_SESSION_FINISH]: (
+    state: AppState,
+    action: ReduxActionType<Record<string, string | boolean>>,
+  ) => ({
+    ...state,
+    script: {
+      isPending: false,
+      response: action.payload,
+    },
+  }),
   [ReduxActionTypes.SESSION_STATE_CHANGE_FINISH]: (
     state: AppState,
-    action: ReduxActionType<Record<string, string>>,
+    action: ReduxActionType<Record<string, string | boolean>>,
   ) => ({
     ...state,
     state: {

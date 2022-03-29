@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
 import {
@@ -18,6 +18,7 @@ import chroma from "chroma-js";
 import Session from "../../../interfaces/session";
 import SessionMenuItems from "./session-details-menu-items";
 import { Tooltip } from "@mui/material";
+import SessionScriptExecutor from "./session-script-executor";
 
 const Container = styled.div``;
 
@@ -68,16 +69,20 @@ const PausedProgressIndicator = styled(ProgressIndicator)`
 
 export const SUMMARY_HEIGHT = 120;
 export const FAIL_MESSAGE_CONTAINER_HEIGHT = 80;
-export const PADDING = 20;
+export const PADDING = 10;
 export const VIDEO_PLAYER_HEIGHT = 400;
 /* App will go into responsive mode below the given width */
 export const RESPONSIVE_WIDTH = 1400;
 
-function hasSessionFailureMessage(session: Session) {
-  return session.session_status === "FAILED" && session.session_status_message;
+function hasSessionFailureMessage(session: Session | null) {
+  return (
+    session &&
+    session.session_status === "FAILED" &&
+    session.session_status_message
+  );
 }
 
-function getSessiobDetailsMainContainerHeight(session: Session) {
+function getSessiobDetailsMainContainerHeight(session: Session | null) {
   return (
     SUMMARY_HEIGHT +
     APP_HEADER_HEIGHT +
@@ -87,8 +92,8 @@ function getSessiobDetailsMainContainerHeight(session: Session) {
   );
 }
 
-function getLoadingIndicator(session: Session) {
-  if (session.is_paused) {
+function getLoadingIndicator(session: Session, isPaused: boolean) {
+  if (isPaused) {
     return (
       <Tooltip title="Paused" arrow>
         <PausedProgressIndicator />
@@ -107,13 +112,40 @@ function getLoadingIndicator(session: Session) {
 
 export default function SessionDetails() {
   const session = useSelector(getSelectedSession);
+  const [paused, setPaused] = useState(session?.is_paused);
+  const [isDebugging, setIsDebugging] = useState(false);
+  const [isVideoFullscreen, setIsVideFullScreen] = useState(false);
+
+  const MAIN_CONTENT_CONTAINER_HEIGHT =
+    getSessiobDetailsMainContainerHeight(session);
+
+  const videoHeight = useMemo(() => {
+    return isVideoFullscreen && !session?.is_completed
+      ? `calc(100vh - ${MAIN_CONTENT_CONTAINER_HEIGHT}px)`
+      : `${VIDEO_PLAYER_HEIGHT}px`;
+  }, [isVideoFullscreen, session?.session_id]);
+
+  const onVideoSizeChanged = useCallback((isFullScreen: boolean) => {
+    setIsVideFullScreen(isFullScreen);
+  }, []);
+
+  useEffect(() => {
+    setPaused(!session?.is_completed && session?.is_paused);
+    setIsDebugging(false);
+    setIsVideFullScreen(isVideoFullscreen && !session?.is_completed);
+  }, [session?.session_id, session?.is_completed]);
+
+  const onSessionStateChange = (state: boolean) => {
+    setPaused(state);
+  };
+
+  const onDebuggerToggle = (state: boolean) => {
+    setIsDebugging(state);
+  };
 
   if (!session) {
     return <EmptyMessage>Select a Session</EmptyMessage>;
   }
-
-  const MAIN_CONTENT_CONTAINER_HEIGHT =
-    getSessiobDetailsMainContainerHeight(session);
 
   return (
     <Container>
@@ -125,7 +157,13 @@ export default function SessionDetails() {
                 <Name>{session.name || session.session_id}</Name>
               </Column>
               <Column grid={2}>
-                <SessionMenuItems session={session} />
+                <SessionMenuItems
+                  session={session}
+                  paused={paused}
+                  debugging={isDebugging}
+                  onDebuggingToggled={(state) => onDebuggerToggle(state)}
+                  onStateChanged={(state) => onSessionStateChange(state)}
+                />
               </Column>
             </ParallelLayout>
           </HEADER>
@@ -135,7 +173,7 @@ export default function SessionDetails() {
         </Row>
         {/* Animated indicator of the session status */}
         {(!session.is_completed || session.is_paused) && (
-          <Row height="4px">{getLoadingIndicator(session)}</Row>
+          <Row height="4px">{getLoadingIndicator(session, paused)}</Row>
         )}
         {hasSessionFailureMessage(session) && (
           <Row height={`${FAIL_MESSAGE_CONTAINER_HEIGHT}px`} padding={"10px"}>
@@ -148,28 +186,41 @@ export default function SessionDetails() {
               <SerialLayout
                 responsive
                 responsiveWidth={RESPONSIVE_WIDTH}
-                heightOnResize={`${VIDEO_PLAYER_HEIGHT}px`}
+                heightOnResize={videoHeight}
               >
                 <Row>
                   <SessionVideo
                     session={session}
-                    height={VIDEO_PLAYER_HEIGHT}
+                    onVideoSizeChanged={onVideoSizeChanged}
+                    isFullScreen={isVideoFullscreen}
+                    height={videoHeight}
                   />
                 </Row>
-                <Row>
-                  <SessionCapabilityDetails
-                    responsiveWidth={RESPONSIVE_WIDTH}
-                    session={session}
-                    height={MAIN_CONTENT_CONTAINER_HEIGHT + VIDEO_PLAYER_HEIGHT}
-                  />
-                </Row>
+                {!isVideoFullscreen ? (
+                  <Row>
+                    <SessionCapabilityDetails
+                      responsiveWidth={RESPONSIVE_WIDTH}
+                      session={session}
+                      height={
+                        MAIN_CONTENT_CONTAINER_HEIGHT + VIDEO_PLAYER_HEIGHT
+                      }
+                    />
+                  </Row>
+                ) : null}
               </SerialLayout>
             </Column>
             <Column grid={8}>
-              <SessionLogs
-                session={session}
-                parentHeight={MAIN_CONTENT_CONTAINER_HEIGHT}
-              />
+              {!!isDebugging ? (
+                <SessionScriptExecutor
+                  session={session}
+                  parentHeight={MAIN_CONTENT_CONTAINER_HEIGHT}
+                />
+              ) : (
+                <SessionLogs
+                  session={session}
+                  parentHeight={MAIN_CONTENT_CONTAINER_HEIGHT}
+                />
+              )}
             </Column>
           </ParallelLayout>
         </Row>

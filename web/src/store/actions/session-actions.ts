@@ -104,3 +104,18 @@ export const sessionStateChangeFinish = (payload: any) => ({
   type: ReduxActionTypes.SESSION_STATE_CHANGE_FINISH,
   payload,
 });
+
+export const runDriverScript = (payload: any) => ({
+  type: ReduxActionTypes.RUN_SCRIPT_FOR_SESSION,
+  payload,
+});
+
+export const sessionScriptExecutionFinish = (payload: any) => ({
+  type: ReduxActionTypes.RUN_SCRIPT_FOR_SESSION_FINISH,
+  payload,
+});
+
+export const sessionScriptExecutionReset = (payload: any) => ({
+  type: ReduxActionTypes.RESET_SCRIPT_RESPONSE_FOR_SESSION,
+  payload,
+});

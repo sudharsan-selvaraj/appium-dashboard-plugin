@@ -59,4 +59,19 @@ export default class SessionApi {
   public static getHttpLogsForSession(sessionId: string) {
     return Api.get(`/sessions/${sessionId}/http_logs`);
   }
+
+  public static runDriverScript({
+    sessionId,
+    script,
+    timeoutMs,
+  }: {
+    sessionId: string;
+    script: string;
+    timeoutMs?: number;
+  }) {
+    return Api.post(`/debug/${sessionId}/execute_driver_script`, {
+      script,
+      timeout: timeoutMs,
+    });
+  }
 }

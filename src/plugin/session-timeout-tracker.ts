@@ -1,5 +1,3 @@
-import { AppiumCommand } from "../interfaces/appium-command";
-
 export class SessionTimeoutTracker {
   private lastCommandRecievedTime!: Date;
   private timer: any;
@@ -21,7 +19,7 @@ export class SessionTimeoutTracker {
     }
   }
 
-  public tick(command: AppiumCommand) {
+  public tick() {
     this.lastCommandRecievedTime = new Date();
   }
 

@@ -12,6 +12,7 @@ import {
   sessionStateChangeFinish,
   fetchSessionProfilingDataSuccess,
   fetchSessionHttpLogsSuccess,
+  sessionScriptExecutionFinish,
 } from "../actions/session-actions";
 import ReduxActionTypes from "../redux-action-types";
 import { omitBy } from "lodash";
@@ -125,6 +126,21 @@ function* fetchSessionProfileData(action: ReduxActionType<string>) {
   }
 }
 
+function* runDriverScript(
+  action: ReduxActionType<{
+    sessionId: string;
+    script: string;
+    timeoutMs?: number;
+  }>,
+) {
+  if (action.payload) {
+    const response: ApiResponse<any> = yield SessionApi.runDriverScript(
+      action.payload,
+    );
+    yield put(sessionScriptExecutionFinish(response.result));
+  }
+}
+
 export default function* () {
   yield all([
     takeEvery(ReduxActionTypes.FETCH_SESSIONS_INIT, fetchSessions),
@@ -144,5 +160,6 @@ export default function* () {
     takeLatest(ReduxActionTypes.SET_SESSION_FILTER, fetchSessions),
     takeLatest(ReduxActionTypes.PAUSE_SESSION, pauseSession),
     takeLatest(ReduxActionTypes.RESUME_SESSION, resumeSession),
+    takeLatest(ReduxActionTypes.RUN_SCRIPT_FOR_SESSION, runDriverScript),
   ]);
 }

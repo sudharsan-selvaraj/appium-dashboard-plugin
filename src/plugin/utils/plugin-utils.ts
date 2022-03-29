@@ -44,7 +44,7 @@ function getDriverEndpoint(driver: any) {
 
 function constructBasePath(basePath: string) {
   if (!basePath || basePath == "") {
-    return "";
+    return "/wd-internal";
   }
   if (!basePath.startsWith("/")) {
     basePath = `/${basePath}`;
@@ -52,7 +52,7 @@ function constructBasePath(basePath: string) {
   if (basePath.endsWith("/")) {
     basePath = basePath.substr(0, basePath.length - 2);
   }
-  return basePath;
+  return `${basePath}/wd-internal`;
 }
 
 async function makePostCall(driver: any, sessionId: string, path: string, body: any): Promise<any> {
@@ -76,7 +76,7 @@ async function makeDELETECall(driver: any, sessionId: string, path: string): Pro
   return await response.json();
 }
 function getQueryString() {
-  return "?internal=true";
+  return "";
 }
 
 function interceptProxyResponse(response: any): Promise<any> {
@@ -179,16 +179,27 @@ function getMjpegServerPort(driver: any, sessionId: string) {
   return typeof mjpegServerPort == "object" ? defaultPorts[automationName] : mjpegServerPort;
 }
 
+function getWdioServerOpts(driver: any) {
+  let { address, port, basePath } = driver.opts || driver;
+  return {
+    hostname: address,
+    port: port,
+    path: constructBasePath(basePath),
+  };
+}
+
 export {
   makeGETCall,
   makePostCall,
   makeDELETECall,
   getSessionDetails,
+  getDriverEndpoint,
   interceptProxyResponse,
   routeToCommand,
   millisToMinutesAndSeconds,
   isDashboardCommand,
   isAndroidSession,
+  getWdioServerOpts,
   isIOSSession,
   isAppProfilingSupported,
   isHttpLogsSuppoted,
