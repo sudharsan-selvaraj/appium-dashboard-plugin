@@ -57,23 +57,3 @@ body {
 .custom-tooltip-arrow {
 	color: #000!important;
 }
-
-@-webkit-keyframes progress {
-    0% {
-        background-position: 0 0
-    }
-
-    to {
-        background-position: 200px 0
-    }
-}
-
-@keyframes progress {
-    0% {
-        background-position: 0 0
-    }
-
-    to {
-        background-position: 200px 0
-    }
-}
