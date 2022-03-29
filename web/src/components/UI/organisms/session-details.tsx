@@ -178,7 +178,7 @@ export default function SessionDetails() {
   const [paused, setPaused] = useState(session?.is_paused);
   const [isDebugging, setIsDebugging] = useState(false);
   const [isVideoFullscreen, setIsVideFullScreen] = useState(false);
-  const [hideSummary, setHideSummary] = useState(true);
+  const [hideSummary, setHideSummary] = useState(false);
 
   const onToggleSummary = useCallback((state) => {
     setHideSummary(state);
