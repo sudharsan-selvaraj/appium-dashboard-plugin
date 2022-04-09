@@ -23,7 +23,7 @@
     "js-beautify": "^1.14.0",
     "lodash": "^4.17.21",
     "lottie-react": "^2.1.0",
-    "moment": "^2.29.1",
+    "moment": "^2.29.2",
     "moment-timezone": "^0.5.33",
     "popper.js": "^1.16.1",
     "prism-react-renderer": "^1.2.1",
