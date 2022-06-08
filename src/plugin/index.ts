@@ -91,6 +91,9 @@ class AppiumDashboardPlugin extends BasePlugin {
   }
 
   private async constructDesiredCapabilities(args: any) {
+    if (!args[2].alwaysMatch) {
+      return;
+    }
     let rawCapabilities = Object.assign({}, args[2].firstMatch[0], args[2].alwaysMatch);
     CUSTOM_CAPABILITIES.forEach((capability) => {
       delete rawCapabilities[capability];
@@ -106,8 +109,7 @@ class AppiumDashboardPlugin extends BasePlugin {
     }
 
     Object.keys(newCapabilities).forEach((k) => {
-      args[2][k] = newCapabilities[k];
-      args[2].firstMatch[0][k] = newCapabilities[k];
+      args[2].alwaysMatch[k] = newCapabilities[k];
     });
   }
 }
