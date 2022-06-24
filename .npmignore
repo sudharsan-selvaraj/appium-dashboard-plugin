@@ -3,6 +3,9 @@ web
 tmp
 node_modules
 sequelize-config.json
+.prettierrc.json
 .history
 .vscode
 .github
+assets
+typings
