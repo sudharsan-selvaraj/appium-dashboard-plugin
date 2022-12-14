@@ -16,14 +16,14 @@ function getSessionDetails(rawCapabilities: any, sessionResponse: any): any {
 
   let sessionInfo: SessionInfo = {
     session_id,
-    platform: caps.platform,
-    platform_name: caps.platformName.toUpperCase(),
-    automation_name: caps.automationName,
-    device_name: caps.deviceName,
-    browser_name: caps.browserName,
-    platform_version: caps.platformVersion,
+    platform: caps.platform || "",
+    platform_name: caps.platformName?.toUpperCase() || "",
+    automation_name: caps.automationName || "",
+    device_name: caps.deviceName || "",
+    browser_name: caps.browserName || "",
+    platform_version: caps.platformVersion || "",
     app: caps.app,
-    udid: caps.platformName.toLowerCase() == "ios" ? caps.udid : caps.deviceUDID,
+    udid: (caps.platformName?.toLowerCase() == "ios" ? caps.udid : caps.deviceUDID) || "",
     capabilities: {
       ...caps,
       desired: rawCapabilities,

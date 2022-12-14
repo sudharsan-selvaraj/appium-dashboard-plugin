@@ -180,7 +180,13 @@ export default function SessionVideo(props: PropsType) {
       );
     } else if (session.is_completed && session.video_path) {
       return (
-        <VideoPlayer url={CommonUtils.getVideoForSession(session.session_id)} />
+        <VideoPlayer
+          session_id={session.session_id}
+          downloadUrl={CommonUtils.getDownloadVideoForSession(
+            session.session_id,
+          )}
+          url={CommonUtils.getVideoForSession(session.session_id)}
+        />
       );
     } else {
       return (
