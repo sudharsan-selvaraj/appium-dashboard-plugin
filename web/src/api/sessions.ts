@@ -40,6 +40,10 @@ export default class SessionApi {
     return Api.delete(`/sessions/${sessionId}`);
   }
 
+  public static deleteAllSessions() {
+    return Api.delete(`/sessions`);
+  }
+
   public static getSessionTextLogs(sessionId: string) {
     return Api.get(`/sessions/${sessionId}/logs/text`, {});
   }

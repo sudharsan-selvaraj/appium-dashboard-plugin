@@ -85,6 +85,10 @@ export const deleteSession = (payload: string) => ({
   payload,
 });
 
+export const deleteAllSession = () => ({
+  type: ReduxActionTypes.DELETE_ALL_SESSION,
+});
+
 export const deleteSessionFinish = (payload: any) => ({
   type: ReduxActionTypes.SESSION_DELETE_FINISH,
   payload,

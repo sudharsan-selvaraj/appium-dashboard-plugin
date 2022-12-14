@@ -210,50 +210,58 @@ class SessionManager {
   }
 
   private async sessionStarted(command: AppiumCommand) {
-    sessionDebugMap.createNewSession(this.sessionInfo.session_id);
+    try {
+      sessionDebugMap.createNewSession(this.sessionInfo.session_id);
 
-    this.driverScriptExecutor = new DriverScriptExecutor(this.sessionInfo, command.driver);
+      this.driverScriptExecutor = new DriverScriptExecutor(this.sessionInfo, command.driver);
 
-    /* Check if the current session supports network profiling */
-    if (isHttpLogsSuppoted(this.sessionInfo)) {
-      pluginLogger.info("Creating network profiler");
-      this.httpLogger = getHttpLogger({
-        sessionInfo: this.sessionInfo,
-        adb: this.adb,
-        driver: command.driver,
-      });
+      /* Check if the current session supports network profiling */
+      if (isHttpLogsSuppoted(this.sessionInfo)) {
+        pluginLogger.info("Creating network profiler");
+        this.httpLogger = getHttpLogger({
+          sessionInfo: this.sessionInfo,
+          adb: this.adb,
+          driver: command.driver,
+        });
+      }
+
+      let { desired } = this.sessionInfo.capabilities;
+      let buildName = desired["dashboard:build"];
+      let projectName = desired["dashboard:project"];
+      let name = desired["dashboard:name"];
+      let build, project;
+
+      let { is_profiling_available, device_info } = await this.startAppProfiling();
+      await this.startHttpLogsCapture();
+
+      if (projectName) {
+        project = await getOrCreateNewProject({ projectName });
+      }
+      if (buildName) {
+        build = await getOrCreateNewBuild({ buildName, projectId: project?.id });
+      }
+
+      await this.initializeScreenShotFolder();
+      await this.startScreenRecording(command.driver);
+      await Session.create({
+        ...this.sessionInfo,
+        start_time: new Date(),
+        build_id: build?.build_id,
+        project_id: project?.id || null,
+        device_info,
+        is_profiling_available,
+        name: name || null,
+        live_stream_port: await getMjpegServerPort(command.driver, this.sessionInfo.session_id),
+      } as any);
+
+      await this.saveCommandLog(command, null);
+    } catch (err) {
+      logger.error(
+        `Error saving new session info in database for session ${
+          this.sessionInfo.session_id
+        }. response: ${JSON.stringify(err)}`
+      );
     }
-
-    let { desired } = this.sessionInfo.capabilities;
-    let buildName = desired["dashboard:build"];
-    let projectName = desired["dashboard:project"];
-    let name = desired["dashboard:name"];
-    let build, project;
-
-    let { is_profiling_available, device_info } = await this.startAppProfiling();
-    await this.startHttpLogsCapture();
-
-    if (projectName) {
-      project = await getOrCreateNewProject({ projectName });
-    }
-    if (buildName) {
-      build = await getOrCreateNewBuild({ buildName, projectId: project?.id });
-    }
-
-    await this.initializeScreenShotFolder();
-    await this.startScreenRecording(command.driver);
-    await Session.create({
-      ...this.sessionInfo,
-      start_time: new Date(),
-      build_id: build?.build_id,
-      project_id: project?.id || null,
-      device_info,
-      is_profiling_available,
-      name: name || null,
-      live_stream_port: await getMjpegServerPort(command.driver, this.sessionInfo.session_id),
-    } as any);
-
-    await this.saveCommandLog(command, null);
   }
 
   public async sessionTerminated(options: { sessionTimedOut: boolean } = { sessionTimedOut: false }) {

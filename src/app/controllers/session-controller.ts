@@ -15,8 +15,10 @@ export class SessionController extends BaseController {
     router.get("/", this.getSessions.bind(this));
     router.get("/:sessionId", this.getSessionBySessionId.bind(this));
     router.delete("/:sessionId", (req, res, next) => this.deleteSession(req, res, next, config));
+    router.delete("/", (req, res, next) => this.deleteAllSession(req, res, next, config));
     router.get("/:sessionId/log/:logId/screen-shot", this.getScreenShotForLog.bind(this));
     router.get("/:sessionId/video", this.getVideoForSession.bind(this));
+    router.get("/:sessionId/video/download", this.downloadVideoForSession.bind(this));
     router.get("/:sessionId/logs/text", this.getTextLogs.bind(this));
     router.get("/:sessionId/logs/device", this.getDeviceLogs.bind(this));
     router.get("/:sessionId/logs/debug", this.getDebugLogs.bind(this));
@@ -51,6 +53,37 @@ export class SessionController extends BaseController {
     );
   }
 
+  public async deleteAllSession(request: Request, response: Response, next: NextFunction, config: any) {
+    let sessions = await Session.findAll({
+      where: {
+        session_status: {
+          [Op.notIn]: ["RUNNING"],
+        },
+      },
+    });
+
+    await Session.destroy({
+      where: {
+        session_status: {
+          [Op.notIn]: ["RUNNING"],
+        },
+      },
+    });
+
+    for (var session of sessions) {
+      try {
+        if (session.video_path) {
+          fs.unlinkSync(session.video_path);
+        }
+        fs.rmdirSync(path.join(config.screenshotSavePath, session.session_id), { recursive: true });
+      } catch (err) {}
+    }
+
+    this.sendSuccessResponse(response, {
+      success: true,
+    });
+  }
+
   public async deleteSession(request: Request, response: Response, next: NextFunction, config: any) {
     let sessionId: string = request.params.sessionId;
     let session = await Session.findOne({
@@ -70,6 +103,22 @@ export class SessionController extends BaseController {
       });
     } else {
       this.sendFailureResponse(response, "Cannnot delete running session");
+    }
+  }
+
+  public async downloadVideoForSession(request: Request, response: Response, next: NextFunction) {
+    let sessionId: string = request.params.sessionId;
+    let session = await Session.findOne({
+      where: {
+        session_id: sessionId,
+      },
+    });
+    const videoPath = session?.video_path;
+
+    if (session && videoPath) {
+      return response.download(videoPath);
+    } else {
+      this.sendFailureResponse(response, "Video not available");
     }
   }
 

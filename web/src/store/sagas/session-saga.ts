@@ -95,6 +95,11 @@ function* deleteSession(action: ReduxActionType<string>) {
   }
 }
 
+function* deleteAllSession() {
+  const response: ApiResponse<any> = yield SessionApi.deleteAllSessions();
+  yield put(deleteSessionFinish(response));
+}
+
 function* pauseSession(action: ReduxActionType<string>) {
   if (action.payload) {
     const response: ApiResponse<any> = yield SessionApi.pauseSession(
@@ -157,6 +162,7 @@ export default function* () {
       fetchSessionProfileData,
     ),
     takeLatest(ReduxActionTypes.DELETE_SESSION, deleteSession),
+    takeLatest(ReduxActionTypes.DELETE_ALL_SESSION, deleteAllSession),
     takeLatest(ReduxActionTypes.SET_SESSION_FILTER, fetchSessions),
     takeLatest(ReduxActionTypes.PAUSE_SESSION, pauseSession),
     takeLatest(ReduxActionTypes.RESUME_SESSION, resumeSession),
