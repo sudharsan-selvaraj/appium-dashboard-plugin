@@ -1,14 +1,20 @@
 import { makeGETCall, makePostCall, makeDELETECall } from "./utils/plugin-utils";
 
-async function startScreenRecording(driver: any, sessionId: string) {
+async function startScreenRecording(driver: any, sessionId: string, videoResolution: string) {
+  let resolution = "1280:720";
+  let size = "1280x720";
+  if (videoResolution) {
+    resolution = videoResolution.replace("x", ":");
+    size = videoResolution.replace(":", "x");
+  }
   return await makePostCall(driver, sessionId, "/appium/start_recording_screen", {
     options: {
       videoType: "libx264",
       videoFps: 10,
       /* Force iOS video scale to fix '[ffmpeg] [libx264 @ 0x7fda5f005280] width not divisible by 2 (1125x2436)' */
-      videoScale: "1280:720",
+      videoScale: resolution,
       /* Force Android size because some devices cannot record at their native resolution, resulting in error 'Unable to get output buffers (err=-38)' */
-      videoSize: "1280:720",
+      videoSize: size,
       /* In android, adb can record only 3 mins of video. below timeLimit is used to take longer video */
       timeLimit: 1800, //in seconds (30 min)
     },
