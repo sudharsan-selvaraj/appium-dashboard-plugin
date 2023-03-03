@@ -13,7 +13,7 @@ import getPort from "get-port";
 
 const sessionMap: Map<string, SessionManager> = new Map();
 const IGNORED_COMMANDS = ["getScreenshot", "stopRecordingScreen", "startRecordingScreen"];
-const CUSTOM_CAPABILITIES = ["newCommandTimeout", "dashboard:project", "dashboard:build", "dashboard:name"];
+const CUSTOM_CAPABILITIES = ["newCommandTimeout", "dashboard:project", "dashboard:build", "dashboard:name", "dashboard:videoResolution"];
 
 class AppiumDashboardPlugin extends BasePlugin {
   constructor(pluginName: string) {
