@@ -1,6 +1,6 @@
 {
   "name": "appium-dashboard",
-  "version": "v2.0.2",
+  "version": "v2.0.3",
   "description": "Appium plugin to view session execution details via detailed dashboard",
   "main": "lib/index.js",
   "scripts": {
@@ -55,7 +55,7 @@
     "sequelize": "^6.6.5",
     "sequelize-cli": "^6.2.0",
     "sequelize-typescript": "^2.1.0",
-    "sqlite3": "^5.0.8",
+    "sqlite3": "^5.1.7",
     "typedi": "^0.10.0",
     "uuid": "^8.3.2",
     "vm2": "^3.9.8",

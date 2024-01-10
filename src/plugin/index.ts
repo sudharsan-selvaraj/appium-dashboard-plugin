@@ -13,7 +13,15 @@ import getPort from "get-port";
 
 const sessionMap: Map<string, SessionManager> = new Map();
 const IGNORED_COMMANDS = ["getScreenshot", "stopRecordingScreen", "startRecordingScreen"];
-const CUSTOM_CAPABILITIES = ["newCommandTimeout", "dashboard:project", "dashboard:build", "dashboard:name", "dashboard:videoResolution"];
+const CUSTOM_CAPABILITIES = [
+  "newCommandTimeout",
+  "dashboard:project",
+  "dashboard:build",
+  "dashboard:name",
+  "dashboard:videoResolution",
+  "dashboard:enableLiveVideo",
+  "dashboard:enableVideoRecording",
+];
 
 class AppiumDashboardPlugin extends BasePlugin {
   constructor(pluginName: string) {
@@ -95,6 +103,9 @@ class AppiumDashboardPlugin extends BasePlugin {
       return;
     }
     let rawCapabilities = Object.assign({}, args[2].firstMatch[0], args[2].alwaysMatch);
+    const enableLiveVideo = _.isNil(rawCapabilities["dashboard:enableLiveVideo"])
+      ? true
+      : rawCapabilities["dashboard:enableLiveVideo"];
     CUSTOM_CAPABILITIES.forEach((capability) => {
       delete rawCapabilities[capability];
     });
@@ -104,7 +115,11 @@ class AppiumDashboardPlugin extends BasePlugin {
       "appium:nativeWebScreenshot": true, //to make screenshot endpoint work in android webview tests,
     };
 
-    if (rawCapabilities?.["platformName"].toLowerCase() == "android" && !rawCapabilities?.["appium:mjpegServerPort"]) {
+    if (
+      rawCapabilities?.["platformName"].toLowerCase() == "android" &&
+      !rawCapabilities?.["appium:mjpegServerPort"] &&
+      enableLiveVideo
+    ) {
       newCapabilities["appium:mjpegServerPort"] = await getPort();
     }
 
