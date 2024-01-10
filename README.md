@@ -63,3 +63,11 @@ appium --use-plugin=appium-dashboard
 Now navigate to `http://localhost:4723/dashboard` to open the web app which will show the complete list of tests and its details that are being executed.
 
 NOTE: This plugin is still in beta phase and heavy testing is being done to eliminate all possible issues along with lot other new features.
+
+## Custom capabilitis:
+
+| Name                           | Type    | Description                                                                                           | Example                                   |
+| ------------------------------ | ------- | ----------------------------------------------------------------------------------------------------- | ----------------------------------------- |
+| dashboard:name                 | string  | Custom name for the session                                                                           | `{"dashboard:name" : Sample login test }` |
+| dashboard:enableLiveVideo      | boolean | if `true` live video of the execution will be streamed from the dashboard                             | defaults to `true`                        |
+| dashboard:enableVideoRecording | boolean | if `true`, video recording of the session can be viewd from the dashboard after the session is killed | defaults to `true`                        |

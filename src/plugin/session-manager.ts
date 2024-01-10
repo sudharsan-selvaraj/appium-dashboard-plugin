@@ -381,7 +381,12 @@ class SessionManager {
   private async startScreenRecording(driver: any) {
     let { desired } = this.sessionInfo.capabilities;
     let videoResolution = desired["dashboard:videoResolution"];
-    await startScreenRecording(driver, this.sessionInfo.session_id, videoResolution);
+    let sholdRecordVideo = _.isNil(desired["dashboard:enableVideoRecording"])
+      ? true
+      : desired["dashboard:enableVideoRecording"];
+    if (sholdRecordVideo) {
+      await startScreenRecording(driver, this.sessionInfo.session_id, videoResolution);
+    }
   }
 
   private async initializeScreenShotFolder() {
