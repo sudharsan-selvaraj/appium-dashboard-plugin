@@ -1,3 +1,6 @@
+## 🚨 Attention!!!! 
+We have successfully integrated the dashboard with the [appium-device-farm](https://github.com/AppiumTestDistribution/appium-device-farm) plugin. As a result, I am now archiving this repository. I highly recommend that everyone begin using appium-device-farm from now on. For any new feature requests or bugs, please create an issue directly in the [device farm repository](https://github.com/AppiumTestDistribution/appium-device-farm/issues). Thank you everyone for your support!!!
+
 <p align="center">
 <img src="./assets/logo.png" height=150/>
 </p>
