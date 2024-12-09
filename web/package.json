@@ -24,7 +24,7 @@
     "lodash": "^4.17.21",
     "lottie-react": "^2.1.0",
     "moment": "^2.29.1",
-    "moment-timezone": "^0.5.33",
+    "moment-timezone": "^0.5.35",
     "popper.js": "^1.16.1",
     "prism-react-renderer": "^1.2.1",
     "react": "^17.0.2",
